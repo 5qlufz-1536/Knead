@@ -1,2 +1,4 @@
 # Knead
-Minecraft用playsoundジェネレーター
+Minecraft用playsoundジェネレーター。
+
+playsound generator for Minecraft.
