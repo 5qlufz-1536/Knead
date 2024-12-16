@@ -8,7 +8,7 @@ build({
     appId: "com.neac.knead",
     productName: "Knead",
     copyright: "Copyright © 2025 ${author}",
-    artifactName: "${productName}-${version}-${platform}-${arch}.${ext}",
+    artifactName: "${productName}-${version}-${arch}.${ext}",
     files: ["dist/**/*"],
     directories: {
       output: "release",
@@ -20,7 +20,8 @@ build({
     },
     win: {
       target: ['nsis', 'zip'],
-      publisherName: "NeAc"
+      publisherName: "NeAc",
+      icon: "build/icon.png"
     },
     mac: {
       icon: "build/icon.icns",
