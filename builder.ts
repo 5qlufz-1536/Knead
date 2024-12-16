@@ -7,21 +7,34 @@ build({
   config: {
     appId: "com.neac.knead",
     productName: "Knead",
+    copyright: "Copyright © 2025 ${author}",
     artifactName: "${productName}-${version}-${platform}-${arch}.${ext}",
     files: ["dist/**/*"],
     directories: {
       output: "release",
     },
-    icon: "build/icon.ico",
+    icon: "build/icon.png",
     nsis: {
       oneClick: false,
       allowToChangeInstallationDirectory: true
     },
     win: {
+      target: ['nsis', 'zip'],
+      publisherName: "NeAc"
+    },
+    mac: {
+      icon: "build/icon.icns",
       target: {
-        target: "nsis",
-        arch: ["x64", "ia32"]
-      }
+        target: "default",
+        arch: "universal"
+      },
+      // コード署名しない場合は null の設定が必須
+      identity: null,
+    },
+    linux: {
+      icon: 'build/icon.icns',
+      target: ['AppImage'],
+      category: 'Development'
     }
   },
 });
