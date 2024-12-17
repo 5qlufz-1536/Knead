@@ -1,7 +1,7 @@
 {
   "name": "knead",
   "version": "1.0.0",
-  "description": "Minecraft用playsoundジェネレーター。",
+  "description": "Playsound generator for Minecraft",
   "main": "dist/main.js",
   "scripts": {
     "dev": "rimraf dist && run-p dev:webpack dev:electron",
