@@ -8,7 +8,8 @@ const { myAPI } = window;
 
 export const VersionList = () => {
 
-  var [list, setList]: [ComboboxData, Function] = useState([]);
+  const [list, setList]: [ComboboxData, Function] = useState([]);
+  const [SelectedVertion, setSelected]: [string, Function] = useState("");
 
   var appdata_dir: string = ""
   var all_versions: string[] = []
@@ -118,10 +119,11 @@ export const VersionList = () => {
     const f = async () => {
       try {
         await get_mcVersions();
-        // all_versions = ["1.21", "1.21.2", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
+        // all_versions = ["1.21", "1.21.2", "1.42.3", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
         version_sort();
         version_filter();
         setList(make_data());
+        setSelected(major_versions[major_versions.length-1]);
       } catch (e) {
         alert(e);
       }
@@ -143,6 +145,7 @@ export const VersionList = () => {
       placeholder="バージョンを選択"
       data={list}
       searchable
+      value={SelectedVertion}
       checkIconPosition="left"
       comboboxProps={{ dropdownPadding: 5, position: 'bottom', middlewares: { flip: false, shift: false }, offset: 0 }}
       scrollAreaProps={{ type: "scroll", mah: 250, scrollbarSize: 10 }}
