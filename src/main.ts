@@ -10,8 +10,8 @@ app.whenReady().then(() => {
     const mainWindow = new BrowserWindow({
         width: 1000,
         height: 640,
-        minWidth: 1000,
-        minHeight: 640,
+        minWidth: 400,
+        minHeight: 240,
         autoHideMenuBar: true,
         frame: true,
         center: true,

@@ -1,39 +1,52 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import { createTheme, MantineProvider, NativeSelect } from '@mantine/core';
+import { useEffect, useState } from "react";
+import { ComboboxData, Select, rem, Divider } from '@mantine/core';
+import { IconCube } from "@tabler/icons-react";
+import "./VersionList.module.css";
 
 const { myAPI } = window;
 
 
 export const VersionList = () => {
 
-  var [list, setList]: [ReactElement[], Function] = useState([]);
+  var [list, setList]: [ComboboxData, Function] = useState([]);
 
   var appdata_dir: string = ""
-  var Versions: string[] = []
+  var all_versions: string[] = []
+  var major_versions: string[] = []
+  var snapshot_versions: string[] = []
+  var pre_versions: string[] = []
+  var rc_versions: string[] = []
 
+  var MajorVersionTXT = "MajorVersion"
+  var SnapshotVersionTXT = "Snapshot"
+  var PreReleaseVersionTXT = "Pre-Release"
+  var ReleaseCandidateVersionTXT = "ReleaseCandidate"
 
   const get_mcVersions = async () => {
     appdata_dir = await myAPI.appdata()
-    Versions = await myAPI.readdirSync(appdata_dir + '\\.minecraft\\versions')
-    console.log(appdata_dir + '\\.minecraft\\versions')
-    console.log(Versions)
+    all_versions = await myAPI.readdirSync(appdata_dir + '\\.minecraft\\versions')
+    // console.log(appdata_dir + '\\.minecraft\\versions')
   }
 
   const version_filter = () => {
     // 特定の正規表現に当てはまらなければ除外する
     // (マインクラフト公式から発行されたバージョンでないものを除く)
-    Versions = Versions.filter((item) => {
-      const patterns: RegExp[] = [
-        // メジャーバージョン検知用
-        /(^\d+)(\.)(\d+)(\.?)(\d)??((?![^\-])$)/,
-        // スナショ(00w00a)検知用
-        /(^\d+)w(\d+)a/,
-        // pre-release / release-candidate 検知用
-        /(^\d+)\.(\d+)(\.?)(\d)??-((pre)|(rc)\d+$)/
-      ];
-      var flag: boolean = false;
-      patterns.forEach((element) => { if (element.test(item)) flag = true })
-      return flag;
+
+    // メジャーバージョン
+    major_versions = all_versions.filter((item) => {
+      return /(^\d+)(\.)(\d+)(\.?)(\d)??((?![^\-])$)/.test(item)
+    })
+    // スナショ(00w00a)
+    snapshot_versions = all_versions.filter((item) => {
+      return /(^\d+)w(\d+)a/.test(item)
+    })
+    // pre-release
+    pre_versions = all_versions.filter((item) => {
+      return /(^\d+)\.(\d+)(\.?)(\d)??-((pre)\d+$)/.test(item)
+    })
+    // release-candidate
+    rc_versions = all_versions.filter((item) => {
+      return /(^\d+)\.(\d+)(\.?)(\d)??-((rc)\d+$)/.test(item)
     })
   }
 
@@ -53,7 +66,7 @@ export const VersionList = () => {
 
 
     // .で区切られたバージョンをソート
-    Versions.sort((a: string, b: string) => {
+    all_versions.sort((a: string, b: string) => {
       if (a == b) { return 0; }
       var a_s: string[] = a.split(".");
       var b_s: string[] = b.split(".");
@@ -71,7 +84,7 @@ export const VersionList = () => {
       return 0;
     });
     // wとaで区切られたバージョンのソート
-    Versions.sort((a: string, b: string) => {
+    all_versions.sort((a: string, b: string) => {
       if (a == b) { return 0; }
       // まずはwで分ける
       var a_s: string[] = a.split("w");
@@ -91,25 +104,24 @@ export const VersionList = () => {
     });
   }
 
-  const make_html_element = () => {
-    var tmp: ReactElement[] = []
-    Versions.forEach((element, index) => {
-      tmp.push(<option key={element} value={element}>{element}</option>);
-    });
+  const make_data = () => {
+    var tmp: ComboboxData = [
+      { group: MajorVersionTXT, items: major_versions },
+      { group: ReleaseCandidateVersionTXT, items: rc_versions },
+      { group: PreReleaseVersionTXT, items: pre_versions },
+      { group: SnapshotVersionTXT, items: snapshot_versions }
+    ]
     return tmp
   }
 
   useEffect(() => {
     const f = async () => {
-      Versions = ["loading.."]
       try {
         await get_mcVersions();
-        // Versions = ["1.21", "1.21.2", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
-        version_filter();
+        // all_versions = ["1.21", "1.21.2", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
         version_sort();
-        setList(make_html_element());
-        console.log(Versions)
-        console.log("list AWAIT" + String(list))
+        version_filter();
+        setList(make_data());
       } catch (e) {
         alert(e);
       }
@@ -117,13 +129,24 @@ export const VersionList = () => {
     f();
   }, []);
 
+  const SelectVersion = (value: any) => {
+    console.log(value)
+  }
+
+  const icon = <IconCube style={{ width: rem(16), height: rem(16) }} />
 
   return (
-    // <div style={{ display: "flex" }}>
-    <NativeSelect>
-      <option key="" value="" hidden selected>バージョンを選択</option>
-      {list}
-    </NativeSelect>
-    // </div>
+    <Select style={{ display: "flex", maxWidth: 240, margin: 0, marginBottom: 5 }}
+      className="input dropdown"
+      allowDeselect={false}
+      leftSection={icon}
+      placeholder="バージョンを選択"
+      data={list}
+      searchable
+      checkIconPosition="left"
+      comboboxProps={{ dropdownPadding: 5, position: 'bottom', middlewares: { flip: false, shift: false }, offset: 0 }}
+      scrollAreaProps={{ type: "scroll", mah: 250, scrollbarSize: 10 }}
+      onChange={SelectVersion}
+    />
   );
 };
