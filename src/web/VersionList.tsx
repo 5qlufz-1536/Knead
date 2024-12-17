@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { Select, Option } from "@yamada-ui/react"
+import { createTheme, MantineProvider, NativeSelect } from '@mantine/core';
 
 const { myAPI } = window;
 
@@ -94,7 +94,7 @@ export const VersionList = () => {
   const make_html_element = () => {
     var tmp: ReactElement[] = []
     Versions.forEach((element, index) => {
-      tmp.push(<Option value={element}>{element}</Option>);
+      tmp.push(<option key={element} value={element}>{element}</option>);
     });
     return tmp
   }
@@ -120,9 +120,10 @@ export const VersionList = () => {
 
   return (
     // <div style={{ display: "flex" }}>
-      <Select id="version_list" placeholder="バージョンを選択" >
-        {list}
-      </Select>
+    <NativeSelect>
+      <option key="" value="" hidden selected>バージョンを選択</option>
+      {list}
+    </NativeSelect>
     // </div>
   );
 };
