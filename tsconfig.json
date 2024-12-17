@@ -1,15 +1,21 @@
 {
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true
+  },
+  "ts-node": {
     "compilerOptions": {
-      "target": "ESNext",
-      "module": "ESNext",
-      "esModuleInterop": true,
-      "moduleResolution": "bundler",
-      "jsx": "react-jsx",
-      "strict": true
-    },
-    "ts-node": {
-      "compilerOptions": {
-        "module": "CommonJS"
-      }
+      "module": "CommonJS"
     }
-  }
+  },
+  "files": [
+    "@types/global.d.ts"
+  ],
+  "include": [
+    "src"
+  ]
+}

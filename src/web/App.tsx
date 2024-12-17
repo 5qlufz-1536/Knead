@@ -1,9 +1,14 @@
-import "./App.css";
+
+import { VersionList } from "./VersionList"
+import { Footer } from "./Footer"
+import { UIProvider, extendTheme } from "@yamada-ui/react"
+
 
 export const App = () => {
   return (
-    <div className="container">
-      <h1>Hello.</h1>
-    </div>
+    <UIProvider>
+      <VersionList />
+      {/* <Footer /> */}
+    </UIProvider>
   );
 };

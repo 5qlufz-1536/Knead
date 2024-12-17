@@ -87,6 +87,7 @@ const preload: Configuration = {
   },
 };
 
+
 // レンダラープロセス向け設定
 const renderer: Configuration = {
   ...common,
@@ -111,7 +112,7 @@ const renderer: Configuration = {
 };
 
 
-//アセット
+//その他必要なファイルいろいろ
 const assets: Configuration = {
     ...common,
     entry: [
