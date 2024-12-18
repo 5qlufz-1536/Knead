@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ComboboxData, Select, rem, Divider } from '@mantine/core';
+import { ComboboxData, Select, rem, Group, Button } from '@mantine/core';
 import { IconCube } from "@tabler/icons-react";
-import "./VersionList.module.css";
+import styles from "./VersionList.module.css";
 
 const { myAPI } = window;
 
@@ -120,10 +120,11 @@ export const VersionList = () => {
       try {
         await get_mcVersions();
         // all_versions = ["1.21", "1.21.2", "1.42.3", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
+        // all_versions = ["1.21", "1.21.2", "1.42.3", "1.19"]
         version_sort();
         version_filter();
         setList(make_data());
-        setSelected(major_versions[major_versions.length-1]);
+        setSelected(major_versions[major_versions.length - 1]);
       } catch (e) {
         alert(e);
       }
@@ -132,24 +133,39 @@ export const VersionList = () => {
   }, []);
 
   const SelectVersion = (value: any) => {
+    setSelected(value)
     console.log(value)
   }
 
   const icon = <IconCube style={{ width: rem(16), height: rem(16) }} />
 
   return (
-    <Select style={{ display: "flex", maxWidth: 240, margin: 0, marginBottom: 5 }}
-      className="input dropdown"
-      allowDeselect={false}
-      leftSection={icon}
-      placeholder="バージョンを選択"
-      data={list}
-      searchable
-      value={SelectedVertion}
-      checkIconPosition="left"
-      comboboxProps={{ dropdownPadding: 5, position: 'bottom', middlewares: { flip: false, shift: false }, offset: 0 }}
-      scrollAreaProps={{ type: "scroll", mah: 250, scrollbarSize: 10 }}
-      onChange={SelectVersion}
-    />
+    <>
+      <Group style={{ marginBottom: 5 }} justify="space-between">
+        <Group w={200}>
+          <Select
+            classNames={styles}
+            allowDeselect={false}
+            leftSection={icon}
+            placeholder="バージョンを選択"
+            data={list}
+            searchable
+            value={SelectedVertion}
+            checkIconPosition="left"
+            comboboxProps={{ dropdownPadding: 2, position: 'bottom', middlewares: { flip: false, shift: false }, offset: 0, transitionProps: { transition: 'scale-y', duration: 150 } }}
+            scrollAreaProps={{ type: "auto", scrollbarSize: 10 }}
+            onChange={SelectVersion}
+          />
+        </Group>
+        <Group>
+          <Button>1</Button>
+          <Button>2</Button>
+          <Button>3</Button>
+          <Button>4</Button>
+          <Button>5</Button>
+          <Button>6</Button>
+        </Group>
+      </Group>
+    </>
   );
 };
