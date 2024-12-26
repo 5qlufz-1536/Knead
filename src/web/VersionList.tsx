@@ -139,8 +139,6 @@ export const VersionList = () => {
 
   const icon = <IconCube style={{ width: rem(16), height: rem(16) }} />
 
-  console.log(classes)
-
   return (
     <>
       <Group style={{ marginBottom: 5 }} justify="space-between">
