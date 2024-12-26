@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ComboboxData, Select, rem, Group, Button } from '@mantine/core';
 import { IconCube } from "@tabler/icons-react";
-import styles from "./VersionList.module.css";
+import classes from "./VersionList.module.css";
 
 const { myAPI } = window;
 
@@ -139,12 +139,14 @@ export const VersionList = () => {
 
   const icon = <IconCube style={{ width: rem(16), height: rem(16) }} />
 
+  console.log(classes)
+
   return (
     <>
       <Group style={{ marginBottom: 5 }} justify="space-between">
         <Group w={200}>
           <Select
-            classNames={styles}
+            classNames={classes}
             allowDeselect={false}
             leftSection={icon}
             placeholder="バージョンを選択"
