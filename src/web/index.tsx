@@ -17,27 +17,27 @@ const customTheme = extendTheme({
 
 
 
-// const injectColorModeScript = () => {
-//   const scriptContent = getColorModeScript({
-//     initialColorMode: customConfig.initialColorMode,
-//   })
+const injectColorModeScript = () => {
+  const scriptContent = getColorModeScript({
+    initialColorMode: customConfig.initialColorMode,
+  })
 
-//   const script = document.createElement("script")
+  const script = document.createElement("script")
 
-//   script.textContent = scriptContent
+  script.textContent = scriptContent
 
-//   document.head.appendChild(script)
-// }
+  document.head.appendChild(script)
+}
 
-// injectColorModeScript()
+injectColorModeScript()
 
 
 
 
 createRoot(document.getElementById("root") as Element).render(
-  // <StrictMode>
+  <StrictMode>
     <UIProvider config={customConfig}>
       <App />
     </UIProvider>
-  // </StrictMode>
+  </StrictMode>
 );
