@@ -2,7 +2,7 @@ import { VersionSelector } from "./VersionSelector"
 import { SoundSelector } from "./SoundSelector"
 import { Configuration } from "./Configuration"
 import { Footer } from "./Footer"
-import { Separator, Flex, Button, Spacer, useColorMode } from "@yamada-ui/react"
+import { Separator, Flex, Button, Spacer, useColorMode, Box } from "@yamada-ui/react"
 
 
 import "./App.css"
@@ -20,16 +20,19 @@ export const App = () => {
   document.head.appendChild(style)
 
   return (
-    <>
-      <Flex w="full" gap="md" padding={1} paddingBottom={0}>
+    <Box padding={2}>
+      <Flex w="full" gap="md" paddingBottom={0}>
         <VersionSelector />
 
         <Spacer />
 
+        <Button onClick={() => changeColorMode("light")}>light</Button>
+        <Button onClick={() => changeColorMode("dark")}>dark</Button>
         <Button onClick={() => changeColorMode("system")}>システムカラー</Button>
         <Configuration />
       </Flex>
-      <Separator margin={1} size="xs" />
-    </>
+      <Separator marginY={2} size="xs" />
+      <SoundSelector />
+    </Box>
   );
 };

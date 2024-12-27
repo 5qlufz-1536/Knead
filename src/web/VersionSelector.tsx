@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, AutocompleteItem, Box } from "@yamada-ui/react"
+import { Autocomplete, AutocompleteItem, Dict } from "@yamada-ui/react"
 import { BoxIcon } from "@yamada-ui/lucide";
+import { useAddDispatch, useAppSelector } from '../store/_store';
+import { Sound, soundList, targetVersion } from "../store/fetchSlice";
 
 const { myAPI } = window;
 
 
 export const VersionSelector = () => {
 
+  const dispatch = useAddDispatch();
+  const target_version = useAppSelector((state) => state.fetch.target_version);
+
   const [list, setList]: [AutocompleteItem, Function] = useState([]);
-  const [SelectedVertion, setSelected]: [string, Function] = useState("");
 
   var appdata_dir: string = ""
   var all_versions: string[] = []
@@ -108,12 +112,9 @@ export const VersionSelector = () => {
       return fe_list
     }
 
-
     var tmp: AutocompleteItem = [
-      { label: "MajorVersion", items: feMM(major_versions) },
-      { label: "ReleaseCandidate", items: feMM(rc_versions) },
-      { label: "Pre-Release", items: feMM(pre_versions) },
-      { label: "Snapshot", items: feMM(snapshot_versions) }
+      { label: "正式", items: feMM(major_versions) },
+      { label: "スナップショット", items: feMM(rc_versions.concat(pre_versions).concat(snapshot_versions)) }
     ]
     return tmp
   }
@@ -127,7 +128,9 @@ export const VersionSelector = () => {
         version_sort();
         version_filter();
         setList(make_data());
-        setSelected(major_versions[major_versions.length - 1]);
+
+        // dispatch(targetVersion({ version: major_versions[major_versions.length - 1] }));
+
       } catch (e) {
         alert(e);
       }
@@ -135,9 +138,20 @@ export const VersionSelector = () => {
     f();
   }, []);
 
-  const SelectVersion = (value: any) => {
-    setSelected(value)
+  var oggs: Sound[] = []
+
+  const get_mcSounds = async (value: string) => {
+    oggs = await myAPI.get_mcSounds(value)
+    console.log(oggs)
+    dispatch(soundList({ sounds: oggs }));
+  }
+
+
+  const ChangeVersion = async (value: any) => {
     console.log(value)
+    dispatch(targetVersion({ version: value }));
+
+    get_mcSounds(value);
   }
 
   return (
@@ -148,12 +162,10 @@ export const VersionSelector = () => {
         closeOnSelect={false}
         variant="filled"
         items={list}
-        // defaultValue="1.21.4"
-        // value={SelectedVertion}
-        onChange={SelectVersion}
+        onChange={ChangeVersion}
         maxW="xs"
         animation="top"
-        listProps={{padding:0}}
+        listProps={{ padding: 0 }}
       />
     </>
   );
