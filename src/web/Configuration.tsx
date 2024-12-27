@@ -12,7 +12,7 @@ export const Configuration = () => {
   return (
     <>
       <Button onClick={onOpen}><Settings2Icon /></Button>
-
+{/* 
       <Drawer isOpen={isOpen} onClose={onClose}>
         <DrawerHeader>設定</DrawerHeader>
 
@@ -26,7 +26,7 @@ export const Configuration = () => {
           </Button>
           <Button colorScheme="primary">あ</Button>
         </DrawerFooter>
-      </Drawer>
+      </Drawer> */}
     </>
   );
 };

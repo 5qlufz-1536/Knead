@@ -6,14 +6,12 @@ import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript 
 
 
 export const config: ThemeConfig = {
-  initialColorMode: "dark"
+  initialColorMode: "system"
 }
 
-const customConfig = extendConfig(config)
+const customConfig = extendConfig(config);
 
-const customTheme = extendTheme({
-
-})();
+const customTheme = extendTheme({})();
 
 
 
