@@ -1,21 +1,22 @@
-
-import { VersionList } from "./VersionList"
+import { VersionSelector } from "./VersionSelector"
+// import { SoundSelector } from "./SoundSelector"
+// import { Configuration } from "./Configuration"
 import { Footer } from "./Footer"
-import { createTheme, MantineProvider, Divider, Button, Space } from '@mantine/core';
+import { Separator, Flex, Button, Spacer, useColorMode } from "@yamada-ui/react"
 
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
 
 export const App = () => {
 
   return (
-    <MantineProvider theme={theme} defaultColorScheme="auto">
-      <div style={{ padding: 5 }}>
-        <VersionList />
-        <Divider size="xs" />
-      </div>
-      {/* <Footer /> */}
-    </MantineProvider>
+    <>
+      <Flex w="full" gap="md" padding={1} paddingBottom={0}>
+        <VersionSelector />
+
+        <Spacer />
+
+        {/* <Configuration /> */}
+      </Flex>
+      <Separator margin={1} size="xs" />
+    </>
   );
 };

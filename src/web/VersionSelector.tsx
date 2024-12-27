@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { ComboboxData, Select, rem, Group, Button } from '@mantine/core';
-import { IconCube } from "@tabler/icons-react";
-import classes from "./VersionList.module.css";
+import { Autocomplete, AutocompleteItem } from "@yamada-ui/react"
+import { BoxIcon } from "@yamada-ui/lucide";
 
 const { myAPI } = window;
 
 
-export const VersionList = () => {
+export const VersionSelector = () => {
 
-  const [list, setList]: [ComboboxData, Function] = useState([]);
+  const [list, setList]: [AutocompleteItem, Function] = useState([]);
   const [SelectedVertion, setSelected]: [string, Function] = useState("");
 
   var appdata_dir: string = ""
@@ -18,10 +17,6 @@ export const VersionList = () => {
   var pre_versions: string[] = []
   var rc_versions: string[] = []
 
-  var MajorVersionTXT = "MajorVersion"
-  var SnapshotVersionTXT = "Snapshot"
-  var PreReleaseVersionTXT = "Pre-Release"
-  var ReleaseCandidateVersionTXT = "ReleaseCandidate"
 
   const get_mcVersions = async () => {
     appdata_dir = await myAPI.appdata()
@@ -106,11 +101,19 @@ export const VersionList = () => {
   }
 
   const make_data = () => {
-    var tmp: ComboboxData = [
-      { group: MajorVersionTXT, items: major_versions },
-      { group: ReleaseCandidateVersionTXT, items: rc_versions },
-      { group: PreReleaseVersionTXT, items: pre_versions },
-      { group: SnapshotVersionTXT, items: snapshot_versions }
+
+    const feMM = (list: string[]) => {
+      var fe_list: AutocompleteItem = [];
+      list.forEach((fe_value) => { fe_list.push({ label: fe_value, value: fe_value }) })
+      return fe_list
+    }
+
+
+    var tmp: AutocompleteItem = [
+      { label: "MajorVersion", items: feMM(major_versions) },
+      { label: "ReleaseCandidate", items: feMM(rc_versions) },
+      { label: "Pre-Release", items: feMM(pre_versions) },
+      { label: "Snapshot", items: feMM(snapshot_versions) }
     ]
     return tmp
   }
@@ -137,35 +140,16 @@ export const VersionList = () => {
     console.log(value)
   }
 
-  const icon = <IconCube style={{ width: rem(16), height: rem(16) }} />
-
   return (
     <>
-      <Group style={{ marginBottom: 5 }} justify="space-between">
-        <Group w={200}>
-          <Select
-            classNames={classes}
-            allowDeselect={false}
-            leftSection={icon}
-            placeholder="バージョンを選択"
-            data={list}
-            searchable
-            value={SelectedVertion}
-            checkIconPosition="left"
-            comboboxProps={{ dropdownPadding: 2, position: 'bottom', middlewares: { flip: false, shift: false }, offset: 0, transitionProps: { transition: 'scale-y', duration: 150 } }}
-            scrollAreaProps={{ type: "auto", scrollbarSize: 10 }}
-            onChange={SelectVersion}
-          />
-        </Group>
-        <Group>
-          <Button>1</Button>
-          <Button>2</Button>
-          <Button>3</Button>
-          <Button>4</Button>
-          <Button>5</Button>
-          <Button>6</Button>
-        </Group>
-      </Group>
+      <Autocomplete
+        placeholder="バージョンを選択"
+        emptyMessage="該当バージョンなし"
+        items={list}
+        defaultValue={SelectedVertion}
+        onChange={SelectVersion}
+        maxW="xs"
+      />
     </>
   );
 };
