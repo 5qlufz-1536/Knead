@@ -1,6 +1,6 @@
 
-import { Settings2Icon } from "@yamada-ui/lucide";
-import { Button, Drawer, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure } from "@yamada-ui/react"
+import { SettingsIcon } from "@yamada-ui/lucide";
+import { Drawer, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, IconButton, Button } from "@yamada-ui/react"
 
 
 
@@ -11,9 +11,9 @@ export const Configuration = () => {
 
   return (
     <>
-      <Button onClick={onOpen}><Settings2Icon /></Button>
-{/* 
-      <Drawer isOpen={isOpen} onClose={onClose}>
+      <IconButton onClick={onOpen} icon={<SettingsIcon />} />
+
+      {/* <Drawer isOpen={isOpen} onClose={onClose}>
         <DrawerHeader>設定</DrawerHeader>
 
         <DrawerBody>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Autocomplete, AutocompleteItem } from "@yamada-ui/react"
+import { Autocomplete, AutocompleteItem, Box } from "@yamada-ui/react"
 import { BoxIcon } from "@yamada-ui/lucide";
 
 const { myAPI } = window;
@@ -145,10 +145,15 @@ export const VersionSelector = () => {
       <Autocomplete
         placeholder="バージョンを選択"
         emptyMessage="該当バージョンなし"
+        closeOnSelect={false}
+        variant="filled"
         items={list}
-        defaultValue={SelectedVertion}
+        // defaultValue="1.21.4"
+        // value={SelectedVertion}
         onChange={SelectVersion}
         maxW="xs"
+        animation="top"
+        listProps={{padding:0}}
       />
     </>
   );

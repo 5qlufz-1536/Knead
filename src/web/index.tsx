@@ -1,8 +1,7 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 
 import { App } from "./App";
-import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript } from "@yamada-ui/react"
+import { createRoot } from "react-dom/client";
+import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript, useSystemColorMode } from "@yamada-ui/react"
 
 
 
@@ -15,8 +14,8 @@ const customConfig = extendConfig(config);
 const customTheme = extendTheme({
   semantics: {
     colors: {
-      black: ["#141414","#1f1f1f"],
-      white: ["#fbfbfb","#cccccc"]
+      black: ["#141414", "#1f1f1f"],
+      white: ["#fbfbfb", "#cccccc"]
     }
   }
 })();
@@ -40,10 +39,10 @@ injectColorModeScript()
 
 
 
+
 createRoot(document.getElementById("root") as Element).render(
-  <StrictMode>
-    <UIProvider config={customConfig} theme={customTheme}>
-      <App />
-    </UIProvider>
-  </StrictMode>
+  <UIProvider config={customConfig} theme={customTheme}>
+    <App />
+  </UIProvider>
+
 );
