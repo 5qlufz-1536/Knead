@@ -2,10 +2,12 @@ import { VersionSelector } from "./VersionSelector"
 import { SoundSelector } from "./SoundSelector"
 import { Configuration } from "./Configuration"
 import { Footer } from "./Footer"
-import { Separator, Flex, Button, Spacer, useColorMode } from "@yamada-ui/react"
+import { Separator, Flex, Button, Spacer, useColorMode, Wrap } from "@yamada-ui/react"
 
 
 export const App = () => {
+  const { colorMode, changeColorMode, toggleColorMode } = useColorMode()
+
 
   return (
     <>
@@ -14,6 +16,7 @@ export const App = () => {
 
         <Spacer />
 
+        <Button onClick={() => changeColorMode("system")}>システムカラー</Button>
         <Configuration />
       </Flex>
       <Separator margin={1} size="xs" />
