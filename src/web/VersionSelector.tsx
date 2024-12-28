@@ -157,7 +157,7 @@ export const VersionSelector = () => {
       <Autocomplete
         placeholder="バージョンを選択"
         emptyMessage="該当バージョンなし"
-        closeOnSelect={false}
+        // closeOnSelect={false}
         variant="filled"
         items={list}
         onChange={ChangeVersion}
