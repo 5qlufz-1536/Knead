@@ -8,9 +8,9 @@ initIpcMain();
 app.whenReady().then(() => {
     // アプリの起動イベント発火で BrowserWindow インスタンスを作成
     const mainWindow = new BrowserWindow({
-        width: 1000,
-        height: 640,
-        minWidth: 400,
+        width: 650,
+        height: 720,
+        minWidth: 650,
         minHeight: 240,
         autoHideMenuBar: true,
         frame: true,

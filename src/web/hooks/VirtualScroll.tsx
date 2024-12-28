@@ -36,7 +36,7 @@ export const useVirtualScroll = <Item extends unknown>({
 
   const displayingItems = useMemo(
     () => items.slice(startIndex, startIndex + maxDisplayCount),
-    [startIndex, maxDisplayCount]
+    [startIndex, maxDisplayCount, items]
   );
 
   return { handleScroll, displayingItems, startIndex };

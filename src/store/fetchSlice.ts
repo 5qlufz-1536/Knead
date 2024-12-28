@@ -5,12 +5,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface Sound {
   id: string;
   sounds: SoundName[];
-  rating: number;
 }
 
 export interface SoundName {
   hash: string;
-  volume: number;
   pitch: number;
 }
 
@@ -18,11 +16,13 @@ export interface SoundName {
 interface State {
   target_version: string;
   sound_list: Sound[];
+  soundRatings: { [key: string]: number; };
 }
 
 const initialState: State = {
   target_version: "",
-  sound_list: []
+  sound_list: [],
+  soundRatings: {}
 };
 
 export const fetchSlice = createSlice({
@@ -44,7 +44,14 @@ export const fetchSlice = createSlice({
       state.sound_list = action.payload.sounds;
     },
 
+    updateSoundRating: (
+      state,
+      action: PayloadAction<{ soundRatings: { [key: string]: number; }; }>
+    ) => {
+      state.soundRatings = action.payload.soundRatings;
+    }
+
   },
 });
 export default fetchSlice.reducer;
-export const { targetVersion, soundList } = fetchSlice.actions;
+export const { targetVersion, soundList, updateSoundRating } = fetchSlice.actions;
