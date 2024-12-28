@@ -1,25 +1,33 @@
 
-import React, { useEffect, useRef, MouseEvent } from 'react';
+import React, { useEffect, useRef, MouseEvent, useState, useMemo } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
-import { soundList } from '../store/fetchSlice';
-import { Button, Input, InputGroup, InputLeftElement, List, ListItem, Rating, ScrollArea } from "@yamada-ui/react";
+import { Box, Button, Flex, Input, InputGroup, InputLeftElement, Rating } from "@yamada-ui/react";
 import { SearchIcon } from '@yamada-ui/lucide';
-
-const { myAPI } = window;
+import { useVirtualScroll } from "./_VirtualScroll";
 
 export const SoundSelector = () => {
-  const name = useRef<string>('');
-  const age = useRef<number>(0);
-  const dispatch = useAddDispatch();
-  const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    // dispatch(soundList({ id: name.current, rating: age.current }));
-  };
 
   const sounds = useAppSelector((state) => state.fetch.sound_list);
   const version = useAppSelector((state) => state.fetch.target_version);
 
-  // console.log(sounds)
+
+  const items = sounds;
+  const itemHeight = 50;
+  const containerHeight = 500;
+
+  const { displayingItems, handleScroll, startIndex } = useVirtualScroll({
+    containerHeight,
+    itemHeight,
+    items,
+  });
+
+
+  const [previous_version, update_previous_version] = useState<string>()
+
+  if (previous_version != version) {
+    update_previous_version(version)
+  }
+
 
   return (
     <>
@@ -30,17 +38,46 @@ export const SoundSelector = () => {
 
         <Input type="tel" placeholder="Search..." />
       </InputGroup>
-      <ScrollArea h="lg" marginTop={2} padding={2}>
-        <List>
-          {sounds.map((sound) => (
-            <ListItem as="button" key={sound.id}>
-              {sound.id}
-              {/* <Rating defaultValue={sound.rating}/> */}
-            </ListItem>
-          ))}
-        </List>
-      </ScrollArea>
 
+      <Flex marginTop={2} border={1}>
+        <div
+          onScroll={handleScroll}
+          style={{
+            width: "100%",
+            height: containerHeight,
+            overflowY: "scroll"
+          }}
+        >
+          <div style={{ height: items.length * itemHeight }}>
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: "none",
+                position: "relative",
+                top: startIndex * itemHeight,
+              }}
+            >
+              {displayingItems.map((item) => (
+                <li
+                  key={item.id}
+                  style={{
+                    height: itemHeight,
+                    display: "flex",
+                    justifyContent: "left",
+                    alignItems: "center",
+                  }}
+                >
+                  <Flex>
+                    <Rating defaultValue={item.rating} />
+                    {item.id}
+                  </Flex>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Flex>
     </>
   );
 };

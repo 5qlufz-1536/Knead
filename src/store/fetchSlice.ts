@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface SoundName {
-  hash: string;
-  volume: number;
-  pitch: number;
-}
+
 
 export interface Sound {
   id: string;
   sounds: SoundName[];
   rating: number;
+}
+
+export interface SoundName {
+  hash: string;
+  volume: number;
+  pitch: number;
 }
 
 

@@ -138,11 +138,9 @@ export const VersionSelector = () => {
     f();
   }, []);
 
-  var oggs: Sound[] = []
-
   const get_mcSounds = async (value: string) => {
-    oggs = await myAPI.get_mcSounds(value)
-    console.log(oggs)
+    var oggs: Sound[] = await myAPI.get_mcSounds(value)
+    // console.log(oggs)
     dispatch(soundList({ sounds: oggs }));
   }
 
@@ -165,7 +163,9 @@ export const VersionSelector = () => {
         onChange={ChangeVersion}
         maxW="xs"
         animation="top"
-        listProps={{ padding: 0 }}
+        gutter={0}
+        listProps={{ padding: 0, margin: 0, h: "lg" }}
+        // contentProps={{ h: "lg" }}
       />
     </>
   );

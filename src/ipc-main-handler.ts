@@ -13,6 +13,8 @@ export const initIpcMain = (): void => {
   ipcMain.handle("appdata", (event) => {
     return process.env.APPDATA
   });
+
+
   ipcMain.handle("get_mcSounds", async (event, str: string) => {
     var assetIndex: string = JSON.parse(fs.readFileSync(path.join(process.env.APPDATA + '\\.minecraft\\versions\\' + str + "\\" + str + ".json")).toString()).assetIndex.id
     var objects: Dict = JSON.parse(fs.readFileSync(path.join(process.env.APPDATA + '\\.minecraft\\assets\\indexes\\' + assetIndex + ".json")).toString()).objects
@@ -30,7 +32,7 @@ export const initIpcMain = (): void => {
     for (var id of Object.keys(sounds_json)) {
       var sound: Sound = { id: "", sounds: [], rating: 3 }
       sound.id = id
-      sounds_json[id].sounds.forEach((element: any) => {
+      sounds_json[id].sounds.map((element: any) => {
         var hash: string = ""
         var volume: number = 1
         var pitch: number = 1
@@ -41,7 +43,7 @@ export const initIpcMain = (): void => {
         else if (element.type != null && element.type == "event") {
           if (element.volume != null) volume = element.volume > 2 ? 2 : element.volume
           if (element.pitch != null) pitch = element.pitch
-          sounds_json[element.name].sounds.forEach((element2: any) => {
+          sounds_json[element.name].sounds.map((element2: any) => {
             var hash_tmp: string = ""
             var volume_tmp: number = 1
             var pitch_tmp: number = 1
@@ -71,6 +73,9 @@ export const initIpcMain = (): void => {
 
     return result
   });
+
+
+
   ipcMain.handle("save", (event, str: string) => {
     console.log(`save: ${str}`);
   });
