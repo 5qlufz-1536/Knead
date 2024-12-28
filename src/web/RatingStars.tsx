@@ -1,6 +1,6 @@
 import { StarFillIcon } from '@primer/octicons-react';
 import { Flex, useColorModeValue } from '@yamada-ui/react';
-import React, { JSX, useCallback, useMemo } from 'react';
+import { JSX, useCallback } from 'react';
 
 type RatingStarsProps = {
   rating: number;
