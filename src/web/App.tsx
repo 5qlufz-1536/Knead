@@ -15,9 +15,14 @@ export const App = () => {
 
   const style = document.createElement("style")
   style.textContent += "::-webkit-scrollbar { width: 7px; height: 7px; }"
-  style.textContent += "::-webkit-scrollbar-track { background: transparent; border: none; }"
-  if (colorMode === "light") style.textContent += "::-webkit-scrollbar-thumb { background: var(--ui-colors-blackAlpha-600); border-radius: 10px; }"
-  if (colorMode === "dark") style.textContent += "::-webkit-scrollbar-thumb { background: var(--ui-colors-whiteAlpha-600); border-radius: 10px; }"
+  if (colorMode === "light") {
+    style.textContent += "::-webkit-scrollbar-track { background: var(--ui-colors-blackAlpha-200); border: none; }"
+    style.textContent += "::-webkit-scrollbar-thumb { background: var(--ui-colors-blackAlpha-600); border-radius: 10px; }"
+  }
+  if (colorMode === "dark") {
+    style.textContent += "::-webkit-scrollbar-track { background: var(--ui-colors-whiteAlpha-200); border: none; }"
+    style.textContent += "::-webkit-scrollbar-thumb { background: var(--ui-colors-whiteAlpha-600); border-radius: 10px; }"
+  }
   document.head.appendChild(style)
 
   return (
