@@ -1,12 +1,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
-import { Box, Button, Flex, Input, InputGroup, InputLeftElement, Spacer } from "@yamada-ui/react";
+import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer } from "@yamada-ui/react";
 import { SearchIcon } from '@yamada-ui/lucide';
-import { StarFillIcon } from "@primer/octicons-react"
 import { useVirtualScroll } from "./hooks/VirtualScroll";
 import { RatingStars } from "./RatingStars"
-import { targetVersion, updateSoundRating } from "../store/fetchSlice";
+import { updateSoundRating } from "../store/fetchSlice";
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch();
