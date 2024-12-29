@@ -1,4 +1,4 @@
-import { StarFillIcon } from '@primer/octicons-react';
+import { GoStarFill } from "react-icons/go";
 import { Flex, useColorModeValue } from '@yamada-ui/react';
 import { JSX, useCallback } from 'react';
 
@@ -19,12 +19,12 @@ export const RatingStars = ({ rating, onChange, disabled }: RatingStarsProps): J
     const activeStarColor = useColorModeValue("var(--ui-colors-amber-100)", "var(--ui-colors-amber-900)")
     const inactiveStarColor = useColorModeValue("var(--ui-colors-blackAlpha-100)", "var(--ui-colors-whiteAlpha-100)")
     return (
-      <Flex paddingX={1} as='button' onClick={(e: any) => {e.stopPropagation()}}>
-        <div><StarFillIcon size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
-        <div><StarFillIcon size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
-        <div><StarFillIcon size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>
-        <div><StarFillIcon size={18} fill={rating >= 4 ? activeStarColor : inactiveStarColor} /></div>
-        <div><StarFillIcon size={18} fill={rating >= 5 ? activeStarColor : inactiveStarColor} /></div>
+      <Flex paddingX={1} marginBottom={-2} as='button' onClick={(e: any) => {e.stopPropagation()}}>
+        <div><GoStarFill size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
+        <div><GoStarFill size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
+        <div><GoStarFill size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>
+        <div><GoStarFill size={18} fill={rating >= 4 ? activeStarColor : inactiveStarColor} /></div>
+        <div><GoStarFill size={18} fill={rating >= 5 ? activeStarColor : inactiveStarColor} /></div>
       </Flex>
     );
   }
@@ -32,12 +32,12 @@ export const RatingStars = ({ rating, onChange, disabled }: RatingStarsProps): J
   const activeStarColor = useColorModeValue("var(--ui-colors-amber-500)", "var(--ui-colors-amber-400)")
   const inactiveStarColor = useColorModeValue("var(--ui-colors-blackAlpha-300)", "var(--ui-colors-whiteAlpha-300)")
   return (
-    <Flex paddingX={1} as='button' onClick={(e: any) => {e.stopPropagation()}}>
-      <div onClick={onClick1}><StarFillIcon size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
-      <div onClick={onClick2}><StarFillIcon size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
-      <div onClick={onClick3}><StarFillIcon size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>
-      <div onClick={onClick4}><StarFillIcon size={18} fill={rating >= 4 ? activeStarColor : inactiveStarColor} /></div>
-      <div onClick={onClick5}><StarFillIcon size={18} fill={rating >= 5 ? activeStarColor : inactiveStarColor} /></div>
+    <Flex paddingX={1} marginBottom={-2} as='button' onClick={(e: any) => {e.stopPropagation()}}>
+      <div onClick={onClick1}><GoStarFill size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
+      <div onClick={onClick2}><GoStarFill size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
+      <div onClick={onClick3}><GoStarFill size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>
+      <div onClick={onClick4}><GoStarFill size={18} fill={rating >= 4 ? activeStarColor : inactiveStarColor} /></div>
+      <div onClick={onClick5}><GoStarFill size={18} fill={rating >= 5 ? activeStarColor : inactiveStarColor} /></div>
     </Flex>
   );
 };

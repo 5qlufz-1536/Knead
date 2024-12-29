@@ -1,9 +1,8 @@
-import { Dict, useOS } from "@yamada-ui/react";
+import { Dict } from "@yamada-ui/react";
 import { ipcMain } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import { Sound } from "./store/fetchSlice";
-import { homedir } from "os";
 
 const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max);
@@ -45,6 +44,8 @@ const getHashBySoundName = (hashMap: { [key: string]: { hash: string } }, soundN
 }
 
 export const initIpcMain = (): void => {
+
+
   ipcMain.handle("get_versions", async (event) => {
     const folders = fs.readdirSync(path.join(...getMinecraftDir(), 'versions')).filter((e) => {
       return fs.statSync(path.join(...getMinecraftDir(), 'versions', e)).isDirectory()
@@ -95,8 +96,6 @@ export const initIpcMain = (): void => {
 
     return result
   });
-
-
 
   ipcMain.handle("save", (event, str: string) => {
     console.log(`save: ${str}`);

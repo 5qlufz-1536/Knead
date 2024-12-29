@@ -42,9 +42,7 @@ export const App = () => {
         </Box>
         <Spacer />
       </VStack>
-      <Box w="full">
-        <Footer />
-      </Box>
+      <Footer />
     </>
   );
 };

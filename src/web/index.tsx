@@ -18,7 +18,8 @@ const customTheme = extendTheme({
   semantics: {
     colors: {
       black: ["#141414", "#1f1f1f"],
-      white: ["#fbfbfb", "#cccccc"]
+      white: ["#f8f8f8", "#cccccc"],
+      footerBackground: ["#ffffff", "#181818"],
     }
   }
 })();

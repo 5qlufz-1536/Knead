@@ -68,14 +68,16 @@ export const SoundSelector = () => {
       <Box
         onClick={onSelectSound}
         id={item.id}
-        as="button" w="full" maxH={itemHeight} style={{ transition: "0.5s all" }}
+        w="full" maxH={itemHeight} style={{ transition: "0.5s all" }}
         backgroundColor={item.id == selected_sound ? ['blackAlpha.200', 'whiteAlpha.200'] : "none"}
         _nativeHover={{ background: ['blackAlpha.200', 'whiteAlpha.200'] }} paddingX={5} paddingY={2} bg=""
       >
         <Flex w="full" style={{ userSelect: "none" }}>
           {item.id}
-          <Spacer/>
-          <RatingStars rating={soundRatings[item.id] ?? 0} onChange={rate => onChangeRating(item.id, rate)} />
+          <Spacer />
+          <Box alignContent="center">
+            <RatingStars rating={soundRatings[item.id] ?? 0} onChange={rate => onChangeRating(item.id, rate)} />
+          </Box>
         </Flex>
       </Box>
     </li>
@@ -86,7 +88,7 @@ export const SoundSelector = () => {
       <Flex w="full" >
         <InputGroup>
           <InputLeftElement>
-            <SearchIcon color="gray.500" />
+            <SearchIcon color="gray.500" fontSize="lg" />
           </InputLeftElement>
 
           <Input placeholder="Search..." onChange={onChangeSearchWord} />
@@ -99,7 +101,7 @@ export const SoundSelector = () => {
             <RatingStars rating={ratingFilter} onChange={rate => setRatingFilter(rate)} />
           </Box>
         </Flex>
-        <Toggle variant="outline" colorScheme="success" icon={ratingFilterSwitch ? <FilterIcon /> : <FilterXIcon />} onClick={toggleRatingFilter} />
+        <Toggle variant="outline" colorScheme="success" icon={ratingFilterSwitch ? <FilterIcon fontSize="lg" /> : <FilterXIcon fontSize="lg" />} onClick={toggleRatingFilter} />
       </Flex>
 
 

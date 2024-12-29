@@ -1,5 +1,5 @@
 
-import { useColorMode, Menu, MenuButton, MenuList, MenuItem, IconButton } from "@yamada-ui/react"
+import { useColorMode, Menu, MenuButton, MenuList, MenuItem, IconButton, Box } from "@yamada-ui/react"
 
 import { MoonIcon, PaletteIcon, SunIcon, MonitorCogIcon } from "@yamada-ui/lucide"
 
@@ -14,26 +14,26 @@ export const ThemeChange = () => {
 
     return (
         <Menu>
-            <MenuButton as={IconButton} icon={<PaletteIcon />} variant="outline" />
+            <MenuButton as={IconButton} icon={<PaletteIcon fontSize="lg"/>} variant="outline" />
 
             <MenuList>
                 <MenuItem icon={<MonitorCogIcon color={isSystemColor} fontSize="lg" />}
                     textColor={isSystemColor}
                     onClick={() => changeColorMode("system")}
                 >
-                    System
+                    <Box paddingBottom={0.5}>System</Box>
                 </MenuItem>
                 <MenuItem icon={<SunIcon color={isLightColor} fontSize="lg" />}
                     textColor={isLightColor}
                     onClick={() => changeColorMode("light")}
                 >
-                    Light
+                    <Box paddingBottom={0.5}>Light</Box>
                 </MenuItem>
                 <MenuItem icon={<MoonIcon color={isDarkColor} fontSize="lg" />}
                     textColor={isDarkColor}
                     onClick={() => changeColorMode("dark")}
                 >
-                    Dark
+                    <Box paddingBottom={0.5}>Dark</Box>
                 </MenuItem>
             </MenuList>
         </Menu>
