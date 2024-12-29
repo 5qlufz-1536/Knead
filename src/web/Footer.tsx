@@ -90,7 +90,7 @@ export const Footer = () => {
         <Box w="full" bg="footerBackground" padding={2} style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
-            <Slider defaultValue={0} filledTrackColor="red.600" thumbColor="red.600" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+            <Slider step={0.01} defaultValue={0} filledTrackColor="red.600" thumbColor="red.600" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
           </Box>
 
           <Flex w="full" marginTop={2} >
