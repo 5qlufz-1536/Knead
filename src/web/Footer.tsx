@@ -1,26 +1,27 @@
+import { CheckIcon, CopyIcon } from "@primer/octicons-react";
+import { Box, Flex, IconButton, Input, InputGroup, Separator, Slider, Spacer, Tooltip, useClipboard } from "@yamada-ui/react";
 
 export const Footer = () => {
+
+  const { onCopy, hasCopied } = useClipboard()
+
+  const value = "Test String"
+
   return (
     <footer>
-      <div className="FF">
-        <audio id="audio-player" src="" preload="auto" />
-        <a className="AudioB" id="replay">
-          <i id="replay" className="fas fa-step-backward" />
-        </a>
-        <a className="AudioB" id="playpause"  style={{display: "none"}}>
-          <i id="play" className="fas fa-play" />
-          <i id="pause" className="fas fa-pause" style={{display: "none"}} />
-        </a>
-        <div className="AudioT" id="timeText">
-          <span id="currentTime">00:00</span>
-          /
-          <span id="maxTime">00:00</span>
-        </div>
-        <input className="audioS" id="audio-seekbar" type="range" name="time" min="0" max="100" step="0.01" value="0" />
-        <input className="audioS" id="audio-speed" type="range" name="speed" min="0.5" max="2" step="0.01" value="1" />
-        <input className="AudioPT" id="pitch" type="number" name="pitch" min="0.5" max="2" step="0.01" value="1" />
-        <input className="audioS" id="audio-volume" type="range" name="volume" min="-1" max="0" step="0.01" value="0" />
-      </div>
+      <Box h={10}>
+        <Slider thumbSize={3} />
+      </Box>
+      <Box w="full" marginTop={2} border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5}>
+        <Flex>
+          <Box alignContent="center" paddingX={3} style={{ userSelect: "none"}} >{value}</Box>
+          <Spacer />
+          <Box><Separator orientation="vertical" /></Box>
+          <Tooltip label={hasCopied ? "Copied!": "Copy"}>
+            <IconButton icon={hasCopied ? <Box color="success" alignContent="center" paddingBottom={1} ><CheckIcon /></Box> : <CopyIcon />} onClick={() => onCopy(value)} colorScheme={"primary"} variant="primary" borderLeftRadius={0} borderRightRadius={2} />
+          </Tooltip>
+        </Flex>
+      </Box>
     </footer>
   );
 };

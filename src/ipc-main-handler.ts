@@ -1,8 +1,9 @@
-import { Dict } from "@yamada-ui/react";
+import { Dict, useOS } from "@yamada-ui/react";
 import { ipcMain } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import { Sound } from "./store/fetchSlice";
+import { homedir } from "os";
 
 const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max);
@@ -15,6 +16,27 @@ type SoundsJson = {
   }
 }
 
+const getMinecraftDir = () => {
+  let dir: string[] = [process.env.HOME!]
+  const os = process.platform
+
+  switch (os) {
+    case "win32":
+      dir = [...dir, "AppData", "Roaming", '.minecraft']
+      break
+    case "darwin":
+      dir = [...dir, "Library", "Application Support", "minecraft"]
+      break
+    case "linux":
+      dir = [...dir, '.minecraft']
+      break
+    default:
+      break
+  }
+
+  return dir
+}
+
 const getHashBySoundName = (hashMap: { [key: string]: { hash: string } }, soundName: string): string => {
   return hashMap[`minecraft/sounds/${soundName}.ogg`].hash
     ?? hashMap[`sounds/${soundName}.ogg`].hash
@@ -24,16 +46,23 @@ const getHashBySoundName = (hashMap: { [key: string]: { hash: string } }, soundN
 
 export const initIpcMain = (): void => {
   ipcMain.handle("get_versions", async (event) => {
-    return fs.readdirSync(path.join(process.env.APPDATA!, '.minecraft', 'versions'))
+    const folders = fs.readdirSync(path.join(...getMinecraftDir(), 'versions')).filter((e) => {
+      return fs.statSync(path.join(...getMinecraftDir(), 'versions', e)).isDirectory()
+    }).filter((e) => {
+      return fs.readdirSync(path.join(...getMinecraftDir(), 'versions', e)).filter((e) => {
+        return /.*\.json$/.test(e)
+      }).length > 0
+    })
+    return folders
   });
 
   ipcMain.handle("get_mcSounds", async (event, version: string) => {
-    const assetIndex: string = JSON.parse(fs.readFileSync(path.join(process.env.APPDATA!, '.minecraft', 'versions', version, `${version}.json`)).toString()).assetIndex.id
-    const objects: Dict = JSON.parse(fs.readFileSync(path.join(process.env.APPDATA!, '.minecraft', 'assets', 'indexes', `${assetIndex}.json`)).toString()).objects
+    const assetIndex: string = JSON.parse(fs.readFileSync(path.join(...getMinecraftDir(), 'versions', version, `${version}.json`)).toString()).assetIndex.id
+    const objects: Dict = JSON.parse(fs.readFileSync(path.join(...getMinecraftDir(), 'assets', 'indexes', `${assetIndex}.json`)).toString()).objects
 
     // sounds.jsonの中身
     const soundsJsonHash = objects[Object.keys(objects).filter((key) => /sounds.json$/.test(key))[0]].hash
-    const soundsJsonPath = path.join(process.env.APPDATA!, '.minecraft', 'assets', 'objects', soundsJsonHash.slice(0, 2), soundsJsonHash)
+    const soundsJsonPath = path.join(...getMinecraftDir(), 'assets', 'objects', soundsJsonHash.slice(0, 2), soundsJsonHash)
     const soundsJson = JSON.parse(fs.readFileSync(soundsJsonPath).toString()) as SoundsJson
 
     const result: Sound[] = [];
@@ -51,7 +80,7 @@ export const initIpcMain = (): void => {
             if (typeof element2 == "string") {
               sound.sounds.push({ hash: getHashBySoundName(objects, element2), pitch })
             } else {
-              sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5 , 2) })
+              sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5, 2) })
             }
           }
 

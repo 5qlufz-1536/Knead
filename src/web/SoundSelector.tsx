@@ -1,11 +1,11 @@
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
 import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBoolean } from "@yamada-ui/react";
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
 import { useVirtualScroll } from "./hooks/VirtualScroll";
 import { RatingStars } from "./RatingStars"
-import { updateSoundRating } from "../store/fetchSlice";
+import { updateSelectedSound, updateSoundRating } from "../store/fetchSlice";
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch();
@@ -13,6 +13,7 @@ export const SoundSelector = () => {
   const sounds = useAppSelector(state => state.fetch.sound_list);
   const soundRatings = useAppSelector(state => state.fetch.soundRatings);
   const target_version = useAppSelector(state => state.fetch.target_version);
+  const selected_sound = useAppSelector(state => state.fetch.selected_sound);
 
   const [txtFilters, setTxtFilters] = useState<string[]>([])
   const [ratingFilter, setRatingFilter] = useState(0)
@@ -48,6 +49,14 @@ export const SoundSelector = () => {
 
   const onChangeSearchWord = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setTxtFilters(e.target.value.split(' ')), [setTxtFilters])
 
+  const onSelectSound = useCallback(() => {
+    // console.log(e.target)
+    // e.stopPropagation();
+    // setSelectedSound(e.target)
+    // ↓test用
+    dispatch(updateSelectedSound({ id: "ambient.cave" }))
+  }, [selected_sound])
+
   const onChangeRating = (id: string, rating: number) => {
     dispatch(updateSoundRating({ soundRatings: { ...soundRatings, [id]: rating } }))
   }
@@ -57,12 +66,15 @@ export const SoundSelector = () => {
       style={{ height: itemHeight, display: "flex", justifyContent: "left", alignItems: "center" }}
     >
       <Box
+        onClick={onSelectSound}
+        id={item.id}
         as="button" w="full" maxH={itemHeight} style={{ transition: "0.5s all" }}
+        backgroundColor={item.id == selected_sound ? ['blackAlpha.200', 'whiteAlpha.200'] : "none"}
         _nativeHover={{ background: ['blackAlpha.200', 'whiteAlpha.200'] }} paddingX={5} paddingY={2} bg=""
       >
-        <Flex w="full">
+        <Flex w="full" style={{ userSelect: "none" }}>
           {item.id}
-          <Spacer />
+          <Spacer/>
           <RatingStars rating={soundRatings[item.id] ?? 0} onChange={rate => onChangeRating(item.id, rate)} />
         </Flex>
       </Box>

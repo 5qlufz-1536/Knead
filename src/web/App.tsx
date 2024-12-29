@@ -26,21 +26,25 @@ export const App = () => {
   document.head.appendChild(style)
 
   return (
-    <VStack padding={2}>
-      <Box>
-        <Flex w="full" gap="md" paddingBottom={0}>
-          <VersionSelector />
+    <>
+      <VStack padding={2}>
+        <Box>
+          <Flex w="full" gap="md" paddingBottom={0}>
+            <VersionSelector />
 
-          <Spacer />
+            <Spacer />
 
-          <ThemeChange />
-          {/* <Configuration /> */}
-        </Flex>
-        <Separator marginY={2} size="xs" />
-        <SoundSelector />
+            <ThemeChange />
+            {/* <Configuration /> */}
+          </Flex>
+          <Separator marginY={2} size="xs" />
+          <SoundSelector />
+        </Box>
+        <Spacer />
+      </VStack>
+      <Box w="full">
+        <Footer />
       </Box>
-      <Spacer />
-      {/* <Button w="full"></Button> */}
-    </VStack>
+    </>
   );
 };

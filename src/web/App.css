@@ -1,0 +1,11 @@
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 10px 10px;
+
+    /*絶対位置*/
+    position: absolute;
+    /*下に固定*/
+    bottom: 0;
+    background: #0e0e0e;
+}
