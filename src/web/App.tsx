@@ -40,7 +40,7 @@ export const App = () => {
         <SoundSelector />
       </Box>
       <Spacer />
-      <Button w="full"></Button>
+      {/* <Button w="full"></Button> */}
     </VStack>
   );
 };
