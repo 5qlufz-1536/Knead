@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
 import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBoolean } from "@yamada-ui/react";
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
@@ -34,8 +34,19 @@ export const SoundSelector = () => {
   });
 
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, ratingFilter, ratingFilterSwitch, target_version])
+
+
   const itemHeight = 40;
-  const containerHeight = 400;
+
+  const containerHeight = useMemo<number>(
+    () => {
+      const cHeight = scrollRef.current?.getBoundingClientRect().height
+      return cHeight ? cHeight : 0
+    },
+    [scrollRef.current?.getBoundingClientRect()]
+  );
 
 
   const { displayingItems, handleScroll, startIndex } = useVirtualScroll({
@@ -44,17 +55,12 @@ export const SoundSelector = () => {
     items: filteredSounds,
   });
 
-  const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, ratingFilter, ratingFilterSwitch, target_version])
+  const listBoxHeightCSS = "calc(100vh - 391px)"
 
   const onChangeSearchWord = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setTxtFilters(e.target.value.split(' ')), [setTxtFilters])
 
-  const onSelectSound = useCallback(() => {
-    // console.log(e.target)
-    // e.stopPropagation();
-    // setSelectedSound(e.target)
-    // ↓test用
-    dispatch(updateSelectedSound({ id: "ambient.cave" }))
+  const onSelectSound = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    dispatch(updateSelectedSound({ id: e.currentTarget.id }))
   }, [selected_sound])
 
   const onChangeRating = (id: string, rating: number) => {
@@ -68,11 +74,14 @@ export const SoundSelector = () => {
       <Box
         onClick={onSelectSound}
         id={item.id}
-        w="full" maxH={itemHeight} style={{ transition: "0.5s all" }}
-        backgroundColor={item.id == selected_sound ? ['blackAlpha.200', 'whiteAlpha.200'] : "none"}
-        _nativeHover={{ background: ['blackAlpha.200', 'whiteAlpha.200'] }} paddingX={5} paddingY={2} bg=""
+        w="full" maxH={itemHeight} style={{ transition: "0.25s all" }}
+        _hover={{ background: ['blackAlpha.200', 'whiteAlpha.200'] }}
+        bg=""
       >
-        <Flex w="full" style={{ userSelect: "none" }}>
+        <Flex w="full" style={{ userSelect: "none", transition: "0.25s all" }}
+          backgroundColor={item.id == selected_sound ? ['blackAlpha.400', 'whiteAlpha.400'] : "none"}
+          paddingX={5} paddingY={2}
+        >
           {item.id}
           <Spacer />
           <Box alignContent="center">
@@ -85,7 +94,7 @@ export const SoundSelector = () => {
 
   return (
     <>
-      <Flex w="full" >
+      <Flex w="full">
         <InputGroup>
           <InputLeftElement>
             <SearchIcon color="gray.500" fontSize="lg" />
@@ -105,11 +114,11 @@ export const SoundSelector = () => {
       </Flex>
 
 
-      <Box marginTop={2} border="1px solid" borderColor="inherit" borderRadius={5}>
+      <Box marginTop={2} border="1px solid" borderColor="inherit" borderRadius={5} h={listBoxHeightCSS}>
         <div
           onScroll={handleScroll}
           ref={scrollRef}
-          style={{ width: "100%", height: containerHeight, overflowY: "scroll" }}
+          style={{ width: "100%", height: listBoxHeightCSS, overflowY: "scroll" }}
         >
           <div style={{ height: filteredSounds.length * itemHeight }}>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", position: "relative", top: startIndex * itemHeight }}>

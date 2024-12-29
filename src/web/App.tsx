@@ -27,8 +27,8 @@ export const App = () => {
 
   return (
     <>
-      <VStack padding={2}>
-        <Box>
+      <VStack h="100vh">
+        <Box padding={2}>
           <Flex w="full" gap="md" paddingBottom={0}>
             <VersionSelector />
 
@@ -40,9 +40,8 @@ export const App = () => {
           <Separator marginY={2} size="xs" />
           <SoundSelector />
         </Box>
-        <Spacer />
+        <Footer />
       </VStack>
-      <Footer />
     </>
   );
 };

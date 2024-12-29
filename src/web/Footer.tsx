@@ -2,6 +2,7 @@ import { Box, Flex, IconButton, Input, NumberInput, Select, SelectItem, Separato
 import { FaPlay, FaPause, FaArrowRotateLeft } from "react-icons/fa6";
 import { CheckIcon, CopyIcon, SlashIcon } from "@yamada-ui/lucide";
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from "react-icons/pi";
+import { useAppSelector } from "../store/_store";
 
 
 
@@ -18,8 +19,8 @@ export const Footer = () => {
   const { onCopy, hasCopied } = useClipboard()
   const [SlashSwitch, { toggle: toggleSlash }] = useBoolean(false)
 
-  const selected_sound = "test.sound.id"
-  const command = (SlashSwitch ? "/" : "") + "playsound " + selected_sound
+  const selected_sound = useAppSelector(state => state.fetch.selected_sound);
+  const command = selected_sound != "" ? ((SlashSwitch ? "/" : "") + "playsound " + selected_sound) : ""
 
   const isPlaying = false
 
