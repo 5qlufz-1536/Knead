@@ -87,7 +87,7 @@ export const Footer = () => {
   return (
     <>
       <footer>
-        <Box w="full" bg="footerBackground" padding={2} style={{ userSelect: "none" }}>
+        <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
             <Slider step={0.01} defaultValue={0} filledTrackColor="red.600" thumbColor="red.600" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
@@ -125,15 +125,15 @@ export const Footer = () => {
               <Flex>
               <Spacer />
                 <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5} >
+                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
                   <IconButton icon={<PiTildeBold size={20} />} variant="ghost" />
                 </Box>
                 <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5} >
+                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
                   <IconButton icon={<PiCaretUpBold size={20} />} variant="ghost" />
                 </Box>
                 <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5} >
+                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
                   <IconButton icon={<PiSelectionBold size={20} />} variant="ghost" />
                 </Box>
               </Flex>
@@ -146,7 +146,7 @@ export const Footer = () => {
             <Switch defaultChecked reverse w="sm">同ディメンション</Switch>
           </Flex>
 
-          <Box w="full" marginTop={1} border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5} >
+          <Box w="full" marginTop={1} border="1px solid" borderColor="inherit" borderRadius={5} >
             <Flex>
               <Box alignContent="center" paddingX={3} style={{ userSelect: "none" }} >{command}</Box>
               <Spacer />

@@ -105,7 +105,7 @@ export const SoundSelector = () => {
       </Flex>
 
 
-      <Box marginTop={2} border="1px solid" borderColor="inherit" boxShadow="md" borderRadius={5}>
+      <Box marginTop={2} border="1px solid" borderColor="inherit" borderRadius={5}>
         <div
           onScroll={handleScroll}
           ref={scrollRef}
