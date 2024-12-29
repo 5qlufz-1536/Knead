@@ -19,7 +19,7 @@ export const RatingStars = ({ rating, onChange, disabled }: RatingStarsProps): J
     const activeStarColor = useColorModeValue("var(--ui-colors-amber-100)", "var(--ui-colors-amber-900)")
     const inactiveStarColor = useColorModeValue("var(--ui-colors-blackAlpha-100)", "var(--ui-colors-whiteAlpha-100)")
     return (
-      <Flex alignContent="center" paddingX={5}>
+      <Flex paddingX={1}>
         <div><StarFillIcon size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
         <div><StarFillIcon size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
         <div><StarFillIcon size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>
@@ -32,7 +32,7 @@ export const RatingStars = ({ rating, onChange, disabled }: RatingStarsProps): J
   const activeStarColor = useColorModeValue("var(--ui-colors-amber-500)", "var(--ui-colors-amber-400)")
   const inactiveStarColor = useColorModeValue("var(--ui-colors-blackAlpha-300)", "var(--ui-colors-whiteAlpha-300)")
   return (
-    <Flex alignContent="center" paddingX={5}>
+    <Flex paddingX={1}>
       <div onClick={onClick1}><StarFillIcon size={18} fill={rating >= 1 ? activeStarColor : inactiveStarColor} /></div>
       <div onClick={onClick2}><StarFillIcon size={18} fill={rating >= 2 ? activeStarColor : inactiveStarColor} /></div>
       <div onClick={onClick3}><StarFillIcon size={18} fill={rating >= 3 ? activeStarColor : inactiveStarColor} /></div>

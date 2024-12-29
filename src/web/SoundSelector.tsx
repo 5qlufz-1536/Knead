@@ -1,8 +1,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
-import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer } from "@yamada-ui/react";
-import { SearchIcon } from '@yamada-ui/lucide';
+import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBoolean } from "@yamada-ui/react";
+import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
 import { useVirtualScroll } from "./hooks/VirtualScroll";
 import { RatingStars } from "./RatingStars"
 import { updateSoundRating } from "../store/fetchSlice";
@@ -16,8 +16,21 @@ export const SoundSelector = () => {
 
   const [txtFilters, setTxtFilters] = useState<string[]>([])
   const [ratingFilter, setRatingFilter] = useState(0)
+  const [ratingFilterSwitch, { toggle: toggleRatingFilter }] = useBoolean(false)
 
-  const filteredSounds = sounds.filter(value => txtFilters.every(filter => value.id.includes(filter))).filter(value => ratingFilter > 0 ? soundRatings[value.id] === ratingFilter : true);
+  const filteredSounds = sounds.filter(value => txtFilters.every(filter => value.id.includes(filter))).filter(value => {
+
+    const rate = soundRatings[value.id] ?? 0
+    let result = false
+    // (ratingFilterSwitch && ratingFilter ? true : true && )
+    if (ratingFilterSwitch) {
+      if (rate === ratingFilter) result = true
+    } else {
+      result = true
+    }
+    return result
+
+  });
 
 
   const itemHeight = 40;
@@ -31,13 +44,9 @@ export const SoundSelector = () => {
   });
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, ratingFilter, target_version])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, ratingFilter, ratingFilterSwitch, target_version])
 
   const onChangeSearchWord = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setTxtFilters(e.target.value.split(' ')), [setTxtFilters])
-
-  const onFilterRating = (rating: number) => {
-    setRatingFilter(rating)
-  }
 
   const onChangeRating = (id: string, rating: number) => {
     dispatch(updateSoundRating({ soundRatings: { ...soundRatings, [id]: rating } }))
@@ -62,7 +71,7 @@ export const SoundSelector = () => {
 
   return (
     <>
-      <Flex w="full">
+      <Flex w="full" >
         <InputGroup>
           <InputLeftElement>
             <SearchIcon color="gray.500" />
@@ -73,12 +82,12 @@ export const SoundSelector = () => {
 
         <Spacer />
 
-        <Box
-          w="xs" maxH={itemHeight} style={{ transition: "0.5s all" }}
-          paddingX={5} paddingY={2} bg=""
-        >
-          <RatingStars rating={ratingFilter ?? 0} onChange={rate => onFilterRating(rate)} />
-        </Box>
+        <Flex paddingX={5} bg="">
+          <Box alignContent="center">
+            <RatingStars rating={ratingFilter} onChange={rate => setRatingFilter(rate)} />
+          </Box>
+        </Flex>
+        <Toggle variant="outline" colorScheme="success" icon={ratingFilterSwitch ? <FilterIcon /> : <FilterXIcon />} onClick={toggleRatingFilter} />
       </Flex>
 
 
