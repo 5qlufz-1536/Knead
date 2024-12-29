@@ -2,8 +2,7 @@ import { Dict } from "@yamada-ui/react";
 import { ipcMain } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import { SoundName, Sound } from "./store/fetchSlice";
-import { VersionInfoType } from "./types/VersionInfo";
+import { Sound } from "./store/fetchSlice";
 
 const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max);
@@ -52,9 +51,10 @@ export const initIpcMain = (): void => {
             if (typeof element2 == "string") {
               sound.sounds.push({ hash: getHashBySoundName(objects, element2), pitch })
             } else {
-              sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: element2?.pitch ?? 1 })
+              sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5 , 2) })
             }
           }
+
         } else {
           sound.sounds.push({ hash: getHashBySoundName(objects, element.name), pitch: element?.pitch ?? 1 })
         }
