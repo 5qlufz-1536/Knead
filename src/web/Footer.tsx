@@ -31,7 +31,6 @@ export const Footer = () => {
     { label: "ambient", value: "ambient" },
     { label: "block", value: "block" },
     { label: "hostile", value: "hostile" },
-
     { label: "music", value: "music" },
     { label: "neutral", value: "neutral" },
     { label: "player", value: "player" },
