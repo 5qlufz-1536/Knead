@@ -91,7 +91,7 @@ export const Footer = () => {
         <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
-            <Slider step={0.01} defaultValue={0} filledTrackColor="red.600" thumbColor="red.600" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+            <Slider step={0.01} defaultValue={0} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
           </Box>
 
           <Flex w="full" marginTop={2} >
@@ -103,7 +103,7 @@ export const Footer = () => {
               {timeToString(0)} / {timeToString(100)}
             </Text>
             <Spacer />
-            <Slider w={32} step={0.01} defaultValue={1} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="sky.600" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+            <Slider w={32} step={0.01} defaultValue={1} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
             <Spacer maxW={3} />
             <Input width={20} alignItems="left" placeholder="pitch" defaultValue={1} />
             <Spacer maxW={1} />

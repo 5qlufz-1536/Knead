@@ -111,7 +111,7 @@ export const SoundSelector = () => {
             <RatingStars rating={ratingFilter} onChange={rate => setRatingFilter(rate)} />
           </Box>
         </Flex>
-        <Toggle variant="outline" colorScheme="success" icon={ratingFilterSwitch ? <FilterIcon fontSize="lg" /> : <FilterXIcon fontSize="lg" />} onClick={toggleRatingFilter} />
+        <Toggle variant="outline" colorScheme="primary" icon={ratingFilterSwitch ? <FilterIcon fontSize="lg" /> : <FilterXIcon fontSize="lg" />} onClick={toggleRatingFilter} />
       </Flex>
 
 
