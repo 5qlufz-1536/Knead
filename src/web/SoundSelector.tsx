@@ -36,7 +36,7 @@ export const SoundSelector = () => {
 
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, ratingFilter, ratingFilterSwitch, target_version])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, (ratingFilterSwitch ? ratingFilter : 0), ratingFilterSwitch, target_version])
 
 
   const itemHeight = 40;
