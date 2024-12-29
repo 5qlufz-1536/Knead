@@ -6,7 +6,7 @@ import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
 import { useVirtualScroll } from "./hooks/VirtualScroll";
 import { RatingStars } from "./RatingStars"
 import { updateSelectedSound, updateSoundRating } from "../store/fetchSlice";
-import { GetWindowSize } from './hooks/getWindowSize';
+import { getWindowSize } from './hooks/GetWindowSize';
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch();
@@ -46,7 +46,7 @@ export const SoundSelector = () => {
       const cHeight = scrollRef.current?.getBoundingClientRect().height
       return cHeight ? cHeight : 0
     },
-    [GetWindowSize()[1]]
+    [getWindowSize()[1]]
   );
 
 

@@ -111,20 +111,20 @@ export const Footer = () => {
           </Flex>
 
           <Flex w="full" marginTop={1} >
-            <Toggle variant="outline" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
+            <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
             <Spacer maxW={1} />
             <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" />
             <Spacer />
             <NumberInput w={40} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
             <Spacer maxW={1} />
-            <NumberInput w={40} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
+            <NumberInput w={40} defaultValue={0.0} precision={2} min={0.0} step={0.1} />
           </Flex>
 
           <Flex w="full" marginTop={1} >
             <Input alignItems="left" placeholder="Coordinate" defaultValue="" />
             <Box w="xs" >
               <Flex>
-              <Spacer />
+                <Spacer />
                 <Spacer maxW={1} />
                 <Box border="1px solid" borderColor="inherit" borderRadius={5} >
                   <IconButton icon={<PiTildeBold size={20} />} variant="ghost" />
@@ -142,9 +142,13 @@ export const Footer = () => {
           </Flex>
 
           <Flex w="full" marginTop={1} >
-            <Input alignItems="left" placeholder="Selector" defaultValue="@a" />
-            <Spacer />
-            <Switch defaultChecked reverse w="sm">同ディメンション</Switch>
+            <Input placeholder="Selector" defaultValue="@a" />
+            <Flex w="sm">
+              <Spacer />
+              <Toggle px="4" variant="outline" colorScheme="primary">
+                ディメンション干渉
+              </Toggle>
+            </Flex>
           </Flex>
 
           <Box w="full" marginTop={1} border="1px solid" borderColor="inherit" borderRadius={5} >
