@@ -1,14 +1,13 @@
-import { Sound, SoundName } from "../src/store/fetchSlice";
-import { VersionInfoType } from "../src/types/VersionInfo";
+import { Sound } from '../src/store/fetchSlice'
 
 declare global {
-    interface Window {
-        myAPI: Sandbox;
-    }
+  interface Window {
+    myAPI: Sandbox
+  }
 }
 
 export interface Sandbox {
-    get_versions: () => Promise<string[]>;
-    get_mcSounds: (version: string) => Promise<Sound[]>;
-    get_mcSoundHash: (hash: string) => Promise<string>;
+  get_versions: () => Promise<string[]>
+  get_mcSounds: (version: string) => Promise<Sound[]>
+  get_mcSoundHash: (hash: string) => Promise<string>
 }

@@ -1,11 +1,11 @@
-import { Dict } from "@yamada-ui/react";
-import { ipcMain } from "electron";
-import * as fs from "fs";
-import * as path from "path";
-import { Sound } from "./store/fetchSlice";
+import { Dict } from '@yamada-ui/react'
+import { ipcMain } from 'electron'
+import * as fs from 'fs'
+import * as path from 'path'
+import { Sound } from './store/fetchSlice'
 
 const clamp = (num: number, min: number, max: number): number => {
-  return Math.min(Math.max(num, min), max);
+  return Math.min(Math.max(num, min), max)
 }
 
 const getMinecraftDir = () => {
@@ -13,13 +13,13 @@ const getMinecraftDir = () => {
   const os = process.platform
 
   switch (os) {
-    case "win32":
-      dir = [...dir, "AppData", "Roaming", '.minecraft']
+    case 'win32':
+      dir = [...dir, 'AppData', 'Roaming', '.minecraft']
       break
-    case "darwin":
-      dir = [...dir, "Library", "Application Support", "minecraft"]
+    case 'darwin':
+      dir = [...dir, 'Library', 'Application Support', 'minecraft']
       break
-    case "linux":
+    case 'linux':
       dir = [...dir, '.minecraft']
       break
     default:
@@ -40,13 +40,11 @@ const getHashBySoundName = (hashMap: { [key: string]: { hash: string } }, soundN
   return hashMap[`minecraft/sounds/${soundName}.ogg`].hash
     ?? hashMap[`sounds/${soundName}.ogg`].hash
     ?? hashMap[`sound/${soundName}.ogg`].hash
-    ?? ""
+    ?? ''
 }
 
 export const initIpcMain = (): void => {
-
-
-  ipcMain.handle("get_versions", async (event) => {
+  ipcMain.handle('get_versions', async () => {
     const folders = fs.readdirSync(path.join(...getMinecraftDir(), 'versions')).filter((e) => {
       return fs.statSync(path.join(...getMinecraftDir(), 'versions', e)).isDirectory()
     }).filter((e) => {
@@ -55,37 +53,39 @@ export const initIpcMain = (): void => {
       }).length > 0
     })
     return folders
-  });
+  })
 
-  ipcMain.handle("get_mcSounds", async (event, version: string) => {
+  ipcMain.handle('get_mcSounds', async (event, version: string) => {
     const assetIndex: string = JSON.parse(fs.readFileSync(path.join(...getMinecraftDir(), 'versions', version, `${version}.json`)).toString()).assetIndex.id
     const objects: Dict = JSON.parse(fs.readFileSync(path.join(...getMinecraftDir(), 'assets', 'indexes', `${assetIndex}.json`)).toString()).objects
 
     // sounds.jsonの中身
-    const soundsJsonHash = objects[Object.keys(objects).filter((key) => /sounds.json$/.test(key))[0]].hash
+    const soundsJsonHash = objects[Object.keys(objects).filter(key => /sounds.json$/.test(key))[0]].hash
     const soundsJsonPath = path.join(...getMinecraftDir(), 'assets', 'objects', soundsJsonHash.slice(0, 2), soundsJsonHash)
     const soundsJson = JSON.parse(fs.readFileSync(soundsJsonPath).toString()) as SoundsJson
 
-    const result: Sound[] = [];
+    const result: Sound[] = []
 
     for (const id of Object.keys(soundsJson)) {
       const sound: Sound = { id, sounds: [] }
 
       for (const element of soundsJson[id].sounds) {
-        if (typeof element == "string") {
+        if (typeof element == 'string') {
           sound.sounds.push({ hash: getHashBySoundName(objects, element), pitch: 1 })
-        } else if (element.type != null && element.type == "event") {
+        }
+        else if (element.type != null && element.type == 'event') {
           const pitch: number = element?.pitch ?? 1
 
           for (const element2 of soundsJson[element.name].sounds) {
-            if (typeof element2 == "string") {
+            if (typeof element2 == 'string') {
               sound.sounds.push({ hash: getHashBySoundName(objects, element2), pitch })
-            } else {
+            }
+            else {
               sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5, 2) })
             }
           }
-
-        } else {
+        }
+        else {
           sound.sounds.push({ hash: getHashBySoundName(objects, element.name), pitch: element?.pitch ?? 1 })
         }
       }
@@ -93,18 +93,15 @@ export const initIpcMain = (): void => {
       result.push(sound)
     }
 
-
     return result
-  });
+  })
 
-  ipcMain.handle("get_mcSoundHash", async (event, hash: string) => {
-    const file = hash === "" ? "" : path.join(...getMinecraftDir(), 'assets', 'objects', hash.slice(0, 2), hash)
+  ipcMain.handle('get_mcSoundHash', async (event, hash: string): Promise<string> => {
+    const file = hash === '' ? '' : path.join(...getMinecraftDir(), 'assets', 'objects', hash.slice(0, 2), hash)
     return file
-  });
+  })
 
-  ipcMain.handle("save", (event, str: string) => {
-    console.log(`save: ${str}`);
-  });
-};
-
-
+  ipcMain.handle('save', (event, str: string) => {
+    console.log(`save: ${str}`)
+  })
+}

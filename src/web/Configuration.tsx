@@ -1,13 +1,9 @@
-
-import { SettingsIcon } from "@yamada-ui/lucide";
-import { Drawer, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, IconButton, Button } from "@yamada-ui/react"
-import { ThemeChange } from "./ThemeChange";
-
-
-
+import React from 'react'
+import { SettingsIcon } from '@yamada-ui/lucide'
+import { Drawer, DrawerHeader, DrawerBody, useDisclosure, IconButton } from '@yamada-ui/react'
+import { ThemeChange } from './ThemeChange'
 
 export const Configuration = () => {
-
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -29,5 +25,5 @@ export const Configuration = () => {
         </DrawerFooter> */}
       </Drawer>
     </>
-  );
-};
+  )
+}

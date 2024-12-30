@@ -1,15 +1,15 @@
-import { Volume1Icon, Volume2Icon, VolumeOffIcon, VolumeXIcon } from '@yamada-ui/lucide';
-import { Box, IconButton, Popover, PopoverBody, PopoverContent, PopoverHeader, PopoverTrigger, Slider, Toggle, useBoolean } from '@yamada-ui/react';
-import { useAddDispatch, useAppSelector } from '../store/_store';
-import { updateAppVolume } from '../store/fetchSlice';
-
+import React from 'react'
+import { Volume1Icon, Volume2Icon, VolumeOffIcon, VolumeXIcon } from '@yamada-ui/lucide'
+import { Box, IconButton, Popover, PopoverBody, PopoverContent, PopoverHeader, PopoverTrigger, Slider, Toggle, useBoolean } from '@yamada-ui/react'
+import { useAddDispatch, useAppSelector } from '../store/_store'
+import { updateAppVolume } from '../store/fetchSlice'
 
 export const VolumeChange = () => {
-  const dispatch = useAddDispatch();
+  const dispatch = useAddDispatch()
 
   const [MuteSwitch, { toggle: toggleMute }] = useBoolean(false)
 
-  const volumeSlider = useAppSelector(state => state.fetch.volumeSlider);
+  const volumeSlider = useAppSelector(state => state.fetch.volumeSlider)
 
   const onChangeVolumeSlider = (value: number) => {
     dispatch(updateAppVolume({ volume: value, mute: MuteSwitch }))
@@ -33,13 +33,12 @@ export const VolumeChange = () => {
           <Toggle icon={<VolumeXIcon fontSize="lg" />} onClick={toggleMute} variant="outline" />
         </PopoverHeader>
         <PopoverBody>
-          <Box w="full" textAlign="center" paddingY={2} >
-            <Slider value={volumeSlider} disabled={MuteSwitch} onChange={onChangeVolumeSlider} h="xs" orientation="vertical" marginTop={2} step={0.01} min={0} max={1} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" }, _disabled: { color: "primary" } }} />
+          <Box w="full" textAlign="center" paddingY={2}>
+            <Slider value={volumeSlider} disabled={MuteSwitch} onChange={onChangeVolumeSlider} h="xs" orientation="vertical" marginTop={2} step={0.01} min={0} max={1} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' }, _disabled: { color: 'primary' } }} />
           </Box>
         </PopoverBody>
       </PopoverContent>
     </Popover>
 
-
-  );
-};
+  )
+}

@@ -4,37 +4,40 @@ type VersionInfo = {
 }
 
 type ReleaseVersionInfo = VersionInfo & {
-  kind: 'release';
-  major: number;
-  minor: number;
-  patch: number;
+  kind: 'release'
+  major: number
+  minor: number
+  patch: number
 }
-export const compareReleaseVersionInfo = (a: ReleaseVersionInfo, b: ReleaseVersionInfo) => {
+export const compareReleaseVersionInfo = (a: ReleaseVersionInfo | undefined, b: ReleaseVersionInfo) => {
+  if (a === undefined) return -b.major
   if (a.major !== b.major) return a.major - b.major
   if (a.minor !== b.minor) return a.minor - b.minor
   return a.patch - b.patch
 }
 
 type SnapshotVersionInfo = VersionInfo & {
-  kind: 'snapshot';
-  year: number;
-  releaseNumber: number;
-  letter: string;
+  kind: 'snapshot'
+  year: number
+  releaseNumber: number
+  letter: string
 }
-export const compareSnapshotVersionInfo = (a: SnapshotVersionInfo, b: SnapshotVersionInfo) => {
+export const compareSnapshotVersionInfo = (a: SnapshotVersionInfo | undefined, b: SnapshotVersionInfo) => {
+  if (a === undefined) return -b.year
   if (a.year !== b.year) return a.year - b.year
   if (a.releaseNumber !== b.releaseNumber) return a.releaseNumber - b.releaseNumber
   return a.letter.localeCompare(b.letter)
 }
 
 type PreReleaseVersionInfo = VersionInfo & {
-  kind: 'pre-release';
-  major: number;
-  minor: number;
-  patch: number;
-  releaseNumber: number;
+  kind: 'pre-release'
+  major: number
+  minor: number
+  patch: number
+  releaseNumber: number
 }
-export const comparePreReleaseVersionInfo = (a: PreReleaseVersionInfo, b: PreReleaseVersionInfo) => {
+export const comparePreReleaseVersionInfo = (a: PreReleaseVersionInfo | undefined, b: PreReleaseVersionInfo) => {
+  if (a === undefined) return -b.major
   if (a.major !== b.major) return a.major - b.major
   if (a.minor !== b.minor) return a.minor - b.minor
   if (a.patch !== b.patch) return a.patch - b.patch
@@ -42,20 +45,21 @@ export const comparePreReleaseVersionInfo = (a: PreReleaseVersionInfo, b: PreRel
 }
 
 type ReleaseCandidateVersionInfo = VersionInfo & {
-  kind: 'rc-release';
-  major: number;
-  minor: number;
-  patch: number;
-  releaseNumber: number;
+  kind: 'release-candidate'
+  major: number
+  minor: number
+  patch: number
+  releaseNumber: number
 }
-export const compareReleaseCandidateVersionInfo = (a: ReleaseCandidateVersionInfo, b: ReleaseCandidateVersionInfo) => {
+export const compareReleaseCandidateVersionInfo = (a: ReleaseCandidateVersionInfo | undefined, b: ReleaseCandidateVersionInfo) => {
+  if (a === undefined) return -b.major
   if (a.major !== b.major) return a.major - b.major
   if (a.minor !== b.minor) return a.minor - b.minor
   if (a.patch !== b.patch) return a.patch - b.patch
   return a.releaseNumber - b.releaseNumber
 }
 
-export type VersionInfoType = ReleaseVersionInfo | SnapshotVersionInfo | PreReleaseVersionInfo | ReleaseCandidateVersionInfo;
+export type VersionInfoType = ReleaseVersionInfo | SnapshotVersionInfo | PreReleaseVersionInfo | ReleaseCandidateVersionInfo
 
 export const parseVersion = (raw: string) => {
   const major = /^(\d+)\.(\d+)(?:\.(\d+))?$/.exec(raw)
@@ -95,7 +99,7 @@ export const parseVersion = (raw: string) => {
   const releaseCandidate = /^(\d+)\.(\d+)(?:\.(\d+))?-rc(\d+)$/.exec(raw)
   if (releaseCandidate) {
     return {
-      kind: 'rc-release',
+      kind: 'release-candidate',
       raw,
       major: Number(releaseCandidate[1]),
       minor: Number(releaseCandidate[2]),
@@ -105,4 +109,32 @@ export const parseVersion = (raw: string) => {
   }
 
   return undefined
+}
+
+export const isAboveVersion = (targetVersion: VersionInfoType | undefined, searchVersion: VersionInfoType) => {
+  if (targetVersion === undefined) return 0
+
+  const searchTargetRelease = targetVersion?.kind == 'release' ? targetVersion : undefined
+  const searchTargetReleaseCandidate = targetVersion?.kind == 'release-candidate' ? targetVersion : undefined
+  const searchTargetPreRelease = targetVersion?.kind == 'pre-release' ? targetVersion : undefined
+  const searchTargetSnapshot = targetVersion?.kind == 'snapshot' ? targetVersion : undefined
+
+  let compare: number = 0
+  switch (searchVersion.kind) {
+    case 'release':
+      compare = compareReleaseVersionInfo(searchTargetRelease, searchVersion)
+      break
+    case 'release-candidate':
+      compare = compareReleaseCandidateVersionInfo(searchTargetReleaseCandidate, searchVersion)
+      break
+    case 'pre-release':
+      compare = comparePreReleaseVersionInfo(searchTargetPreRelease, searchVersion)
+      break
+    case 'snapshot':
+      compare = compareSnapshotVersionInfo(searchTargetSnapshot, searchVersion)
+      break
+    default:
+      break
+  }
+  return !(compare < 0)
 }

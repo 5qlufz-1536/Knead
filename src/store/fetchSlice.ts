@@ -1,27 +1,24 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { VersionInfoType } from '../types/VersionInfo';
-
-
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { VersionInfoType } from '../types/VersionInfo'
 
 export interface Sound {
-  id: string;
-  sounds: SoundName[];
+  id: string
+  sounds: SoundName[]
 }
 
 export interface SoundName {
-  hash: string;
-  pitch: number;
+  hash: string
+  pitch: number
 }
 
-
 interface State {
-  targetVersion: VersionInfoType | undefined;
-  sounds: Sound[];
-  soundRatings: { [key: string]: number; };
-  selectedSound: string;
-  soundSelectDetector: boolean,
-  volumeSlider: number,
-  appVolume: number,
+  targetVersion: VersionInfoType | undefined
+  sounds: Sound[]
+  soundRatings: { [key: string]: number }
+  selectedSound: string
+  soundSelectDetector: boolean
+  volumeSlider: number
+  appVolume: number
   appMute: boolean
 }
 
@@ -29,12 +26,12 @@ const initialState: State = {
   targetVersion: undefined,
   sounds: [],
   soundRatings: {},
-  selectedSound: "",
+  selectedSound: '',
   soundSelectDetector: false,
   volumeSlider: 1,
   appVolume: 1,
   appMute: false,
-};
+}
 
 export const fetchSlice = createSlice({
   name: 'fetch',
@@ -43,28 +40,28 @@ export const fetchSlice = createSlice({
 
     updateTargetVersion: (
       state,
-      action: PayloadAction<{ version: VersionInfoType | undefined; }>
+      action: PayloadAction<{ version: VersionInfoType | undefined }>,
     ) => {
       state.targetVersion = action.payload.version
     },
 
     updateSoundList: (
       state,
-      action: PayloadAction<{ sounds: Sound[]; }>
+      action: PayloadAction<{ sounds: Sound[] }>,
     ) => {
-      state.sounds = action.payload.sounds;
+      state.sounds = action.payload.sounds
     },
 
     updateSoundRating: (
       state,
-      action: PayloadAction<{ soundRatings: { [key: string]: number; }; }>
+      action: PayloadAction<{ soundRatings: { [key: string]: number } }>,
     ) => {
-      state.soundRatings = action.payload.soundRatings;
+      state.soundRatings = action.payload.soundRatings
     },
 
     updateSelectedSound: (
       state,
-      action: PayloadAction<{ id: string; }>
+      action: PayloadAction<{ id: string }>,
     ) => {
       state.selectedSound = action.payload.id
       state.soundSelectDetector = state.soundSelectDetector ? false : true
@@ -72,7 +69,7 @@ export const fetchSlice = createSlice({
 
     updateAppVolume: (
       state,
-      action: PayloadAction<{ volume: number; mute: boolean; }>
+      action: PayloadAction<{ volume: number, mute: boolean }>,
     ) => {
       state.volumeSlider = action.payload.volume
       state.appMute = action.payload.mute
@@ -80,6 +77,6 @@ export const fetchSlice = createSlice({
     },
 
   },
-});
-export default fetchSlice.reducer;
-export const { updateTargetVersion, updateSoundList, updateSoundRating, updateSelectedSound, updateAppVolume } = fetchSlice.actions;
+})
+export default fetchSlice.reducer
+export const { updateTargetVersion, updateSoundList, updateSoundRating, updateSelectedSound, updateAppVolume } = fetchSlice.actions

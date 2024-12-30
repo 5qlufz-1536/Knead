@@ -8,7 +8,8 @@
     "dev:webpack": "cross-env NODE_ENV=\"development\" webpack --progress",
     "dev:electron": "wait-on ./dist/index.html ./dist/main.js && electronmon .",
     "build": "cross-env NODE_ENV=\"production\" webpack --progress",
-    "tcm": "tcm src"
+    "tcm": "tcm src",
+    "lint": "eslint src/** --no-error-on-unmatched-pattern --fix"
   },
   "keywords": [],
   "author": "NeAc",
@@ -19,7 +20,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "@stylistic/eslint-plugin": "^2.12.1",
+    "@stylistic/eslint-plugin-js": "^2.12.1",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
@@ -29,6 +33,10 @@
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
     "electronmon": "^2.0.3",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "npm-run-all": "^4.1.5",
@@ -38,6 +46,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0",
     "wait-on": "^8.0.1",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4"
