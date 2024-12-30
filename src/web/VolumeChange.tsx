@@ -1,6 +1,5 @@
 import { Volume1Icon, Volume2Icon, VolumeOffIcon, VolumeXIcon } from '@yamada-ui/lucide';
-import { Box, IconButton, Popover, PopoverBody, PopoverContent, PopoverFooter, PopoverHeader, PopoverTrigger, Slider, Toggle, useBoolean } from '@yamada-ui/react';
-import { PiSelectionBold } from 'react-icons/pi';
+import { Box, IconButton, Popover, PopoverBody, PopoverContent, PopoverHeader, PopoverTrigger, Slider, Toggle, useBoolean } from '@yamada-ui/react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
 import { updateAppVolume } from '../store/fetchSlice';
 
