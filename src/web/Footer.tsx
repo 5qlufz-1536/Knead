@@ -245,8 +245,8 @@ export const Footer = () => {
       const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
       try {
         const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
-        AudioController.commands.setSound(selectedSound, hash)
-        AudioController.commands.play()
+        // AudioController.commands.setSound(selectedSound, hash)
+        // AudioController.commands.play()
       }
       catch (e: unknown) {
         alert(e)
