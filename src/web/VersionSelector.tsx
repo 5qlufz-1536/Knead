@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Autocomplete, AutocompleteItem, Dict } from "@yamada-ui/react"
-import { BoxIcon } from "@yamada-ui/lucide";
+import { Autocomplete } from "@yamada-ui/react"
 import { useAddDispatch, useAppSelector } from '../store/_store';
 import { Sound, updateSoundList, updateTargetVersion } from "../store/fetchSlice";
-import { VersionInfoType, ReleaseVersionInfo, SnapshotVersionInfo, PreReleaseVersionInfo, ReleaseCandidateVersionInfo, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from "../types/VersionInfo";
+import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from "../types/VersionInfo";
 
 const { myAPI } = window;
 

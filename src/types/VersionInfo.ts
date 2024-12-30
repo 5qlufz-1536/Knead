@@ -3,7 +3,7 @@ type VersionInfo = {
   raw: string
 }
 
-export type ReleaseVersionInfo = VersionInfo & {
+type ReleaseVersionInfo = VersionInfo & {
   kind: 'release';
   major: number;
   minor: number;
@@ -15,7 +15,7 @@ export const compareReleaseVersionInfo = (a: ReleaseVersionInfo, b: ReleaseVersi
   return a.patch - b.patch
 }
 
-export type SnapshotVersionInfo = VersionInfo & {
+type SnapshotVersionInfo = VersionInfo & {
   kind: 'snapshot';
   year: number;
   releaseNumber: number;
@@ -27,7 +27,7 @@ export const compareSnapshotVersionInfo = (a: SnapshotVersionInfo, b: SnapshotVe
   return a.letter.localeCompare(b.letter)
 }
 
-export type PreReleaseVersionInfo = VersionInfo & {
+type PreReleaseVersionInfo = VersionInfo & {
   kind: 'pre-release';
   major: number;
   minor: number;
@@ -41,7 +41,7 @@ export const comparePreReleaseVersionInfo = (a: PreReleaseVersionInfo, b: PreRel
   return a.releaseNumber - b.releaseNumber
 }
 
-export type ReleaseCandidateVersionInfo = VersionInfo & {
+type ReleaseCandidateVersionInfo = VersionInfo & {
   kind: 'rc-release';
   major: number;
   minor: number;

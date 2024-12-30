@@ -1,7 +1,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAddDispatch, useAppSelector } from '../store/_store';
-import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBoolean } from "@yamada-ui/react";
+import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, Tooltip, useBoolean } from "@yamada-ui/react";
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
 import { useVirtualScroll } from "./hooks/VirtualScroll";
 import { RatingStars } from "./RatingStars"
@@ -111,7 +111,9 @@ export const SoundSelector = () => {
             <RatingStars rating={ratingFilter} onChange={rate => setRatingFilter(rate)} />
           </Box>
         </Flex>
+        {/* <Tooltip label="お気に入りフィルター" placement="bottom" animation="top"> */}
         <Toggle variant="outline" colorScheme="primary" icon={ratingFilterSwitch ? <FilterIcon fontSize="lg" /> : <FilterXIcon fontSize="lg" />} onClick={toggleRatingFilter} />
+        {/* </Tooltip> */}
       </Flex>
 
 

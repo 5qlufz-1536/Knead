@@ -1,6 +1,7 @@
 
 import { SettingsIcon } from "@yamada-ui/lucide";
 import { Drawer, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, IconButton, Button } from "@yamada-ui/react"
+import { ThemeChange } from "./ThemeChange";
 
 
 
@@ -13,20 +14,20 @@ export const Configuration = () => {
     <>
       <IconButton onClick={onOpen} icon={<SettingsIcon />} />
 
-      {/* <Drawer isOpen={isOpen} onClose={onClose}>
+      <Drawer isOpen={isOpen} onClose={onClose}>
         <DrawerHeader>設定</DrawerHeader>
 
         <DrawerBody>
-          仮置き
+          <ThemeChange />
         </DrawerBody>
 
-        <DrawerFooter>
+        {/* <DrawerFooter>
           <Button variant="ghost" onClick={onClose}>
             とじる
           </Button>
           <Button colorScheme="primary">あ</Button>
-        </DrawerFooter>
-      </Drawer> */}
+        </DrawerFooter> */}
+      </Drawer>
     </>
   );
 };

@@ -1,6 +1,6 @@
-import { Box, Flex, IconButton, Input, NumberInput, Select, SelectItem, Separator, Slider, Spacer, Switch, Text, Toggle, useBoolean, useClipboard } from "@yamada-ui/react";
+import { Box, Flex, IconButton, Input, NumberInput, Select, SelectItem, Separator, Slider, Spacer, Switch, Text, Toggle, Tooltip, useBoolean, useClipboard } from "@yamada-ui/react";
 import { FaPlay, FaPause, FaArrowRotateLeft } from "react-icons/fa6";
-import { CheckIcon, CopyIcon, SlashIcon } from "@yamada-ui/lucide";
+import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from "@yamada-ui/lucide";
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from "react-icons/pi";
 import { useAppSelector } from "../store/_store";
 
@@ -106,48 +106,61 @@ export const Footer = () => {
             <Spacer maxW={3} />
             <Input width={20} alignItems="left" placeholder="pitch" defaultValue={1} />
             <Spacer maxW={1} />
-            <Select items={PitchScaleMenu} defaultValue="F#1 (ファ#)" alignItems="left" placeholderInOptions={false} w={40} animation="bottom" />
+            <Tooltip label="音階(音ブロック用)" placement="top" animation="bottom">
+              <Select items={PitchScaleMenu} defaultValue="F#1 (ファ#)" alignItems="left" placeholderInOptions={false} w={32} animation="bottom" />
+            </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1} >
-            <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
+            <Tooltip label="スラッシュをつける" placement="top" animation="bottom">
+              <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
+            </Tooltip>
             <Spacer maxW={1} />
-            <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" />
+            <Tooltip label="再生カテゴリ" placement="top" animation="bottom">
+              <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" />
+            </Tooltip>
             <Spacer />
-            <NumberInput w={40} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
+            <Tooltip label="Max Volume" placement="top" animation="bottom">
+              <NumberInput w={32} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
+            </Tooltip>
             <Spacer maxW={1} />
-            <NumberInput w={40} defaultValue={0.0} precision={2} min={0.0} step={0.1} />
+            <Tooltip label="Min Volume" placement="top" animation="bottom">
+              <NumberInput w={32} defaultValue={0.0} precision={2} min={0.0} step={0.1} />
+            </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1} >
-            <Input alignItems="left" placeholder="Coordinate" defaultValue="" />
-            <Box w="xs" >
-              <Flex>
-                <Spacer />
-                <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                  <IconButton icon={<PiTildeBold size={20} />} variant="ghost" />
-                </Box>
-                <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                  <IconButton icon={<PiCaretUpBold size={20} />} variant="ghost" />
-                </Box>
-                <Spacer maxW={1} />
-                <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                  <IconButton icon={<PiSelectionBold size={20} />} variant="ghost" />
-                </Box>
-              </Flex>
-            </Box>
+            <Tooltip label="座標" placement="top" animation="bottom">
+              <Input w="calc(full - xs)" alignItems="left" placeholder="Coordinate" defaultValue="" />
+            </Tooltip>
+            <Spacer maxW={10} />
+            <Tooltip label="相対" placement="top" animation="bottom">
+              <Box border="1px solid" borderColor="inherit" borderRadius={5} >
+                <IconButton icon={<PiTildeBold size={20} />} variant="ghost" />
+              </Box>
+            </Tooltip>
+            <Spacer maxW={1} />
+            <Tooltip label="向き相対" placement="top" animation="bottom">
+              <Box border="1px solid" borderColor="inherit" borderRadius={5} >
+                <IconButton icon={<PiCaretUpBold size={20} />} variant="ghost" />
+              </Box>
+            </Tooltip>
+            <Spacer maxW={1} />
+            <Tooltip label="シンボルクリア" placement="top" animation="bottom">
+              <Box border="1px solid" borderColor="inherit" borderRadius={5} >
+                <IconButton icon={<PiSelectionBold size={20} />} variant="ghost" />
+              </Box>
+            </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1} >
-            <Input placeholder="Selector" defaultValue="@a" />
-            <Flex w="sm">
-              <Spacer />
-              <Toggle px="4" variant="outline" colorScheme="primary">
-                ディメンション干渉
-              </Toggle>
-            </Flex>
+            <Tooltip label="セレクタ" placement="top" animation="bottom">
+              <Input w="calc(full - xs)" placeholder="Selector" defaultValue="@a" />
+            </Tooltip>
+            <Spacer maxW={10} />
+            <Tooltip label="他ディメンションへの干渉を抑制" placement="top" animation="bottom">
+              <Toggle variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
+            </Tooltip>
           </Flex>
 
           <Box w="full" marginTop={1} border="1px solid" borderColor="inherit" borderRadius={5} >
@@ -155,9 +168,9 @@ export const Footer = () => {
               <Box alignContent="center" paddingX={3} style={{ userSelect: "none" }} >{command}</Box>
               <Spacer />
               <Box><Separator orientation="vertical" /></Box>
-              {/* <Tooltip label={hasCopied ? "Copied!" : "Copy"}> */}
-              <IconButton icon={hasCopied ? <CheckIcon color="success" marginX={6} /> : <CopyIcon marginX={6} />} onClick={() => onCopy(command)} variant="ghost" borderLeftRadius={0} borderRightRadius={2} />
-              {/* </Tooltip> */}
+              <Tooltip label={hasCopied ? "Copied!" : "Copy"} placement="top" animation="bottom">
+                <IconButton icon={hasCopied ? <CheckIcon color="success" marginX={6} /> : <CopyIcon marginX={6} />} onClick={() => onCopy(command)} variant="ghost" borderLeftRadius={0} borderRightRadius={2} />
+              </Tooltip>
             </Flex>
           </Box>
 
