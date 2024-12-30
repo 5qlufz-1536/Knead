@@ -9,18 +9,18 @@ const clamp = (num: number, min: number, max: number): number => {
 }
 
 const getMinecraftDir = () => {
-  let dir: string[] = [process.env.HOME!]
+  let dir: string[] = []
   const os = process.platform
 
   switch (os) {
     case 'win32':
-      dir = [...dir, 'AppData', 'Roaming', '.minecraft']
+      dir = [process.env.APPDATA!, '.minecraft']
       break
     case 'darwin':
-      dir = [...dir, 'Library', 'Application Support', 'minecraft']
+      dir = [process.env.HOME!, 'Library', 'Application Support', 'minecraft']
       break
     case 'linux':
-      dir = [...dir, '.minecraft']
+      dir = [process.env.HOME!, '.minecraft']
       break
     default:
       break
