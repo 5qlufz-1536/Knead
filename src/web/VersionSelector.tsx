@@ -41,8 +41,7 @@ export const VersionSelector = () => {
 
 
   const onChangeVersion = async (version: string) => {
-    // console.log(version)
-    dispatch(updateTargetVersion({ version: version }));
+    dispatch(updateTargetVersion({ version: versions.find(v => v.raw == version) }));
 
     const sounds: Sound[] = await myAPI.get_mcSounds(version)
     // console.log(oggs)

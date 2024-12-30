@@ -13,7 +13,7 @@ export const SoundSelector = () => {
 
   const Sounds = useAppSelector(state => state.fetch.sounds);
   const soundRatings = useAppSelector(state => state.fetch.soundRatings);
-  const targetVersion = useAppSelector(state => state.fetch.targetVersion);
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion)?.raw;
   const selectedSound = useAppSelector(state => state.fetch.selectedSound);
 
   const [txtFilters, setTxtFilters] = useState<string[]>([])

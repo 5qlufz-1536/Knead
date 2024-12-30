@@ -97,12 +97,12 @@ export const Footer = () => {
     const scale: string = PitchScale.find(e => e.value == value)?.name ?? ""
     scale != "" ? setSelectedPitchScale(scale) : undefined
   }
-  const onChangePitchInput = useCallback((e: string, value: number) => {
+  const onChangePitchInput = (e: string, value: number) => {
     setPitch(value)
 
     const scale: string = PitchScale.find(e => e.value == value)?.name ?? ""
     scale != "" ? setSelectedPitchScale(scale) : undefined
-  }, [])
+  }
   const onChangePitchScaleMenu = (scale: string) => {
     setSelectedPitchScale(scale)
 
@@ -118,20 +118,39 @@ export const Footer = () => {
     const str = e.target.value
 
     // 条件に応じてエラー表示を行う
-    if (/([\^\~]?[\d]{1,})*/g.test(str) || str === "") offCoordinateError()
-    else onCoordinateError()
+    // if (/([\^\~]?[\d]{1,})*/g.test(str) || str === "") offCoordinateError()
+    // else onCoordinateError()
 
     setCoordinate(e.target.value)
 
   }, [setCoordinate])
-  const onClickTilde = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.currentTarget.value)
+  const onClickTilde = () => {
+    const splitCoordinate: number[] = Coordinate.replaceAll("~", "").replaceAll("^", "").split(" ").map(v => v == "" ? 0 : Number(v))
+    let returnCoordinate: string[] = ["~"]
+    for (let i = 0; i <= 2; i++) {
+      returnCoordinate.push((typeof splitCoordinate[i] === "number" && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != "NaN") ? splitCoordinate[i].toString() : "")
+      if (i < 2) returnCoordinate.push(" ~")
+    }
+    setCoordinate(returnCoordinate.join(""))
   }
-  const onClickCaret = (e: React.MouseEvent<HTMLButtonElement>) => {
-
+  const onClickCaret = () => {
+    const splitCoordinate: number[] = Coordinate.replaceAll("~", "").replaceAll("^", "").split(" ").map(v => v == "" ? 0 : Number(v))
+    let returnCoordinate: string[] = ["^"]
+    for (let i = 0; i <= 2; i++) {
+      returnCoordinate.push((typeof splitCoordinate[i] === "number" && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != "NaN") ? splitCoordinate[i].toString() : "")
+      if (i < 2) returnCoordinate.push(" ^")
+    }
+    setCoordinate(returnCoordinate.join(""))
   }
-  const onClickRemoveSymbol = (e: React.MouseEvent<HTMLButtonElement>) => {
-
+  const onClickRemoveSymbol = () => {
+    const splitCoordinate: number[] = Coordinate.replaceAll("~", "").replaceAll("^", "").split(" ").map(v => v == "" ? NaN : Number(v))
+    const HasIndexes: boolean = splitCoordinate.filter(v => v.toString() != "NaN").length > 0
+    let returnCoordinate: string[] = [""]
+    for (let i = 0; i <= 2; i++) {
+      returnCoordinate.push((typeof splitCoordinate[i] === "number" && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != "NaN") ? splitCoordinate[i].toString() : (HasIndexes ? "0" : ""))
+      if (HasIndexes && i < 2) returnCoordinate.push(" ")
+    }
+    setCoordinate(returnCoordinate.join(""))
   }
 
   // セレクター関系
@@ -149,18 +168,41 @@ export const Footer = () => {
 
   }, [setSelector])
 
+  // ボリューム(生成)関係
+  const [MaxVolume, setMaxVolume] = useState(1);
+  const [MinVolume, setMinVolume] = useState(0);
+  const onChangeMaxVolumeInput = (e: string, value: number) => {
+    setMaxVolume(value)
+  }
+  const onChangeMinVolumeInput = (e: string, value: number) => {
+    setMinVolume(value)
+  }
+
 
   const sounds = useAppSelector(state => state.fetch.sounds);
 
   const selectedSound = useAppSelector(state => state.fetch.selectedSound);
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector);
 
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion);
+
   const appVolume = useAppSelector(state => state.fetch.appVolume);
 
 
 
-
-  const command = selectedSound != "" ? ([(SlashSwitch ? "/" : "") + "playsound", selectedSound, PlaySource, Selector].join(" ")) : ""
+  // コマンド生成
+  const command = selectedSound != "" ? (
+    [
+      (SlashSwitch ? "/" : "") + "playsound",
+      selectedSound,
+      ((PlaySource == "master" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : PlaySource),
+      ((Selector == "@a" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : Selector),
+      ((Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : Coordinate),
+      ((MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : MaxVolume),
+      ((Pitch == 1 && MinVolume == 0) ? "" : Pitch),
+      (MinVolume == 0 ? "" : MinVolume)
+    ].join(" ")
+  ) : ""
 
   const isPlaying = false
 
@@ -185,10 +227,6 @@ export const Footer = () => {
     })();
   }, [soundSelectDetector]);
 
-  // await myAPI.get_mcSound(selectedSound)
-
-  console.log(playTarget)
-
 
 
 
@@ -200,7 +238,6 @@ export const Footer = () => {
         <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
-            <audio id="audio-player" src="" preload="auto"></audio>
             <Slider step={0.01} defaultValue={0} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
           </Box>
 
@@ -213,9 +250,15 @@ export const Footer = () => {
               {timeToString(0)} / {timeToString(100)}
             </Text>
             <Spacer />
-            <Slider onChange={onChangePitchSlider} value={Pitch} w={32} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+            <Tooltip label="ピッチスライダー" placement="bottom" animation="top">
+              <Box>
+                <Slider onChange={onChangePitchSlider} value={Pitch} w={32} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+              </Box>
+            </Tooltip>
             <Spacer maxW={3} />
-            <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
+            <Tooltip label="ピッチ入力" placement="bottom" animation="top">
+              <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
+            </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="音階(音ブロック用)" placement="bottom" animation="top">
               <Select onChange={onChangePitchScaleMenu} items={PitchScaleItems} value={SelectedPitchScale} placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
@@ -232,11 +275,11 @@ export const Footer = () => {
             </Tooltip>
             <Spacer />
             <Tooltip label="Max Volume" placement="bottom" animation="top">
-              <NumberInput w={32} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
+              <NumberInput onChange={onChangeMaxVolumeInput} w={32} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="Min Volume" placement="bottom" animation="top">
-              <NumberInput w={32} defaultValue={0.0} precision={2} min={0.0} step={0.1} />
+              <NumberInput onChange={onChangeMinVolumeInput} w={32} defaultValue={0.0} precision={2} min={0.0} step={0.1} />
             </Tooltip>
           </Flex>
 
@@ -270,15 +313,15 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label="他ディメンションへの干渉を抑制" placement="bottom" animation="top">
-              <Toggle onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
+              <Toggle disabled onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
             </Tooltip>
           </Flex>
 
-          <Box w="full" marginTop={1} border="1px solid" borderColor="primary" borderRadius={5} >
+          <Box w="full" marginTop={1} border="1px solid" borderColor="bg" borderRadius={5} >
             <Flex>
               <Box alignContent="center" paddingX={3} style={{ userSelect: "none" }} >{command}</Box>
               <Spacer />
-              <Box><Separator orientation="vertical" borderColor="primary" /></Box>
+              <Box><Separator orientation="vertical" borderColor="bg" /></Box>
               <Tooltip label={hasCopied ? "Copied!" : "Copy"} placement="bottom" animation="top">
                 <IconButton icon={hasCopied ? <CheckIcon color="success" marginX={6} /> : <CopyIcon marginX={6} />} onClick={() => onCopy(command)} variant="ghost" borderLeftRadius={0} borderRightRadius={2} />
               </Tooltip>

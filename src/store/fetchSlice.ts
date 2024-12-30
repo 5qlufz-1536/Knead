@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { VersionInfoType } from '../types/VersionInfo';
 
 
 
@@ -14,7 +15,7 @@ export interface SoundName {
 
 
 interface State {
-  targetVersion: string;
+  targetVersion: VersionInfoType | undefined;
   sounds: Sound[];
   soundRatings: { [key: string]: number; };
   selectedSound: string;
@@ -25,7 +26,7 @@ interface State {
 }
 
 const initialState: State = {
-  targetVersion: "",
+  targetVersion: undefined,
   sounds: [],
   soundRatings: {},
   selectedSound: "",
@@ -42,7 +43,7 @@ export const fetchSlice = createSlice({
 
     updateTargetVersion: (
       state,
-      action: PayloadAction<{ version: string; }>
+      action: PayloadAction<{ version: VersionInfoType | undefined; }>
     ) => {
       state.targetVersion = action.payload.version
     },
