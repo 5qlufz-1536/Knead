@@ -86,7 +86,7 @@ export const Footer = () => {
 
   return (
     <>
-      <footer>
+      <footer className="fixed_bottom">
         <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
@@ -107,7 +107,7 @@ export const Footer = () => {
             <Input width={20} alignItems="left" placeholder="pitch" defaultValue={1} />
             <Spacer maxW={1} />
             <Tooltip label="音階(音ブロック用)" placement="bottom" animation="top">
-              <Select items={PitchScaleMenu} defaultValue="F#1 (ファ#)" alignItems="left" placeholderInOptions={false} w={32} animation="bottom" />
+              <Select items={PitchScaleMenu} defaultValue="F#1 (ファ#)" alignItems="left" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }}/>
             </Tooltip>
           </Flex>
 
@@ -117,7 +117,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="再生カテゴリ" placement="bottom" animation="top">
-              <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" />
+              <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }}/>
             </Tooltip>
             <Spacer />
             <Tooltip label="Max Volume" placement="bottom" animation="top">

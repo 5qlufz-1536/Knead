@@ -7,6 +7,7 @@ import { Separator, Flex, Button, Spacer, useColorMode, Box, VStack } from "@yam
 
 import "./App.css"
 import { Configuration } from "./Configuration"
+import { VolumeChange } from "./VolumeChange"
 
 
 
@@ -34,6 +35,7 @@ export const App = () => {
 
             <Spacer />
 
+            <VolumeChange />
             <ThemeChange />
             {/* <Configuration /> */}
           </Flex>

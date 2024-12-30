@@ -13,10 +13,10 @@ export const ThemeChange = () => {
     const isDarkColor = (internalColorMode == "dark") ? "primary" : ""
 
     return (
-        <Menu>
+        <Menu animation="top" gutter={0}>
             <MenuButton as={IconButton} icon={<PaletteIcon fontSize="lg"/>} variant="outline" />
 
-            <MenuList>
+            <MenuList style={{ padding: 0, margin: 0 }}>
                 <MenuItem icon={<MonitorCogIcon color={isSystemColor} fontSize="lg" />}
                     textColor={isSystemColor}
                     onClick={() => changeColorMode("system")}

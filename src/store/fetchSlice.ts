@@ -18,13 +18,15 @@ interface State {
   sound_list: Sound[];
   soundRatings: { [key: string]: number; };
   selected_sound: string;
+  app_volume: number,
 }
 
 const initialState: State = {
   target_version: "",
   sound_list: [],
   soundRatings: {},
-  selected_sound: ""
+  selected_sound: "",
+  app_volume: 1
 };
 
 export const fetchSlice = createSlice({
@@ -60,7 +62,14 @@ export const fetchSlice = createSlice({
       state.selected_sound = action.payload.id
     },
 
+    updateAppVolume: (
+      state,
+      action: PayloadAction<{ volume: number; }>
+    ) => {
+      state.app_volume = action.payload.volume
+    },
+
   },
 });
 export default fetchSlice.reducer;
-export const { updateTargetVersion, updateSoundList, updateSoundRating, updateSelectedSound } = fetchSlice.actions;
+export const { updateTargetVersion, updateSoundList, updateSoundRating, updateSelectedSound, updateAppVolume } = fetchSlice.actions;

@@ -8,13 +8,6 @@ const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max);
 }
 
-type SoundsJson = {
-  [key: string]: {
-    sounds: (string | { name: string, pitch?: number, volume?: number, attenuation_distance?: number, type?: string })[]
-    subtitle?: string
-  }
-}
-
 const getMinecraftDir = () => {
   let dir: string[] = [process.env.HOME!]
   const os = process.platform
@@ -34,6 +27,13 @@ const getMinecraftDir = () => {
   }
 
   return dir
+}
+
+type SoundsJson = {
+  [key: string]: {
+    sounds: (string | { name: string, pitch?: number, volume?: number, attenuation_distance?: number, type?: string })[]
+    subtitle?: string
+  }
 }
 
 const getHashBySoundName = (hashMap: { [key: string]: { hash: string } }, soundName: string): string => {
