@@ -3,10 +3,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAddDispatch, useAppSelector } from '../store/_store';
 import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, Tooltip, useBoolean } from "@yamada-ui/react";
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide';
-import { useVirtualScroll } from "./hooks/VirtualScroll";
+import { useVirtualScroll } from "./hooks/useVirtualScroll";
 import { RatingStars } from "./RatingStars"
 import { updateSelectedSound, updateSoundRating } from "../store/fetchSlice";
-import { getWindowSize } from './hooks/GetWindowSize';
+import { useWindowSize } from './hooks/useWindowSize';
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch();
@@ -46,7 +46,7 @@ export const SoundSelector = () => {
       const cHeight = scrollRef.current?.getBoundingClientRect().height
       return cHeight ? cHeight : 0
     },
-    [getWindowSize()[1]]
+    [useWindowSize()[1]]
   );
 
 
