@@ -191,12 +191,14 @@ export const Footer = () => {
 
 
   // コマンド生成
+  // 1.20.5以降はsourceとselectorを省略できるようになった
+  //
   const command = selectedSound != "" ? (
     [
       (SlashSwitch ? "/" : "") + "playsound",
       selectedSound,
-      ((PlaySource == "master" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : PlaySource),
-      ((Selector == "@a" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : Selector),
+      ((PlaySource == "master" && Selector == "@s" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : PlaySource),
+      ((Selector == "@s" && Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : Selector),
       ((Coordinate == "" && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : Coordinate),
       ((MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? "" : MaxVolume),
       ((Pitch == 1 && MinVolume == 0) ? "" : Pitch),
