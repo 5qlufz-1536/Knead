@@ -11,16 +11,16 @@ import { getWindowSize } from './hooks/GetWindowSize';
 export const SoundSelector = () => {
   const dispatch = useAddDispatch();
 
-  const sounds = useAppSelector(state => state.fetch.sound_list);
+  const Sounds = useAppSelector(state => state.fetch.sounds);
   const soundRatings = useAppSelector(state => state.fetch.soundRatings);
-  const target_version = useAppSelector(state => state.fetch.target_version);
-  const selected_sound = useAppSelector(state => state.fetch.selected_sound);
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion);
+  const selectedSound = useAppSelector(state => state.fetch.selectedSound);
 
   const [txtFilters, setTxtFilters] = useState<string[]>([])
   const [ratingFilter, setRatingFilter] = useState(0)
   const [ratingFilterSwitch, { toggle: toggleRatingFilter }] = useBoolean(false)
 
-  const filteredSounds = sounds.filter(value => txtFilters.every(filter => value.id.includes(filter))).filter(value => {
+  const filteredSounds = Sounds.filter(value => txtFilters.every(filter => value.id.includes(filter))).filter(value => {
 
     const rate = soundRatings[value.id] ?? 0
     let result = false
@@ -36,7 +36,7 @@ export const SoundSelector = () => {
 
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, (ratingFilterSwitch ? ratingFilter : 0), ratingFilterSwitch, target_version])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, }), [txtFilters, (ratingFilterSwitch ? ratingFilter : 0), ratingFilterSwitch, targetVersion])
 
 
   const itemHeight = 40;
@@ -62,7 +62,7 @@ export const SoundSelector = () => {
 
   const onSelectSound = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     dispatch(updateSelectedSound({ id: e.currentTarget.id }))
-  }, [selected_sound])
+  }, [])
 
   const onChangeRating = (id: string, rating: number) => {
     dispatch(updateSoundRating({ soundRatings: { ...soundRatings, [id]: rating } }))
@@ -80,7 +80,7 @@ export const SoundSelector = () => {
         bg=""
       >
         <Flex w="full" style={{ userSelect: "none", transition: "0.25s all" }}
-          backgroundColor={item.id == selected_sound ? ['blackAlpha.400', 'whiteAlpha.400'] : "none"}
+          backgroundColor={item.id == selectedSound ? ['blackAlpha.400', 'whiteAlpha.400'] : "none"}
           paddingX={5} paddingY={2}
         >
           {item.id}

@@ -1,4 +1,4 @@
-import { Sound } from "../src/store/fetchSlice";
+import { Sound, SoundName } from "../src/store/fetchSlice";
 import { VersionInfoType } from "../src/types/VersionInfo";
 
 declare global {
@@ -10,4 +10,5 @@ declare global {
 export interface Sandbox {
     get_versions: () => Promise<string[]>;
     get_mcSounds: (version: string) => Promise<Sound[]>;
+    get_mcSoundHash: (hash: string) => Promise<string>;
 }

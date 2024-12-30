@@ -3,7 +3,11 @@ import { FaPlay, FaPause, FaArrowRotateLeft } from "react-icons/fa6";
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from "@yamada-ui/lucide";
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from "react-icons/pi";
 import { useAppSelector } from "../store/_store";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { SoundName } from "../store/fetchSlice";
 
+
+const { myAPI } = window;
 
 
 type PitchScale = {
@@ -16,17 +20,7 @@ type PitchScale = {
 
 export const Footer = () => {
 
-  const { onCopy, hasCopied } = useClipboard()
-  const [SlashSwitch, { toggle: toggleSlash }] = useBoolean(false)
-
-  const selected_sound = useAppSelector(state => state.fetch.selected_sound);
-  const command = selected_sound != "" ? ((SlashSwitch ? "/" : "") + "playsound " + selected_sound) : ""
-
-  const isPlaying = false
-
-
-
-  const PlaySource: SelectItem[] = [
+  const PlaySourceItems: SelectItem[] = [
 
     { label: "ambient", value: "ambient" },
     { label: "block", value: "block" },
@@ -72,7 +66,7 @@ export const Footer = () => {
     { name: "F#2 (ファ#)", value: 2.0 }
   ]
 
-  let PitchScaleMenu: SelectItem[] = PitchScale.map((item) => {
+  const PitchScaleItems: SelectItem[] = PitchScale.map((item) => {
     return { label: item.name, value: item.name }
   })
 
@@ -84,12 +78,129 @@ export const Footer = () => {
   }
 
 
+  const { onCopy, hasCopied } = useClipboard()
+
+
+  // スラッシュスイッチ
+  const [SlashSwitch, { toggle: toggleSlash }] = useBoolean(false)
+
+  // サウンドを流すターゲット(masterとか)
+  const [PlaySource, setPlaySource] = useState("master");
+
+
+  // ピッチ関係
+  const [Pitch, setPitch] = useState(1);
+  const [SelectedPitchScale, setSelectedPitchScale] = useState("F#1 (ファ#)");
+  const onChangePitchSlider = (value: number) => {
+    setPitch(value)
+
+    const scale: string = PitchScale.find(e => e.value == value)?.name ?? ""
+    scale != "" ? setSelectedPitchScale(scale) : undefined
+  }
+  const onChangePitchInput = useCallback((e: string, value: number) => {
+    setPitch(value)
+
+    const scale: string = PitchScale.find(e => e.value == value)?.name ?? ""
+    scale != "" ? setSelectedPitchScale(scale) : undefined
+  }, [])
+  const onChangePitchScaleMenu = (scale: string) => {
+    setSelectedPitchScale(scale)
+
+    const pitch: number = PitchScale.find(e => e.name == scale)?.value ?? 1
+    setPitch(pitch)
+  }
+
+  // 座標指定関系
+  const [Coordinate, setCoordinate] = useState("");
+  const [CoordinateError, { on: onCoordinateError, off: offCoordinateError }] = useBoolean(false);
+  const onChangeCoordinate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const str = e.target.value
+
+    // 条件に応じてエラー表示を行う
+    if (/([\^\~]?[\d]{1,})*/g.test(str) || str === "") offCoordinateError()
+    else onCoordinateError()
+
+    setCoordinate(e.target.value)
+
+  }, [setCoordinate])
+  const onClickTilde = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(e.currentTarget.value)
+  }
+  const onClickCaret = (e: React.MouseEvent<HTMLButtonElement>) => {
+
+  }
+  const onClickRemoveSymbol = (e: React.MouseEvent<HTMLButtonElement>) => {
+
+  }
+
+  // セレクター関系
+  const [Selector, setSelector] = useState("@a");
+  const [SelectorError, { on: onSelectorError, off: offSelectorError }] = useBoolean(false);
+  const [SelectorX0, { toggle: toggleSelectorX0 }] = useBoolean(false)
+  const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    // スペースを削除した文字列を入手
+    // const selector = e.target.value.replaceAll(" ", "")
+
+    // コンマでスプリット > イコールでスプリット
+
+    // offSelectorError()
+    setSelector(e.target.value)
+
+  }, [setSelector])
+
+
+  const sounds = useAppSelector(state => state.fetch.sounds);
+
+  const selectedSound = useAppSelector(state => state.fetch.selectedSound);
+  const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector);
+
+  const appVolume = useAppSelector(state => state.fetch.appVolume);
+
+
+
+
+  const command = selectedSound != "" ? ([(SlashSwitch ? "/" : "") + "playsound", selectedSound, PlaySource, Selector].join(" ")) : ""
+
+  const isPlaying = false
+
+
+
+
+  const [playTarget, setPlayTarget] = useState<SoundName>();
+
+  useEffect(() => {
+    (async () => {
+      const targetSound = sounds.filter(sound => sound.id == selectedSound)[0];
+      const targetHashes = targetSound?.sounds ?? []
+      const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
+
+      try {
+        const hash = await myAPI.get_mcSoundHash(sound?.hash ?? "")
+        setPlayTarget({ hash, pitch: sound?.pitch ?? 1 });
+
+      } catch (e: unknown) {
+        alert(e);
+      }
+    })();
+  }, [soundSelectDetector]);
+
+  // await myAPI.get_mcSound(selectedSound)
+
+  console.log(playTarget)
+
+
+
+
+
+
   return (
     <>
       <footer className="fixed_bottom">
         <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: "none" }}>
 
           <Box alignContent="center" paddingX={1}>
+            <audio id="audio-player" src="" preload="auto"></audio>
             <Slider step={0.01} defaultValue={0} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
           </Box>
 
@@ -102,12 +213,12 @@ export const Footer = () => {
               {timeToString(0)} / {timeToString(100)}
             </Text>
             <Spacer />
-            <Slider w={32} step={0.01} defaultValue={1} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
+            <Slider onChange={onChangePitchSlider} value={Pitch} w={32} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: "" } }} />
             <Spacer maxW={3} />
-            <Input width={20} alignItems="left" placeholder="pitch" defaultValue={1} />
+            <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
             <Spacer maxW={1} />
             <Tooltip label="音階(音ブロック用)" placement="bottom" animation="top">
-              <Select items={PitchScaleMenu} defaultValue="F#1 (ファ#)" alignItems="left" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }}/>
+              <Select onChange={onChangePitchScaleMenu} items={PitchScaleItems} value={SelectedPitchScale} placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
           </Flex>
 
@@ -117,7 +228,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="再生カテゴリ" placement="bottom" animation="top">
-              <Select items={PlaySource} alignItems="left" defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }}/>
+              <Select items={PlaySourceItems} onChange={setPlaySource} defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
             <Spacer />
             <Tooltip label="Max Volume" placement="bottom" animation="top">
@@ -131,43 +242,43 @@ export const Footer = () => {
 
           <Flex w="full" marginTop={1} >
             <Tooltip label="座標" placement="bottom" animation="top">
-              <Input w="calc(full - xs)" alignItems="left" placeholder="Coordinate" defaultValue="" />
+              <Input value={Coordinate} onChange={onChangeCoordinate} invalid={CoordinateError} w="calc(full - xs)" placeholder="Coordinate" />
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label="相対" placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                <IconButton icon={<PiTildeBold size={20} />} variant="ghost" />
+                <IconButton onClick={onClickTilde} icon={<PiTildeBold size={20} />} variant="ghost" />
               </Box>
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="向き相対" placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                <IconButton icon={<PiCaretUpBold size={20} />} variant="ghost" />
+                <IconButton onClick={onClickCaret} icon={<PiCaretUpBold size={20} />} variant="ghost" />
               </Box>
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label="シンボルクリア" placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5} >
-                <IconButton icon={<PiSelectionBold size={20} />} variant="ghost" />
+                <IconButton onClick={onClickRemoveSymbol} icon={<PiSelectionBold size={20} />} variant="ghost" />
               </Box>
             </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1} >
             <Tooltip label="セレクタ" placement="bottom" animation="top">
-              <Input w="calc(full - xs)" placeholder="Selector" defaultValue="@a" />
+              <Input onChange={onChangeSelector} invalid={SelectorError} defaultValue="@a" w="calc(full - xs)" placeholder="Selector" />
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label="他ディメンションへの干渉を抑制" placement="bottom" animation="top">
-              <Toggle variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
+              <Toggle onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
             </Tooltip>
           </Flex>
 
-          <Box w="full" marginTop={1} border="1px solid" borderColor="inherit" borderRadius={5} >
+          <Box w="full" marginTop={1} border="1px solid" borderColor="primary" borderRadius={5} >
             <Flex>
               <Box alignContent="center" paddingX={3} style={{ userSelect: "none" }} >{command}</Box>
               <Spacer />
-              <Box><Separator orientation="vertical" /></Box>
+              <Box><Separator orientation="vertical" borderColor="primary" /></Box>
               <Tooltip label={hasCopied ? "Copied!" : "Copy"} placement="bottom" animation="top">
                 <IconButton icon={hasCopied ? <CheckIcon color="success" marginX={6} /> : <CopyIcon marginX={6} />} onClick={() => onCopy(command)} variant="ghost" borderLeftRadius={0} borderRightRadius={2} />
               </Tooltip>

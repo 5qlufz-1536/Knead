@@ -97,6 +97,11 @@ export const initIpcMain = (): void => {
     return result
   });
 
+  ipcMain.handle("get_mcSoundHash", async (event, hash: string) => {
+    const file = hash === "" ? "" : path.join(...getMinecraftDir(), 'assets', 'objects', hash.slice(0, 2), hash)
+    return file
+  });
+
   ipcMain.handle("save", (event, str: string) => {
     console.log(`save: ${str}`);
   });

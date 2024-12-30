@@ -1,9 +1,11 @@
 console.log("preloaded!");
 
 import { ipcRenderer, contextBridge } from "electron";
+import { Sound } from "./store/fetchSlice";
 
 contextBridge.exposeInMainWorld("myAPI", {
-  get_versions: (str: string) => ipcRenderer.invoke("get_versions", str),
-  get_mcSounds: (str: string) => ipcRenderer.invoke("get_mcSounds", str),
+  get_versions: () => ipcRenderer.invoke("get_versions"),
+  get_mcSounds: (version: string) => ipcRenderer.invoke("get_mcSounds", version),
+  get_mcSoundHash: (hash: string) => ipcRenderer.invoke("get_mcSoundHash", hash),
   save: (str: string) => ipcRenderer.invoke("save", str),
 });

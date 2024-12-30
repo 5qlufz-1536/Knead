@@ -9,7 +9,6 @@ const { myAPI } = window;
 export const VersionSelector = () => {
 
   const dispatch = useAddDispatch();
-  const target_version = useAppSelector((state) => state.fetch.target_version);
 
   const [versions, setVersions] = useState<VersionInfoType[]>([]);
 
@@ -61,7 +60,7 @@ export const VersionSelector = () => {
         onChange={onChangeVersion}
         maxW="xs"
         animation="top"
-        // value={target_version}
+        // value={targetVersion}
         gutter={0}
         listProps={{ padding: 0, margin: 0 }}
       // contentProps={{ h: "lg" }}

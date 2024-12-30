@@ -14,19 +14,25 @@ export interface SoundName {
 
 
 interface State {
-  target_version: string;
-  sound_list: Sound[];
+  targetVersion: string;
+  sounds: Sound[];
   soundRatings: { [key: string]: number; };
-  selected_sound: string;
-  app_volume: number,
+  selectedSound: string;
+  soundSelectDetector: boolean,
+  volumeSlider: number,
+  appVolume: number,
+  appMute: boolean
 }
 
 const initialState: State = {
-  target_version: "",
-  sound_list: [],
+  targetVersion: "",
+  sounds: [],
   soundRatings: {},
-  selected_sound: "",
-  app_volume: 1
+  selectedSound: "",
+  soundSelectDetector: false,
+  volumeSlider: 1,
+  appVolume: 1,
+  appMute: false,
 };
 
 export const fetchSlice = createSlice({
@@ -38,14 +44,14 @@ export const fetchSlice = createSlice({
       state,
       action: PayloadAction<{ version: string; }>
     ) => {
-      state.target_version = action.payload.version
+      state.targetVersion = action.payload.version
     },
 
     updateSoundList: (
       state,
       action: PayloadAction<{ sounds: Sound[]; }>
     ) => {
-      state.sound_list = action.payload.sounds;
+      state.sounds = action.payload.sounds;
     },
 
     updateSoundRating: (
@@ -59,14 +65,17 @@ export const fetchSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; }>
     ) => {
-      state.selected_sound = action.payload.id
+      state.selectedSound = action.payload.id
+      state.soundSelectDetector = state.soundSelectDetector ? false : true
     },
 
     updateAppVolume: (
       state,
-      action: PayloadAction<{ volume: number; }>
+      action: PayloadAction<{ volume: number; mute: boolean; }>
     ) => {
-      state.app_volume = action.payload.volume
+      state.volumeSlider = action.payload.volume
+      state.appMute = action.payload.mute
+      state.appVolume = state.appMute ? 0 : state.volumeSlider
     },
 
   },
