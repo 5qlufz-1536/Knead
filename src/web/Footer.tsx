@@ -176,9 +176,7 @@ export const Footer = () => {
     // 選択しているサウンドを削除
     dispatch(updateSelectedSound({ id: '' }))
     // 一定バージョン以上ですよフラグによってSourceの選択を無効化する
-    if (mc_15w49a_above) offPlaySourceDisable()
-    else onPlaySourceDisable()
-  }, [dispatch, mc_15w49a_above, offPlaySourceDisable, onPlaySourceDisable])
+  }, [dispatch])
 
   return (
     <>
