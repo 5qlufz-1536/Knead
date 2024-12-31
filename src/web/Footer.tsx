@@ -3,10 +3,11 @@ import { FaPlay, FaPause, FaArrowRotateLeft } from 'react-icons/fa6'
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from '@yamada-ui/lucide'
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
 import { useAddDispatch, useAppSelector } from '../store/_store'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SoundName, updateSelectedSound } from '../store/fetchSlice'
 import { isAboveVersion } from '../types/VersionInfo'
 import { useAudioPlay } from './hooks/useAudioPlay'
+import { useTranslation } from 'react-i18next'
 
 const { myAPI } = window
 
@@ -16,6 +17,7 @@ type PitchScale = {
 }
 
 export const Footer = () => {
+  const { t } = useTranslation()
   const dispatch = useAddDispatch()
 
   const PlaySourceItems: SelectItem[] = [
@@ -30,43 +32,46 @@ export const Footer = () => {
     { label: 'voice', value: 'voice' },
     { label: 'weather', value: 'weather' },
     {
-      label: '非推奨', items: [
+      label: t('not_recommended'), items: [
         { label: 'master', value: 'master' },
       ],
     },
   ]
 
-  const PitchScale: PitchScale[] = [
-    { name: 'F#0 (ファ#)', value: 0.5 },
-    { name: 'G0  (ソ)', value: 0.53 },
-    { name: 'G#0 (ソ#)', value: 0.56 },
-    { name: 'A0  (ラ)', value: 0.59 },
-    { name: 'A#0 (ラ#)', value: 0.63 },
-    { name: 'B0  (シ)', value: 0.67 },
-    { name: 'C1  (ド)', value: 0.71 },
-    { name: 'C#1 (ド#)', value: 0.75 },
-    { name: 'D1  (レ)', value: 0.79 },
-    { name: 'D#1 (レ#)', value: 0.84 },
-    { name: 'E1  (ミ)', value: 0.89 },
-    { name: 'F1  (ファ)', value: 0.94 },
-    { name: 'F#1 (ファ#)', value: 1.0 },
-    { name: 'G1  (ソ)', value: 1.06 },
-    { name: 'G#1 (ソ#)', value: 1.12 },
-    { name: 'A1  (ラ)', value: 1.19 },
-    { name: 'A#1 (ラ#)', value: 1.26 },
-    { name: 'B1  (シ)', value: 1.33 },
-    { name: 'C2  (ド)', value: 1.41 },
-    { name: 'C#2 (ド#)', value: 1.5 },
-    { name: 'D2  (レ)', value: 1.59 },
-    { name: 'D#2 (レ#)', value: 1.68 },
-    { name: 'E2  (ミ)', value: 1.78 },
-    { name: 'F2  (ファ)', value: 1.89 },
-    { name: 'F#2 (ファ#)', value: 2.0 },
-  ]
+  const PitchScale: PitchScale[] = useMemo(() => [
+    { name: 'f#0', value: 0.5 },
+    { name: 'g0', value: 0.53 },
+    { name: 'g#0', value: 0.56 },
+    { name: 'a0', value: 0.59 },
+    { name: 'a#0', value: 0.63 },
+    { name: 'b0', value: 0.67 },
+    { name: 'c1', value: 0.71 },
+    { name: 'c#1', value: 0.75 },
+    { name: 'd1', value: 0.79 },
+    { name: 'd#1', value: 0.84 },
+    { name: 'e1', value: 0.89 },
+    { name: 'f1', value: 0.94 },
+    { name: 'f#1', value: 1.0 },
+    { name: 'g1', value: 1.06 },
+    { name: 'g#1', value: 1.12 },
+    { name: 'a1', value: 1.19 },
+    { name: 'a#1', value: 1.26 },
+    { name: 'b1', value: 1.33 },
+    { name: 'c2', value: 1.41 },
+    { name: 'c#2', value: 1.5 },
+    { name: 'd2', value: 1.59 },
+    { name: 'd#2', value: 1.68 },
+    { name: 'e2', value: 1.78 },
+    { name: 'f2', value: 1.89 },
+    { name: 'f#2', value: 2.0 },
+  ], [])
 
-  const PitchScaleItems: SelectItem[] = PitchScale.map((item) => {
-    return { label: item.name, value: item.name }
-  })
+  const checkSTR = t('f#0')
+  const PitchScaleItems: SelectItem[] = useMemo(() => {
+    return PitchScale.map((item) => {
+      return { label: t(item.name), value: item.name, id: item.name }
+    })
+  }, [PitchScale, t])
 
   const timeToString = (sec: number) => {
     const second = ('0' + Math.floor(sec % 60)).slice(-2)
@@ -86,7 +91,7 @@ export const Footer = () => {
 
   // ピッチ関係
   const [Pitch, setPitch] = useState(1)
-  const [SelectedPitchScale, setSelectedPitchScale] = useState('F#1 (ファ#)')
+  const [SelectedPitchScale, setSelectedPitchScale] = useState('f#1')
   const onChangePitchSlider = (value: number) => {
     setPitch(value)
 
@@ -105,6 +110,10 @@ export const Footer = () => {
     const pitch: number = PitchScale.find(e => e.name == scale)?.value ?? 1
     setPitch(pitch)
   }
+  useEffect(() => {
+    const scale: string = PitchScale.find(e => e.value == Pitch)?.name ?? ''
+    if (scale != '') setSelectedPitchScale(scale)
+  }, [Pitch, PitchScale, PitchScaleItems, SelectedPitchScale, checkSTR, t])
 
   // 座標指定関系
   const [Coordinate, setCoordinate] = useState('')
@@ -284,57 +293,57 @@ export const Footer = () => {
               {timeToString(100)}
             </Text>
             <Spacer />
-            <Tooltip label="ピッチスライダー" placement="bottom" animation="top">
+            <Tooltip label={t('pitch_slider')} placement="bottom" animation="top">
               <Box>
                 <Slider onChange={onChangePitchSlider} value={Pitch} w={32} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }} />
               </Box>
             </Tooltip>
             <Spacer maxW={3} />
-            <Tooltip label="ピッチ入力" placement="bottom" animation="top">
+            <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
               <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
             </Tooltip>
             <Spacer maxW={1} />
-            <Tooltip label="音階(音ブロック用)" placement="bottom" animation="top">
+            <Tooltip label={t('pitch_scale')} placement="bottom" animation="top">
               <Select onChange={onChangePitchScaleMenu} items={PitchScaleItems} value={SelectedPitchScale} placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1}>
-            <Tooltip label="スラッシュをつける" placement="bottom" animation="top">
+            <Tooltip label={t('add_slash')} placement="bottom" animation="top">
               <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
             </Tooltip>
             <Spacer maxW={1} />
-            <Tooltip label="再生カテゴリ" placement="bottom" animation="top">
+            <Tooltip label={t('play_source')} placement="bottom" animation="top">
               <Select disabled={PlaySourceDisable} items={PlaySourceItems} onChange={setPlaySource} defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
             <Spacer />
-            <Tooltip label="Max Volume" placement="bottom" animation="top">
+            <Tooltip label={t('max_volume')} placement="bottom" animation="top">
               <NumberInput onChange={onChangeMaxVolumeInput} w={32} defaultValue={1.0} precision={2} min={0.0} step={0.1} />
             </Tooltip>
             <Spacer maxW={1} />
-            <Tooltip label="Min Volume" placement="bottom" animation="top">
+            <Tooltip label={t('min_volume')} placement="bottom" animation="top">
               <NumberInput onChange={onChangeMinVolumeInput} w={32} defaultValue={0.0} precision={2} min={0.0} max={1.0} step={0.1} />
             </Tooltip>
           </Flex>
 
           <Flex w="full" marginTop={1}>
-            <Tooltip label="座標" placement="bottom" animation="top">
+            <Tooltip label={t('coordinate')} placement="bottom" animation="top">
               <Input value={Coordinate} onChange={onChangeCoordinate} invalid={CoordinateError} w="calc(full - xs)" placeholder="Coordinate" />
             </Tooltip>
             <Spacer maxW={10} />
-            <Tooltip label="相対" placement="bottom" animation="top">
+            <Tooltip label={t('tilde_symbol')} placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5}>
                 <IconButton onClick={onClickTilde} icon={<PiTildeBold size={20} />} variant="ghost" />
               </Box>
             </Tooltip>
             <Spacer maxW={1} />
-            <Tooltip label="向き相対" placement="bottom" animation="top">
+            <Tooltip label={t('caret_symbol')} placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5}>
                 <IconButton onClick={onClickCaret} icon={<PiCaretUpBold size={20} />} variant="ghost" />
               </Box>
             </Tooltip>
             <Spacer maxW={1} />
-            <Tooltip label="シンボルクリア" placement="bottom" animation="top">
+            <Tooltip label={t('symbol_clear')} placement="bottom" animation="top">
               <Box border="1px solid" borderColor="inherit" borderRadius={5}>
                 <IconButton onClick={onClickRemoveSymbol} icon={<PiSelectionBold size={20} />} variant="ghost" />
               </Box>
@@ -342,11 +351,11 @@ export const Footer = () => {
           </Flex>
 
           <Flex w="full" marginTop={1}>
-            <Tooltip label="セレクタ" placement="bottom" animation="top">
+            <Tooltip label={t('selector')} placement="bottom" animation="top">
               <Input onChange={onChangeSelector} invalid={SelectorError} defaultValue="@a" w="calc(full - xs)" placeholder="Selector" />
             </Tooltip>
             <Spacer maxW={10} />
-            <Tooltip label="他ディメンションへの干渉を抑制" placement="bottom" animation="top">
+            <Tooltip label={t('this_dimension_only')} placement="bottom" animation="top" maxW="full">
               <Toggle disabled onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
             </Tooltip>
           </Flex>

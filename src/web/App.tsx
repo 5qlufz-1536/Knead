@@ -8,9 +8,10 @@ import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/r
 import './App.css'
 // import { Configuration } from './Configuration'
 import { VolumeChange } from './VolumeChange'
+import { LanguageChange } from './LanguageChange'
 
 export const App = () => {
-  const { colorMode, changeColorMode } = useColorMode()
+  const { colorMode } = useColorMode()
 
   const style = document.createElement('style')
   style.textContent += '::-webkit-scrollbar { width: 7px; height: 7px; }'
@@ -34,6 +35,7 @@ export const App = () => {
             <Spacer />
 
             <VolumeChange />
+            <LanguageChange />
             <ThemeChange />
             {/* <Configuration /> */}
           </Flex>

@@ -5,6 +5,7 @@ import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript 
 
 import { store } from '../store/_store'
 import { Provider } from 'react-redux'
+import './i18n/configs'
 
 export const config: ThemeConfig = {
   initialColorMode: 'system',

@@ -4,10 +4,12 @@ import { Autocomplete } from '@yamada-ui/react'
 import { useAddDispatch } from '../store/_store'
 import { Sound, updateSoundList, updateTargetVersion } from '../store/fetchSlice'
 import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from '../types/VersionInfo'
+import { useTranslation } from 'react-i18next'
 
 const { myAPI } = window
 
 export const VersionSelector = () => {
+  const { t } = useTranslation()
   const dispatch = useAddDispatch()
 
   const [versions, setVersions] = useState<VersionInfoType[]>([])
@@ -35,10 +37,10 @@ export const VersionSelector = () => {
     const rc_versions = versions.filter(v => v.kind === 'release-candidate').sort(compareReleaseCandidateVersionInfo).reverse().map(v => v.raw)
 
     return [
-      { label: '正式', items: major_versions.map(v => ({ label: v, value: v })) },
-      { label: 'スナップショット', items: [...rc_versions, ...pre_versions, ...snapshot_versions].map(v => ({ label: v, value: v })) },
+      { label: t('release_version'), items: major_versions.map(v => ({ label: v, value: v })) },
+      { label: t('snapshot_version'), items: [...rc_versions, ...pre_versions, ...snapshot_versions].map(v => ({ label: v, value: v })) },
     ]
-  }, [versions])
+  }, [t, versions])
 
   const onChangeVersion = async (version: string) => {
     dispatch(updateTargetVersion({ version: versions.find(v => v.raw == version) }))
@@ -51,7 +53,7 @@ export const VersionSelector = () => {
   return (
     <>
       <Autocomplete
-        placeholder="バージョンを選択"
+        placeholder={t('version_select')}
         emptyMessage="該当バージョンなし"
         // closeOnSelect={false}
         variant="filled"
