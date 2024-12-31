@@ -111,30 +111,21 @@ export const parseVersion = (raw: string) => {
   return undefined
 }
 
-export const isAboveVersion = (targetVersion: VersionInfoType | undefined, searchVersion: VersionInfoType) => {
-  if (targetVersion === undefined) return 0
+export const isAboveVersion = (targetVersion: VersionInfoType | undefined, searchVersion: VersionInfoType): boolean => {
+  if (targetVersion === undefined) return false
 
-  const searchTargetRelease = targetVersion?.kind == 'release' ? targetVersion : undefined
-  const searchTargetReleaseCandidate = targetVersion?.kind == 'release-candidate' ? targetVersion : undefined
-  const searchTargetPreRelease = targetVersion?.kind == 'pre-release' ? targetVersion : undefined
-  const searchTargetSnapshot = targetVersion?.kind == 'snapshot' ? targetVersion : undefined
-
-  let compare: number = 0
   switch (searchVersion.kind) {
     case 'release':
-      compare = compareReleaseVersionInfo(searchTargetRelease, searchVersion)
-      break
+      if (targetVersion.kind !== 'release') return false
+      return compareReleaseVersionInfo(targetVersion, searchVersion) >= 0
     case 'release-candidate':
-      compare = compareReleaseCandidateVersionInfo(searchTargetReleaseCandidate, searchVersion)
-      break
+      if (targetVersion.kind !== 'release-candidate') return false
+      return compareReleaseCandidateVersionInfo(targetVersion, searchVersion) >= 0
     case 'pre-release':
-      compare = comparePreReleaseVersionInfo(searchTargetPreRelease, searchVersion)
-      break
+      if (targetVersion.kind !== 'pre-release') return false
+      return comparePreReleaseVersionInfo(targetVersion, searchVersion) >= 0
     case 'snapshot':
-      compare = compareSnapshotVersionInfo(searchTargetSnapshot, searchVersion)
-      break
-    default:
-      break
+      if (targetVersion.kind !== 'snapshot') return false
+      return compareSnapshotVersionInfo(targetVersion, searchVersion) >= 0
   }
-  return !(compare < 0)
 }

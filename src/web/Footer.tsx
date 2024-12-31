@@ -5,7 +5,7 @@ import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
 import { useAddDispatch, useAppSelector } from '../store/_store'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SoundName, updateSelectedSound } from '../store/fetchSlice'
-import { isAboveVersion } from '../types/VersionInfo'
+import { isAboveVersion, VersionInfoType } from '../types/VersionInfo'
 import { useAudioPlay } from './hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
 import { PitchInput } from './PitchInput'
@@ -18,8 +18,34 @@ export const Footer = () => {
   const dispatch = useAddDispatch()
   const AudioController = useAudioPlay()
 
-  const PlaySourceItems: SelectItem[] = [
+  const sounds = useAppSelector(state => state.fetch.sounds)
+  const selectedSound = useAppSelector(state => state.fetch.selectedSound)
+  const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion)
+  const appVolume = useAppSelector(state => state.fetch.appVolume)
 
+  const mc_24w09a_above = ([
+    { kind: 'release', raw: '', major: 1, minor: 20, patch: 5 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
+    { kind: 'snapshot', raw: '', year: 24, releaseNumber: 9, letter: '' },
+  ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
+
+  const mc_17w45a_above = ([
+    { kind: 'release', raw: '', major: 1, minor: 13, patch: 0 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
+    { kind: 'snapshot', raw: '', year: 17, releaseNumber: 45, letter: '' },
+  ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
+
+  const mc_15w49a_above = ([
+    { kind: 'release', raw: '', major: 1, minor: 9, patch: 0 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
+    { kind: 'snapshot', raw: '', year: 15, releaseNumber: 49, letter: '' },
+  ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
+
+  const PlaySourceItems: SelectItem[] = [
     { label: 'ambient', value: 'ambient' },
     { label: 'block', value: 'block' },
     { label: 'hostile', value: 'hostile' },
@@ -30,7 +56,8 @@ export const Footer = () => {
     { label: 'voice', value: 'voice' },
     { label: 'weather', value: 'weather' },
     {
-      label: t('not_recommended'), items: [
+      label: t('not_recommended'),
+      items: [
         { label: 'master', value: 'master' },
       ],
     },
@@ -43,12 +70,17 @@ export const Footer = () => {
 
   // サウンドを流すターゲット(masterとか)
   const [PlaySource, setPlaySource] = useState('master')
-  const [PlaySourceDisable, { on: onPlaySourceDisable, off: offPlaySourceDisable }] = useBoolean(false)
+  const PlaySourceDisable = mc_15w49a_above
 
   // ピッチ関係
   const [pitch, setPitch] = useState('1')
+  const onChangePitch = useCallback((value: string) => {
+    setPitch(value)
+    if (selectedSound) AudioController.commands.setSpeed(selectedSound, parseFloat(value))
+  }, [AudioController.commands, selectedSound])
 
   // 座標指定関系
+  const coordinateChars = ['~', '^']
   const [Coordinate, setCoordinate] = useState('')
   const [CoordinateError, { on: onCoordinateError, off: offCoordinateError }] = useBoolean(false)
   const onChangeCoordinate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,34 +92,16 @@ export const Footer = () => {
 
     setCoordinate(e.target.value)
   }, [setCoordinate])
-  const onClickTilde = () => {
-    const splitCoordinate: number[] = Coordinate.replaceAll('~', '').replaceAll('^', '').split(' ').map(v => v == '' ? 0 : Number(v))
-    const returnCoordinate: string[] = ['~']
-    for (let i = 0; i <= 2; i++) {
-      returnCoordinate.push((typeof splitCoordinate[i] === 'number' && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != 'NaN') ? splitCoordinate[i].toString() : '')
-      if (i < 2) returnCoordinate.push(' ~')
-    }
-    setCoordinate(returnCoordinate.join(''))
+  const onChangeCoordinateChar = (newCoordinateChar: string) => {
+    setCoordinate((prev) => {
+      const splitCoordinate: number[] = coordinateChars.reduce((prev, char) => prev.replaceAll(char, ''), prev).split(' ').map(v => Number(v))
+      const formattedCoordinates = splitCoordinate.map(v => v != 0 && !Number.isNaN(v) ? v?.toString() : '')
+      return `${newCoordinateChar}${formattedCoordinates[0]} ${newCoordinateChar}${formattedCoordinates[1]} ${newCoordinateChar}${formattedCoordinates[2]}`
+    })
   }
-  const onClickCaret = () => {
-    const splitCoordinate: number[] = Coordinate.replaceAll('~', '').replaceAll('^', '').split(' ').map(v => v == '' ? 0 : Number(v))
-    const returnCoordinate: string[] = ['^']
-    for (let i = 0; i <= 2; i++) {
-      returnCoordinate.push((typeof splitCoordinate[i] === 'number' && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != 'NaN') ? splitCoordinate[i].toString() : '')
-      if (i < 2) returnCoordinate.push(' ^')
-    }
-    setCoordinate(returnCoordinate.join(''))
-  }
-  const onClickRemoveSymbol = () => {
-    const splitCoordinate: number[] = Coordinate.replaceAll('~', '').replaceAll('^', '').split(' ').map(v => v == '' ? NaN : Number(v))
-    const HasIndexes: boolean = splitCoordinate.filter(v => v.toString() != 'NaN').length > 0
-    const returnCoordinate: string[] = ['']
-    for (let i = 0; i <= 2; i++) {
-      returnCoordinate.push((typeof splitCoordinate[i] === 'number' && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != 'NaN') ? splitCoordinate[i].toString() : (HasIndexes ? '0' : ''))
-      if (HasIndexes && i < 2) returnCoordinate.push(' ')
-    }
-    setCoordinate(returnCoordinate.join(''))
-  }
+  const onClickTilde = () => onChangeCoordinateChar('~')
+  const onClickCaret = () => onChangeCoordinateChar('^')
+  const onClickRemoveSymbol = () => setCoordinate('')
 
   // セレクター関系
   const [Selector, setSelector] = useState('@a')
@@ -106,45 +120,8 @@ export const Footer = () => {
   // ボリューム(生成)関係
   const [MaxVolume, setMaxVolume] = useState(1)
   const [MinVolume, setMinVolume] = useState(0)
-  const onChangeMaxVolumeInput = (e: string, value: number) => {
-    setMaxVolume(value)
-  }
-  const onChangeMinVolumeInput = (e: string, value: number) => {
-    setMinVolume(value)
-  }
-
-  const sounds = useAppSelector(state => state.fetch.sounds)
-
-  const selectedSound = useAppSelector(state => state.fetch.selectedSound)
-  const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
-
-  const targetVersion = useAppSelector(state => state.fetch.targetVersion)
-
-  const appVolume = useAppSelector(state => state.fetch.appVolume)
-
-  const mc_24w09a_above = isAboveVersion(targetVersion, { kind: 'release', raw: '', major: 1, minor: 20, patch: 5 })
-    ? true
-    : isAboveVersion(targetVersion, { kind: 'release-candidate', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 })
-      ? true
-      : isAboveVersion(targetVersion, { kind: 'pre-release', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 })
-        ? true
-        : isAboveVersion(targetVersion, { kind: 'snapshot', raw: '', year: 24, releaseNumber: 9, letter: '' })
-
-  const mc_17w45a_above = isAboveVersion(targetVersion, { kind: 'release', raw: '', major: 1, minor: 13, patch: 0 })
-    ? true
-    : isAboveVersion(targetVersion, { kind: 'release-candidate', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 })
-      ? true
-      : isAboveVersion(targetVersion, { kind: 'pre-release', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 })
-        ? true
-        : isAboveVersion(targetVersion, { kind: 'snapshot', raw: '', year: 17, releaseNumber: 45, letter: '' })
-
-  const mc_15w49a_above = isAboveVersion(targetVersion, { kind: 'release', raw: '', major: 1, minor: 9, patch: 0 })
-    ? true
-    : isAboveVersion(targetVersion, { kind: 'release-candidate', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 })
-      ? true
-      : isAboveVersion(targetVersion, { kind: 'pre-release', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 })
-        ? true
-        : isAboveVersion(targetVersion, { kind: 'snapshot', raw: '', year: 15, releaseNumber: 49, letter: '' })
+  const onChangeMaxVolumeInput = (_: string, value: number) => setMaxVolume(value)
+  const onChangeMinVolumeInput = (_: string, value: number) => setMinVolume(value)
 
   // コマンド生成
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
@@ -193,13 +170,6 @@ export const Footer = () => {
       }
     })()
   }, [AudioController.commands, selectedSound, sounds])
-
-  const onChangePitch = useCallback((value: string) => {
-    setPitch(value)
-    if (selectedSound) {
-      AudioController.commands.setSpeed(selectedSound, parseFloat(value))
-    }
-  }, [AudioController.commands, selectedSound])
 
   // 選択バージョンに変化があったとき
   useEffect(() => {
