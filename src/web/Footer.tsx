@@ -38,7 +38,7 @@ export const Footer = () => {
     },
   ]
 
-  const PitchScale: PitchScale[] = useMemo(() => [
+  const PitchScale: PitchScale[] = [
     { name: 'f#0', value: 0.5 },
     { name: 'g0', value: 0.53 },
     { name: 'g#0', value: 0.56 },
@@ -64,20 +64,17 @@ export const Footer = () => {
     { name: 'e2', value: 1.78 },
     { name: 'f2', value: 1.89 },
     { name: 'f#2', value: 2.0 },
-  ], [])
+  ]
 
-  const checkSTR = t('f#0')
-  const PitchScaleItems: SelectItem[] = useMemo(() => {
-    return PitchScale.map((item) => {
-      return { label: t(item.name), value: item.name, id: item.name }
-    })
-  }, [PitchScale, t])
+  const PitchScaleItems: SelectItem[] = PitchScale.map((item) => {
+    return { label: t(item.name), value: item.name, id: item.name }
+  })
 
-  const timeToString = (sec: number) => {
-    const second = ('0' + Math.floor(sec % 60)).slice(-2)
-    const minutes = ('0' + Math.floor(sec / 60) % 60).slice(-2)
-    // let hour = ("0" + Math.floor((time / 60) / 60)).slice(-2);
-    return minutes + ':' + second
+  const timeToString = (sec: number, max_sec: number | undefined) => {
+    const max_hour_check = max_sec ? Math.floor((max_sec / 60) / 60) : 0
+    const hour_num = Math.floor((sec / 60) / 60)
+
+    return (max_hour_check < 1 ? '' : ('0' + hour_num).slice(-2) + ':') + ('0' + Math.floor(sec / 60) % 60).slice(-2) + ':' + ('0' + Math.floor(sec % 60)).slice(-2)
   }
 
   const { onCopy, hasCopied } = useClipboard()
@@ -110,10 +107,6 @@ export const Footer = () => {
     const pitch: number = PitchScale.find(e => e.name == scale)?.value ?? 1
     setPitch(pitch)
   }
-  useEffect(() => {
-    const scale: string = PitchScale.find(e => e.value == Pitch)?.name ?? ''
-    if (scale != '') setSelectedPitchScale(scale)
-  }, [Pitch, PitchScale, PitchScaleItems, SelectedPitchScale, checkSTR, t])
 
   // 座標指定関系
   const [Coordinate, setCoordinate] = useState('')
@@ -287,10 +280,11 @@ export const Footer = () => {
             <IconButton icon={isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />} variant="ghost" />
             <Spacer maxW={1} />
             <Text alignContent="center" paddingX={1} style={{ userSelect: 'none' }} fontSize="lg">
-              {timeToString(0)}
+              {timeToString(0, 100)}
               {' '}
               /
-              {timeToString(100)}
+              {' '}
+              {timeToString(100, 100)}
             </Text>
             <Spacer />
             <Tooltip label={t('pitch_slider')} placement="bottom" animation="top">
