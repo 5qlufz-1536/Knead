@@ -78,7 +78,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   // MARK: pause
   const pause = useCallback(() => {
     setAudioState((prev) => {
-      Object.entries(prev).forEach(([, { absn }]) => {
+      Object.values(prev).forEach(({ absn }) => {
         absn.onended = null
         absn.stop()
       })
@@ -89,7 +89,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   // MARK: stop
   const stop = useCallback(() => {
     setAudioState((prev) => {
-      Object.entries(prev).forEach(([, { absn }]) => {
+      Object.values(prev).forEach(({ absn }) => {
         absn.onended = null
         absn.stop()
       })
