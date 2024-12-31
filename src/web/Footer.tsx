@@ -287,11 +287,7 @@ export const Footer = () => {
               {timeToString(100, 100)}
             </Text>
             <Spacer />
-            <Tooltip label={t('pitch_slider')} placement="bottom" animation="top">
-              <Box>
-                <Slider onChange={onChangePitchSlider} value={Pitch} w={32} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }} />
-              </Box>
-            </Tooltip>
+            <Slider onChange={onChangePitchSlider} value={Pitch} w={32} h={10} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }} />
             <Spacer maxW={3} />
             <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
               <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
