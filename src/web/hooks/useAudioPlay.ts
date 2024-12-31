@@ -7,7 +7,6 @@ type GlobalContext = {
 
 type Context = {
   isPlaying: boolean
-  isPaused?: boolean
   playTime: number
   maxTime: number
   volume: number
@@ -36,7 +35,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const [playingWatcher, setPlayingWatcher] = useState<NodeJS.Timeout>()
   const syncAudioContext = useCallback(() => {
     setAudioState(prev => mapEntries(prev, ({ absn, gc, ctx }) => {
-      if (ctx.isPlaying && !ctx.isPaused) {
+      if (ctx.isPlaying) {
         return { absn, gc, ctx: { ...ctx, playTime: absn.context.currentTime } }
       }
       return { absn, gc, ctx }
@@ -57,7 +56,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   // MARK: play
   const play = useCallback(() => {
     setAudioState((prev) => {
-      const newState = mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: true, isPaused: false } }))
+      const newState = mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: true } }))
       Object.entries(newState).forEach(([k, { absn, ctx }]) => {
         absn.start(0, ctx.playTime)
         absn.onended = () => {
@@ -76,7 +75,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
         if (ctx.isPlaying) {
           absn.stop()
           absn.onended = null
-          return { absn, gc, ctx: { ...ctx, isPlaying: false, isPaused: true } }
+          return { absn, gc, ctx: { ...ctx, isPlaying: false } }
         }
         return { absn, gc, ctx }
       })
@@ -91,7 +90,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
         absn.onended = null
         absn.stop()
       })
-      return mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: false, isPaused: false, playTime: 0 } }))
+      return mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: false, playTime: 0 } }))
     })
   }, [setAudioState])
 
