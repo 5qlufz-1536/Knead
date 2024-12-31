@@ -318,7 +318,7 @@ export const Footer = () => {
 
           <Flex w="full" marginTop={1}>
             <Tooltip label={t('coordinate')} placement="bottom" animation="top">
-              <Input value={Coordinate} onChange={onChangeCoordinate} invalid={CoordinateError} w="calc(full - xs)" placeholder="Coordinate" />
+              <Input value={Coordinate} onChange={onChangeCoordinate} invalid={CoordinateError} w="calc(full - xs)" placeholder={t('coordinate')} />
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label={t('tilde_symbol')} placement="bottom" animation="top">
@@ -342,7 +342,7 @@ export const Footer = () => {
 
           <Flex w="full" marginTop={1}>
             <Tooltip label={t('selector')} placement="bottom" animation="top">
-              <Input onChange={onChangeSelector} invalid={SelectorError} defaultValue="@a" w="calc(full - xs)" placeholder="Selector" />
+              <Input onChange={onChangeSelector} invalid={SelectorError} defaultValue="@a" w="calc(full - xs)" placeholder={t('selector')} />
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label={t('this_dimension_only')} placement="bottom" animation="top" maxW="full">
