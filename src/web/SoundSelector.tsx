@@ -6,9 +6,11 @@ import { useVirtualScroll } from './hooks/useVirtualScroll'
 import { RatingStars } from './RatingStars'
 import { updateSelectedSound, updateSoundRating } from '../store/fetchSlice'
 import { useWindowSize } from './hooks/useWindowSize'
+import { useTranslation } from 'react-i18next'
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch()
+  const { t } = useTranslation()
 
   const Sounds = useAppSelector(state => state.fetch.sounds)
   const soundRatings = useAppSelector(state => state.fetch.soundRatings)
@@ -98,7 +100,7 @@ export const SoundSelector = () => {
             <SearchIcon color="gray.500" fontSize="lg" />
           </InputLeftElement>
 
-          <Input placeholder="Search..." onChange={onChangeSearchWord} />
+          <Input placeholder={t('search_sound_id')} onChange={onChangeSearchWord} />
         </InputGroup>
 
         <Spacer />

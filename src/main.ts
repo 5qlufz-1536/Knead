@@ -11,7 +11,6 @@ app.whenReady().then(() => {
     height: 790 + 40,
     minWidth: 650,
     minHeight: 650,
-    autoHideMenuBar: true,
     frame: true,
     center: true,
     title: 'Knead',
@@ -22,6 +21,8 @@ app.whenReady().then(() => {
       preload: path.join(__dirname, 'preload.js'),
     },
   })
+  // メニューバー削除
+  mainWindow.setMenu(null)
 
   // レンダラープロセスをロード
   mainWindow.loadFile('dist/index.html')
