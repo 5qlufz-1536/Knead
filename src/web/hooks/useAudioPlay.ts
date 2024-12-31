@@ -7,7 +7,7 @@ type GlobalContext = {
 
 type Context = {
   isPlaying: boolean
-  playTime: number
+  playbackTime: number
   maxTime: number
   volume: number
   speed: number
@@ -27,7 +27,7 @@ type Commands = {
   setSounds: (sounds: { [k: string]: string | [uri: string, speed?: number, volume?: number] }) => Promise<void>
   setVolume: (soundKey: string, volume: number) => void
   setSpeed: (soundKey: string, speed: number) => void
-  setPlayTime: (soundKey: string, playTime: number) => void
+  setPlaybackTime: (soundKey: string, playbackTime: number) => void
 }
 
 type AudioState = { [k: string]: InternalContext & Context }
@@ -41,7 +41,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const syncAudioContext = useCallback(() => {
     setAudioState(prev => mapEntries(prev, (ctx) => {
       if (ctx.isPlaying) {
-        return { ...ctx, playTime: ctx.absn.context.currentTime }
+        return { ...ctx, playbackTime: ctx.absn.context.currentTime }
       }
       return ctx
     }))
@@ -62,10 +62,10 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const play = useCallback(() => {
     setAudioState((prev) => {
       const newState = mapEntries(prev, ctx => ({ ...ctx, isPlaying: true }))
-      Object.entries(newState).forEach(([k, { absn, playTime, maxTime }]) => {
-        absn.start(0, playTime)
+      Object.entries(newState).forEach(([k, { absn, playbackTime, maxTime }]) => {
+        absn.start(0, playbackTime)
         absn.onended = () => {
-          setAudioState(prev2 => ({ ...prev2, [k]: { ...prev2[k], isPlaying: false, playTime: maxTime } }))
+          setAudioState(prev2 => ({ ...prev2, [k]: { ...prev2[k], isPlaying: false, playbackTime: maxTime } }))
         }
       })
       return newState
@@ -90,7 +90,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
         absn.onended = null
         absn.stop()
       })
-      return mapEntries(prev, ctx => ({ ...ctx, isPlaying: false, playTime: 0 }))
+      return mapEntries(prev, ctx => ({ ...ctx, isPlaying: false, playbackTime: 0 }))
     })
   }, [setAudioState])
 
@@ -116,7 +116,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   // MARK: createContext
   const createContext = useCallback((ctx: Pick<Context, 'maxTime'> & Partial<Context>): Context => ({
     isPlaying: false,
-    playTime: 0,
+    playbackTime: 0,
     volume: 1,
     speed: 1,
     ...ctx,
@@ -158,11 +158,11 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
     })
   }, [])
 
-  // MARK: setPlayTime
-  const setPlayTime = useCallback((soundKey: string, playTime: number) => {
+  // MARK: setPlaybackTime
+  const setPlaybackTime = useCallback((soundKey: string, playbackTime: number) => {
     setAudioState((prev) => {
       prev[soundKey].absn.stop()
-      return { ...prev, [soundKey]: { ...prev[soundKey], playTime } }
+      return { ...prev, [soundKey]: { ...prev[soundKey], playbackTime } }
     })
   }, [])
 
@@ -174,8 +174,8 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   }, [audioState])
 
   const commands = useMemo(
-    () => ({ play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlayTime }),
-    [play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlayTime],
+    () => ({ play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime }),
+    [play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime],
   )
 
   return { context: globalContext, contexts, commands }
