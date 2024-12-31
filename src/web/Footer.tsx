@@ -152,7 +152,7 @@ export const Footer = () => {
   // セレクター関系
   const [Selector, setSelector] = useState('@a')
   const [SelectorError, { on: onSelectorError, off: offSelectorError }] = useBoolean(false)
-  const [SelectorX0, { toggle: toggleSelectorX0 }] = useBoolean(false)
+  const [SelectorX0, { toggle: toggleSelectorX0 }] = useBoolean(true)
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     // スペースを削除した文字列を入手
     // const selector = e.target.value.replaceAll(" ", "")
@@ -220,21 +220,21 @@ export const Footer = () => {
     }
     const CorrectedCoordinate = Coordinate.includes('~') ? Coordinate : Coordinate.includes('^') ? Coordinate : returnCoordinate.join('')
 
+    const CorrectedSelector = Selector == '@a' ? (SelectorX0 ? '@a[x=0]' : Selector) : Selector
+
     return selectedSound != ''
-      ? (
-          [
-            (SlashSwitch ? '/' : '') + 'playsound',
-            selectedSound,
-            (!mc_15w49a_above ? undefined : ((mc_24w09a_above && PlaySource == 'master' && Selector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : PlaySource)),
-            ((mc_24w09a_above && Selector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : Selector),
-            ((CorrectedCoordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : (CorrectedCoordinate == '' ? '~ ~ ~' : CorrectedCoordinate)),
-            ((MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : MaxVolume),
-            ((Pitch == 1 && MinVolume == 0) ? '' : Pitch),
-            (MinVolume == 0 ? '' : MinVolume),
-          ].join(' ')
-        )
+      ? ([
+          (SlashSwitch ? '/' : '') + 'playsound',
+          selectedSound,
+          (!mc_15w49a_above ? undefined : ((mc_24w09a_above && PlaySource == 'master' && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : PlaySource)),
+          ((mc_24w09a_above && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : CorrectedSelector),
+          ((CorrectedCoordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : (CorrectedCoordinate == '' ? '~ ~ ~' : CorrectedCoordinate)),
+          ((MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : MaxVolume),
+          ((Pitch == 1 && MinVolume == 0) ? '' : Pitch),
+          (MinVolume == 0 ? '' : MinVolume),
+        ].join(' '))
       : ''
-  }, [Coordinate, selectedSound, SlashSwitch, mc_15w49a_above, mc_24w09a_above, PlaySource, Selector, MaxVolume, Pitch, MinVolume])
+  }, [Coordinate, selectedSound, SlashSwitch, mc_15w49a_above, mc_24w09a_above, PlaySource, Selector, MaxVolume, Pitch, MinVolume, SelectorX0])
 
   const isPlaying = false
 
@@ -346,7 +346,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label={t('this_dimension_only')} placement="bottom" animation="top" maxW="full">
-              <Toggle disabled onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
+              <Toggle onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
             </Tooltip>
           </Flex>
 
