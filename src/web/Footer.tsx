@@ -8,17 +8,15 @@ import { SoundName, updateSelectedSound } from '../store/fetchSlice'
 import { isAboveVersion } from '../types/VersionInfo'
 import { useAudioPlay } from './hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
+import { PitchInput } from './PitchInput'
+import { secondsToString } from '../utils/NumberUtil'
 
 const { myAPI } = window
-
-type PitchScale = {
-  name: string
-  value: number
-}
 
 export const Footer = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
+  const AudioController = useAudioPlay()
 
   const PlaySourceItems: SelectItem[] = [
 
@@ -38,45 +36,6 @@ export const Footer = () => {
     },
   ]
 
-  const PitchScale: PitchScale[] = [
-    { name: 'f#0', value: 0.5 },
-    { name: 'g0', value: 0.53 },
-    { name: 'g#0', value: 0.56 },
-    { name: 'a0', value: 0.59 },
-    { name: 'a#0', value: 0.63 },
-    { name: 'b0', value: 0.67 },
-    { name: 'c1', value: 0.71 },
-    { name: 'c#1', value: 0.75 },
-    { name: 'd1', value: 0.79 },
-    { name: 'd#1', value: 0.84 },
-    { name: 'e1', value: 0.89 },
-    { name: 'f1', value: 0.94 },
-    { name: 'f#1', value: 1.0 },
-    { name: 'g1', value: 1.06 },
-    { name: 'g#1', value: 1.12 },
-    { name: 'a1', value: 1.19 },
-    { name: 'a#1', value: 1.26 },
-    { name: 'b1', value: 1.33 },
-    { name: 'c2', value: 1.41 },
-    { name: 'c#2', value: 1.5 },
-    { name: 'd2', value: 1.59 },
-    { name: 'd#2', value: 1.68 },
-    { name: 'e2', value: 1.78 },
-    { name: 'f2', value: 1.89 },
-    { name: 'f#2', value: 2.0 },
-  ]
-
-  const PitchScaleItems: SelectItem[] = PitchScale.map((item) => {
-    return { label: t(item.name), value: item.name, id: item.name }
-  })
-
-  const timeToString = (sec: number, max_sec: number | undefined) => {
-    const max_hour_check = max_sec ? Math.floor((max_sec / 60) / 60) : 0
-    const hour_num = Math.floor((sec / 60) / 60)
-
-    return (max_hour_check < 1 ? '' : ('0' + hour_num).slice(-2) + ':') + ('0' + Math.floor(sec / 60) % 60).slice(-2) + ':' + ('0' + Math.floor(sec % 60)).slice(-2)
-  }
-
   const { onCopy, hasCopied } = useClipboard()
 
   // スラッシュスイッチ
@@ -87,26 +46,7 @@ export const Footer = () => {
   const [PlaySourceDisable, { on: onPlaySourceDisable, off: offPlaySourceDisable }] = useBoolean(false)
 
   // ピッチ関係
-  const [Pitch, setPitch] = useState(1)
-  const [SelectedPitchScale, setSelectedPitchScale] = useState('f#1')
-  const onChangePitchSlider = (value: number) => {
-    setPitch(value)
-
-    const scale: string = PitchScale.find(e => e.value == value)?.name ?? ''
-    if (scale != '') setSelectedPitchScale(scale)
-  }
-  const onChangePitchInput = (e: string, value: number) => {
-    setPitch(value)
-
-    const scale: string = PitchScale.find(e => e.value == value)?.name ?? ''
-    if (scale != '') setSelectedPitchScale(scale)
-  }
-  const onChangePitchScaleMenu = (scale: string) => {
-    setSelectedPitchScale(scale)
-
-    const pitch: number = PitchScale.find(e => e.name == scale)?.value ?? 1
-    setPitch(pitch)
-  }
+  const [pitch, setPitch] = useState('1')
 
   // 座標指定関系
   const [Coordinate, setCoordinate] = useState('')
@@ -226,35 +166,40 @@ export const Footer = () => {
       ? ([
           (SlashSwitch ? '/' : '') + 'playsound',
           selectedSound,
-          (!mc_15w49a_above ? undefined : ((mc_24w09a_above && PlaySource == 'master' && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : PlaySource)),
-          ((mc_24w09a_above && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : CorrectedSelector),
-          ((CorrectedCoordinate == '' && MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : (CorrectedCoordinate == '' ? '~ ~ ~' : CorrectedCoordinate)),
-          ((MaxVolume == 1 && Pitch == 1 && MinVolume == 0) ? '' : MaxVolume),
-          ((Pitch == 1 && MinVolume == 0) ? '' : Pitch),
+          (!mc_15w49a_above ? undefined : ((mc_24w09a_above && PlaySource == 'master' && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : PlaySource)),
+          ((mc_24w09a_above && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : CorrectedSelector),
+          ((CorrectedCoordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : (CorrectedCoordinate == '' ? '~ ~ ~' : CorrectedCoordinate)),
+          ((MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : MaxVolume),
+          ((pitch == '1' && MinVolume == 0) ? '' : pitch),
           (MinVolume == 0 ? '' : MinVolume),
         ].join(' '))
       : ''
-  }, [Coordinate, selectedSound, SlashSwitch, mc_15w49a_above, mc_24w09a_above, PlaySource, Selector, MaxVolume, Pitch, MinVolume, SelectorX0])
-
-  const isPlaying = false
-
-  const AudioController = useAudioPlay()
+  }, [Coordinate, selectedSound, SlashSwitch, mc_15w49a_above, mc_24w09a_above, PlaySource, Selector, MaxVolume, pitch, MinVolume, SelectorX0])
 
   useEffect(() => {
     (async () => {
-      const targetSound = sounds.filter(sound => sound.id == selectedSound)[0]
-      const targetHashes = targetSound?.sounds ?? []
-      const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
-      try {
-        const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
-        // AudioController.commands.setSound(selectedSound, hash)
-        // AudioController.commands.play()
-      }
-      catch (e: unknown) {
-        alert(e)
+      if (selectedSound) {
+        const targetSound = sounds.filter(sound => sound.id == selectedSound)[0]
+        const targetHashes = targetSound?.sounds ?? []
+        const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
+        try {
+          const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
+          await AudioController.commands.setSound(selectedSound, hash)
+          AudioController.commands.play()
+        }
+        catch (e: unknown) {
+          alert(e)
+        }
       }
     })()
   }, [AudioController.commands, selectedSound, sounds])
+
+  const onChangePitch = useCallback((value: string) => {
+    setPitch(value)
+    if (selectedSound) {
+      AudioController.commands.setSpeed(selectedSound, parseInt(value, 10))
+    }
+  }, [AudioController.commands, selectedSound])
 
   // 選択バージョンに変化があったとき
   useEffect(() => {
@@ -271,31 +216,30 @@ export const Footer = () => {
         <Box w="full" bg="footerBackground" padding={2} borderTop="1px solid" borderColor="inherit" style={{ userSelect: 'none' }}>
 
           <Box alignContent="center" paddingX={1}>
-            <Slider step={0.01} defaultValue={0} min={0} max={100} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }} />
+            <Slider
+              step={0.01} defaultValue={0} min={0} max={100}
+              value={AudioController.contexts.head ? AudioController.contexts.head.playbackTime * 100 / AudioController.contexts.head.maxTime : 0}
+              filledTrackColor="primary" thumbColor="primary" trackColor="gray.200"
+              thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }}
+            />
           </Box>
 
           <Flex w="full" marginTop={2}>
-            <IconButton icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
+            <IconButton onClick={AudioController.commands.stop} icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
             <Spacer maxW={1} />
-            <IconButton icon={isPlaying ? <FaPause size={20} /> : <FaPlay size={20} />} variant="ghost" />
+            <IconButton
+              onClick={AudioController.context.isSomePlaying ? AudioController.commands.pause : AudioController.commands.play}
+              icon={AudioController.context.isSomePlaying ? <FaPause size={20} /> : <FaPlay size={20} />}
+              variant="ghost"
+            />
             <Spacer maxW={1} />
             <Text alignContent="center" paddingX={1} style={{ userSelect: 'none' }} fontSize="lg">
-              {timeToString(0, 100)}
-              {' '}
-              /
-              {' '}
-              {timeToString(100, 100)}
+              {secondsToString(AudioController.contexts.head?.playbackTime ?? 0, 100)}
+              {' / '}
+              {secondsToString(AudioController.contexts.head?.maxTime ?? 0, 100)}
             </Text>
             <Spacer />
-            <Slider onChange={onChangePitchSlider} value={Pitch} w={32} h={10} step={0.01} min={0.5} max={2} filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }} />
-            <Spacer maxW={3} />
-            <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
-              <NumberInput onChange={onChangePitchInput} value={Pitch} w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2} />
-            </Tooltip>
-            <Spacer maxW={1} />
-            <Tooltip label={t('pitch_scale')} placement="bottom" animation="top">
-              <Select onChange={onChangePitchScaleMenu} items={PitchScaleItems} value={SelectedPitchScale} placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
-            </Tooltip>
+            <PitchInput pitch={pitch} onChange={onChangePitch} />
           </Flex>
 
           <Flex w="full" marginTop={1}>
