@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react'
+import { useCallback, useState, useMemo, useEffect } from 'react'
 import { mapEntries } from '../../utils/ObjectUtil'
 
 type GlobalContext = {
@@ -42,17 +42,17 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
       return { absn, gc, ctx }
     }))
   }, [setAudioState])
-  const startPlayingWatcher = useCallback(() => {
-    if (playingWatcher) return
+  useEffect(() => {
+    if (playingWatcher || Object.values(audioState).every(({ ctx }) => !ctx.isPlaying)) return
     const watcher = setInterval(syncAudioContext, 5)
     setPlayingWatcher(watcher)
-  }, [playingWatcher, setPlayingWatcher, syncAudioContext])
-  const stopPlayingWatcher = useCallback(() => {
-    if (playingWatcher) {
+  }, [audioState, playingWatcher, syncAudioContext])
+  useEffect(() => {
+    if (playingWatcher && Object.values(audioState).every(({ ctx }) => !ctx.isPlaying)) {
       clearInterval(playingWatcher)
       setPlayingWatcher(undefined)
     }
-  }, [playingWatcher, setPlayingWatcher])
+  }, [audioState, playingWatcher, setPlayingWatcher])
 
   // MARK: play
   const play = useCallback(() => {
@@ -62,16 +62,12 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
         absn.start(0, ctx.playTime)
         absn.onended = () => {
           ctx.isPlaying = false
-          setAudioState(prev2 => ({ ...prev2, [k]: { absn, gc: prev2[k].gc, ctx: { ...prev2[k].ctx, isPlaying: false, playTime: ctx.maxTime } } }))
-          if (Object.values(prev).every(({ ctx }) => !ctx.isPlaying)) {
-            stopPlayingWatcher()
-          }
+          setAudioState(prev2 => (console.log('onended', k, prev2[k], prev2), { ...prev2, [k]: { absn, gc: prev2[k].gc, ctx: { ...prev2[k].ctx, isPlaying: false, playTime: ctx.maxTime } } }))
         }
       })
       return newState
     })
-    startPlayingWatcher()
-  }, [startPlayingWatcher, stopPlayingWatcher])
+  }, [])
 
   // MARK: pause
   const pause = useCallback(() => {
@@ -86,18 +82,18 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
       })
       return newState
     })
-    stopPlayingWatcher()
-  }, [setAudioState, stopPlayingWatcher])
+  }, [])
 
   // MARK: stop
   const stop = useCallback(() => {
-    Object.entries(audioState).forEach(([, { absn }]) => {
-      absn.stop()
-      absn.onended = null
+    setAudioState((prev) => {
+      Object.entries(prev).forEach(([, { absn }]) => {
+        absn.onended = null
+        absn.stop()
+      })
+      return mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: false, isPaused: false, playTime: 0 } }))
     })
-    setAudioState(prev => mapEntries(prev, ({ absn, gc, ctx }) => ({ absn, gc, ctx: { ...ctx, isPlaying: false, isPaused: false, playTime: 0 } })))
-    stopPlayingWatcher()
-  }, [audioState, setAudioState, stopPlayingWatcher])
+  }, [setAudioState])
 
   // MARK: createAudioContext
   const createAudioContext = useCallback(async (uri: string, speed: number = 1, volume: number = 1): Promise<[AudioBufferSourceNode, GainNode]> => {
