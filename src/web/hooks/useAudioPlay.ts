@@ -16,6 +16,7 @@ type Context = {
 type InternalContext = {
   absn: AudioBufferSourceNode
   gc: GainNode
+  playTime: number
 }
 
 type Commands = {
@@ -41,7 +42,10 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const syncAudioContext = useCallback(() => {
     setAudioState(prev => mapEntries(prev, (ctx) => {
       if (ctx.isPlaying) {
-        return { ...ctx, playbackTime: ctx.absn.context.currentTime }
+        if (ctx.absn.context.currentTime - ctx.playTime > ctx.maxTime) {
+          return { ...ctx, isPlaying: false }
+        }
+        return { ...ctx, playbackTime: ctx.absn.context.currentTime - ctx.playTime }
       }
       return ctx
     }))
@@ -61,14 +65,13 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   // MARK: play
   const play = useCallback(() => {
     setAudioState((prev) => {
-      const newState = mapEntries(prev, ctx => ({ ...ctx, isPlaying: true }))
-      Object.entries(newState).forEach(([k, { absn, playbackTime, maxTime }]) => {
-        absn.start(0, playbackTime)
+      Object.entries(prev).forEach(([k, { absn, playTime, playbackTime, maxTime }]) => {
+        absn.start(0, playTime + playbackTime)
         absn.onended = () => {
           setAudioState(prev2 => ({ ...prev2, [k]: { ...prev2[k], isPlaying: false, playbackTime: maxTime } }))
         }
       })
-      return newState
+      return mapEntries(prev, ctx => ({ ...ctx, isPlaying: true, playTime: ctx.absn.context.currentTime }))
     })
   }, [])
 
@@ -126,7 +129,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const setSound = useCallback(async (soundKey: string, uri: string, speed: number = 1, volume: number = 1) => {
     stop()
     const [absn, gainController] = await createAudioContext(uri, speed, volume)
-    const context = { absn, gc: gainController, ...createContext({ maxTime: absn.buffer!.duration, volume, speed }) }
+    const context = { absn, gc: gainController, playTime: 0, ...createContext({ maxTime: absn.buffer!.duration, volume, speed }) }
     setAudioState({ [soundKey]: context })
   }, [createAudioContext, createContext, stop])
 
@@ -136,7 +139,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
     const audioContexts = await Promise.all(Object.entries(sounds).map(async ([k, v]) => {
       const [uri, speed, volume] = Array.isArray(v) ? v : [v]
       const [absn, gainController] = await createAudioContext(uri, speed, volume)
-      const context = { absn, gc: gainController, ...createContext({ maxTime: absn.buffer!.duration, volume, speed }) }
+      const context = { absn, gc: gainController, playTime: 0, ...createContext({ maxTime: absn.buffer!.duration, volume, speed }) }
       return [k, context]
     }))
     setAudioState(Object.fromEntries(audioContexts))
