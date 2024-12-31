@@ -124,19 +124,21 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
 
   // MARK: setSound
   const setSound = useCallback(async (soundKey: string, uri: string, speed: number = 1, volume: number = 1) => {
+    stop()
     const [absn, gainController] = await createAudioContext(uri, speed, volume)
     setAudioState({ [soundKey]: { absn, gc: gainController, ctx: createContext({ maxTime: absn.buffer!.duration, volume, speed }) } })
-  }, [createAudioContext, createContext])
+  }, [createAudioContext, createContext, stop])
 
   // MARK: setSounds
   const setSounds = useCallback(async (sounds: { [k: string]: string | [uri: string, speed?: number, volume?: number] }) => {
+    stop()
     const audioContexts = await Promise.all(Object.entries(sounds).map(async ([k, v]) => {
       const [uri, speed, volume] = Array.isArray(v) ? v : [v]
       const [absn, gainController] = await createAudioContext(uri, speed, volume)
       return [k, { absn, gc: gainController, ctx: createContext({ maxTime: absn.buffer!.duration, volume, speed }) }]
     }))
     setAudioState(Object.fromEntries(audioContexts))
-  }, [createAudioContext, createContext])
+  }, [createAudioContext, createContext, stop])
 
   // MARK: setVolume
   const setVolume = useCallback((soundKey: string, volume: number) => {
