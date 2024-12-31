@@ -1,16 +1,44 @@
-import React from 'react'
+import './App.css'
+import React, { useEffect } from 'react'
 import { VersionSelector } from './VersionSelector'
 import { SoundSelector } from './SoundSelector'
 import { ThemeChange } from './ThemeChange'
 import { Footer } from './Footer'
-import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/react'
-
-import './App.css'
-// import { Configuration } from './Configuration'
+import { Configuration } from './Configuration'
 import { VolumeChange } from './VolumeChange'
 import { LanguageChange } from './LanguageChange'
+import { useAppSelector } from '../store/_store'
+import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/react'
+
+const { myAPI } = window
 
 export const App = () => {
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion)?.raw
+  const soundRatings = useAppSelector(state => state.fetch.soundRatings)
+  const volumeSlider = useAppSelector(state => state.fetch.volumeSlider)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // const loaded = await myAPI.load()
+      }
+      catch (e: unknown) {
+        alert(e)
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await myAPI.save(JSON.stringify({ volume: volumeSlider }), JSON.stringify(soundRatings), JSON.stringify({ version: targetVersion }))
+      }
+      catch (e: unknown) {
+        alert(e)
+      }
+    })()
+  }, [soundRatings, targetVersion, volumeSlider])
+
   const { colorMode } = useColorMode()
 
   const style = document.createElement('style')

@@ -101,7 +101,7 @@ export const initIpcMain = (): void => {
     return file
   })
 
-  ipcMain.handle('save', (event, str: string) => {
-    console.log(`save: ${str}`)
+  ipcMain.handle('save', (event, Volume: string, SoundRatings: string, TargetVersion: string) => {
+
   })
 }
