@@ -98,17 +98,17 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Con
   const createAudioContext = useCallback(async (uri: string, speed: number = 1, volume: number = 1): Promise<[AudioBufferSourceNode, GainNode]> => {
     const res = await fetch(uri)
     const buffer = await res.arrayBuffer()
-    const gainController = audioContext.createGain()
 
     const audioBuffer = await audioContext.decodeAudioData(buffer)
 
     const absn = audioContext.createBufferSource()
     absn.buffer = audioBuffer
-    absn.connect(audioContext.destination)
     absn.playbackRate.value = speed
+    absn.connect(audioContext.destination)
 
-    gainController.connect(audioContext.destination)
+    const gainController = audioContext.createGain()
     gainController.gain.value = volume
+    gainController.connect(audioContext.destination)
 
     return [absn, gainController]
   }, [audioContext])
