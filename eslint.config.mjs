@@ -22,6 +22,7 @@ export default [
       'no-import-assign': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
       'react-hooks/exhaustive-deps': 'error',
+      '@stylistic/jsx-max-props-per-line': 'off',
     },
   },
 ]
