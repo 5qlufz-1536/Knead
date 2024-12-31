@@ -1,6 +1,10 @@
 import { useCallback, useState, useMemo } from 'react'
 import { mapEntries } from '../../utils/ObjectUtil'
 
+type GlobalContext = {
+  isSomePlaying: boolean
+}
+
 type Context = {
   isPlaying: boolean
   isPaused?: boolean
@@ -23,7 +27,7 @@ type Commands = {
 }
 
 type AudioState = { [k: string]: { absn: AudioBufferSourceNode, gc: GainNode, ctx: Context } }
-export const useAudioPlay = (): { contexts: { [k: string]: Context }, commands: Commands } => {
+export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Context } & { [k: string]: Context }, commands: Commands } => {
   const audioContext = useMemo(() => new AudioContext(), [])
 
   const [audioState, setAudioState] = useState<AudioState>({})
@@ -166,12 +170,18 @@ export const useAudioPlay = (): { contexts: { [k: string]: Context }, commands: 
     })
   }, [])
 
-  const contexts = useMemo(() => mapEntries(audioState, ({ ctx }) => ctx), [audioState])
+  const globalContext = useMemo(() => ({ isSomePlaying: Object.values(audioState).some(({ ctx }) => ctx.isPlaying) }), [audioState])
+
+  const contexts = useMemo(() => {
+    const contexts = mapEntries(audioState, ({ ctx }) => ctx)
+    const head = contexts[Object.keys(contexts)[0]]
+    return { head, ...contexts }
+  }, [audioState])
 
   const commands = useMemo(
     () => ({ play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlayTime }),
     [play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlayTime],
   )
 
-  return { contexts, commands }
+  return { context: globalContext, contexts, commands }
 }
