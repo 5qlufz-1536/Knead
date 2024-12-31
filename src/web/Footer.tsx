@@ -24,21 +24,21 @@ export const Footer = () => {
   const targetVersion = useAppSelector(state => state.fetch.targetVersion)
   const appVolume = useAppSelector(state => state.fetch.appVolume)
 
-  const mc_24w09a_above = ([
+  const isTargetVersion24w09aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 20, patch: 5 },
     { kind: 'release-candidate', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
     { kind: 'pre-release', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
     { kind: 'snapshot', raw: '', year: 24, releaseNumber: 9, letter: '' },
   ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
 
-  const mc_17w45a_above = ([
+  const isTargetVersion17w45aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 13, patch: 0 },
     { kind: 'release-candidate', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
     { kind: 'pre-release', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
     { kind: 'snapshot', raw: '', year: 17, releaseNumber: 45, letter: '' },
   ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
 
-  const mc_15w49a_above = ([
+  const isTargetVersion15w49aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 9, patch: 0 },
     { kind: 'release-candidate', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
     { kind: 'pre-release', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
@@ -70,19 +70,31 @@ export const Footer = () => {
 
   // サウンドを流すターゲット(masterとか)
   const [PlaySource, setPlaySource] = useState('master')
-  const PlaySourceDisable = mc_15w49a_above
 
   // ピッチ関係
   const [pitch, setPitch] = useState('1')
-  const onChangePitch = useCallback((value: string) => {
-    setPitch(value)
-    if (selectedSound) AudioController.commands.setSpeed(selectedSound, parseFloat(value))
-  }, [AudioController.commands, selectedSound])
 
   // 座標指定関系
   const coordinateChars = ['~', '^']
   const [Coordinate, setCoordinate] = useState('')
   const [CoordinateError, { on: onCoordinateError, off: offCoordinateError }] = useBoolean(false)
+
+  // セレクター関系
+  const [Selector, setSelector] = useState('@a')
+  const [SelectorError, { on: onSelectorError, off: offSelectorError }] = useBoolean(false)
+  const [SelectorX0, { toggle: toggleSelectorX0 }] = useBoolean(true)
+
+  // ボリューム(生成)関係
+  const [MaxVolume, setMaxVolume] = useState(1)
+  const [MinVolume, setMinVolume] = useState(0)
+  const onChangeMaxVolumeInput = (_: string, value: number) => setMaxVolume(value)
+  const onChangeMinVolumeInput = (_: string, value: number) => setMinVolume(value)
+
+  const onChangePitch = useCallback((value: string) => {
+    setPitch(value)
+    if (selectedSound) AudioController.commands.setSpeed(selectedSound, parseFloat(value))
+  }, [AudioController.commands, selectedSound])
+
   const onChangeCoordinate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const str = e.target.value
 
@@ -103,10 +115,6 @@ export const Footer = () => {
   const onClickCaret = () => onChangeCoordinateChar('^')
   const onClickRemoveSymbol = () => setCoordinate('')
 
-  // セレクター関系
-  const [Selector, setSelector] = useState('@a')
-  const [SelectorError, { on: onSelectorError, off: offSelectorError }] = useBoolean(false)
-  const [SelectorX0, { toggle: toggleSelectorX0 }] = useBoolean(true)
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     // スペースを削除した文字列を入手
     // const selector = e.target.value.replaceAll(" ", "")
@@ -116,12 +124,6 @@ export const Footer = () => {
     // offSelectorError()
     setSelector(e.target.value)
   }, [setSelector])
-
-  // ボリューム(生成)関係
-  const [MaxVolume, setMaxVolume] = useState(1)
-  const [MinVolume, setMinVolume] = useState(0)
-  const onChangeMaxVolumeInput = (_: string, value: number) => setMaxVolume(value)
-  const onChangeMinVolumeInput = (_: string, value: number) => setMinVolume(value)
 
   // コマンド生成
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
@@ -143,15 +145,15 @@ export const Footer = () => {
       ? ([
           (SlashSwitch ? '/' : '') + 'playsound',
           selectedSound,
-          (!mc_15w49a_above ? undefined : ((mc_24w09a_above && PlaySource == 'master' && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : PlaySource)),
-          ((mc_24w09a_above && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : CorrectedSelector),
+          (!isTargetVersion15w49aOrHigher ? undefined : ((isTargetVersion24w09aOrHigher && PlaySource == 'master' && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : PlaySource)),
+          ((isTargetVersion24w09aOrHigher && CorrectedSelector == '@s' && Coordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : CorrectedSelector),
           ((CorrectedCoordinate == '' && MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : (CorrectedCoordinate == '' ? '~ ~ ~' : CorrectedCoordinate)),
           ((MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : MaxVolume),
           ((pitch == '1' && MinVolume == 0) ? '' : pitch),
           (MinVolume == 0 ? '' : MinVolume),
         ].join(' '))
       : ''
-  }, [Coordinate, selectedSound, SlashSwitch, mc_15w49a_above, mc_24w09a_above, PlaySource, Selector, MaxVolume, pitch, MinVolume, SelectorX0])
+  }, [Coordinate, selectedSound, SlashSwitch, isTargetVersion15w49aOrHigher, isTargetVersion24w09aOrHigher, PlaySource, Selector, MaxVolume, pitch, MinVolume, SelectorX0])
 
   useEffect(() => {
     (async () => {
@@ -170,13 +172,6 @@ export const Footer = () => {
       }
     })()
   }, [AudioController.commands, selectedSound, sounds])
-
-  // 選択バージョンに変化があったとき
-  useEffect(() => {
-    // 選択しているサウンドを削除
-    dispatch(updateSelectedSound({ id: '' }))
-    // 一定バージョン以上ですよフラグによってSourceの選択を無効化する
-  }, [dispatch])
 
   return (
     <>
@@ -216,7 +211,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('play_source')} placement="bottom" animation="top">
-              <Select disabled={PlaySourceDisable} items={PlaySourceItems} onChange={setPlaySource} defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
+              <Select disabled={!isTargetVersion15w49aOrHigher} items={PlaySourceItems} onChange={setPlaySource} defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
             <Spacer />
             <Tooltip label={t('max_volume')} placement="bottom" animation="top">
