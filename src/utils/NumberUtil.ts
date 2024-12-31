@@ -4,7 +4,7 @@ export const secondsToString = (sec: number, max_sec: number | undefined) => {
   const maxHourCheck = max_sec ? Math.floor(max_sec / 3600) : 0
   const hours = Math.floor(sec / 3600)
   const minutes = Math.floor((sec % 3600) / 60)
-  const seconds = sec % 60
+  const seconds = Math.floor(sec % 60)
 
   return (maxHourCheck < 1 ? '' : formatTimeUnit(hours) + ':') + formatTimeUnit(minutes) + ':' + formatTimeUnit(seconds)
 }

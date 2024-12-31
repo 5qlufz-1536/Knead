@@ -197,7 +197,7 @@ export const Footer = () => {
   const onChangePitch = useCallback((value: string) => {
     setPitch(value)
     if (selectedSound) {
-      AudioController.commands.setSpeed(selectedSound, parseInt(value, 10))
+      AudioController.commands.setSpeed(selectedSound, parseFloat(value))
     }
   }, [AudioController.commands, selectedSound])
 

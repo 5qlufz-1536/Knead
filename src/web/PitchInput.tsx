@@ -42,7 +42,7 @@ const pitchScales: PitchScale[] = [
 ]
 
 export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element => {
-  const pitchScaleItems: SelectItem[] = pitchScales.map(item => ({ label: t(item.name), value: item.name }))
+  const pitchScaleItems: SelectItem[] = pitchScales.map(item => ({ label: t(item.name), value: item.value }))
 
   const selectedPitchScale = useMemo(() => pitchScales.find(item => item.value === pitch)?.value ?? unsupportedPitch, [pitch])
 
@@ -56,7 +56,7 @@ export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element =>
   return (
     <>
       <Slider
-        onChange={onChangePitchSlider} value={parseInt(pitch, 10)}
+        onChange={onChangePitchSlider} value={parseFloat(pitch)}
         w={32} h={10} step={0.01} min={0.5} max={2}
         filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200"
         thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }}
