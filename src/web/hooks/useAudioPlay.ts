@@ -37,6 +37,7 @@ type Commands = {
   play: () => void
   pause: () => void
   stop: () => void
+  restart: () => void
 
   setSound: (soundKey: string, uri: string, speed?: number, volume?: number) => Promise<void>
   setSounds: (sounds: { [k: string]: string | [uri: string, speed?: number, volume?: number] }) => Promise<void>
@@ -72,7 +73,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   const syncAudioContext = useCallback(() => {
     setAudioState(prev => mapEntries(prev, (ctx) => {
       if (ctx.isPlaying) {
-        return { ...ctx, playbackTime: ctx.absn.context.currentTime - ctx.playTime }
+        return { ...ctx, playbackTime: (ctx.absn.context.currentTime - ctx.playTime) * ctx.speed }
       }
       return ctx
     }))
@@ -140,6 +141,18 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
     }))
   }, [setAudioState])
 
+  // MARK: restart
+  const restart = useCallback(() => {
+    setAudioState(prev => mapEntries(prev, (ctx) => {
+      if (!ctx.isPlaying) return { ...ctx, playbackTime: 0, playTime: 0, pauseTime: undefined }
+
+      stop()
+      play()
+
+      return { ...ctx, isPlaying: true, playTime: 0, pauseTime: ctx.absn.context.currentTime, playbackTime: 0 }
+    }))
+  }, [stop, play])
+
   // MARK: createAudioBuffer
   const createAudioBuffer = useCallback(async (uri: string): Promise<AudioBuffer> => {
     const res = await fetch(uri)
@@ -188,8 +201,17 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   // MARK: setSpeed
   const setSpeed = useCallback((soundKey: string, speed: number) => {
     setAudioState((prev) => {
+      const percent = prev[soundKey].playbackTime / prev[soundKey].maxTime
+      const playbackTime = (prev[soundKey].maxTime / prev[soundKey].speed) * percent
       if (prev[soundKey].isPlaying) {
         prev[soundKey].absn.playbackRate.value = speed
+        // これまで再生してきた時間を考慮してplayTimeが変化するようにする
+        console.log(playbackTime)
+        prev[soundKey].playTime = prev[soundKey].absn.context.currentTime - Math.abs(playbackTime)
+      }
+      else {
+        prev[soundKey].playTime -= Math.abs(playbackTime)
+        if (prev[soundKey].pauseTime) prev[soundKey].pauseTime -= Math.abs(playbackTime)
       }
       return { ...prev, [soundKey]: { ...prev[soundKey], speed } }
     })
@@ -199,11 +221,18 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   const setPlaybackTime = useCallback((soundKey: string, playbackTime: number) => {
     setAudioState((prev) => {
       if (prev[soundKey].isPlaying) {
-        stop()
+        // いろいろ試したけどこの書き方が一番思ってる挙動する 謎
+        const playTime = prev[soundKey].absn.context.currentTime - (playbackTime / (prev[soundKey].speed < 1 ? prev[soundKey].speed : 1))
+        pause()
+        // どうやったら少しだけ待ってくれるん？これ
+        setTimeout(() => {}, 100)
+        play()
+        return { ...prev, [soundKey]: { ...prev[soundKey], playTime, pauseTime: 0, playbackTime } }
       }
-      return { ...prev, [soundKey]: { ...prev[soundKey], playbackTime } }
+
+      return { ...prev, [soundKey]: { ...prev[soundKey], playTime: 0, pauseTime: playbackTime, playbackTime } }
     })
-  }, [stop])
+  }, [pause, play])
 
   const globalContext = useMemo(() => ({ isSomePlaying: Object.values(audioState).some(ctx => ctx.isPlaying) }), [audioState])
 
@@ -213,8 +242,8 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   }, [audioState])
 
   const commands = useMemo(
-    () => ({ play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime }),
-    [play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime],
+    () => ({ play, pause, stop, restart, setSound, setSounds, setVolume, setSpeed, setPlaybackTime }),
+    [play, pause, stop, restart, setSound, setSounds, setVolume, setSpeed, setPlaybackTime],
   )
 
   return { context: globalContext, contexts, commands }

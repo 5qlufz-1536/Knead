@@ -23,9 +23,9 @@ export const VolumeChange = () => {
   }
 
   return (
-    <Popover animation="top" closeOnButton={false} gutter={0}>
+    <Popover animation="top" closeOnButton={false} gutter={0} trigger="hover">
       <PopoverTrigger>
-        <IconButton icon={volumeIcon(volumeSlider, MuteSwitch)} variant="outline" />
+        <IconButton icon={volumeIcon(volumeSlider, MuteSwitch)} variant="outline" disableRipple={true} />
       </PopoverTrigger>
 
       <PopoverContent w={10}>

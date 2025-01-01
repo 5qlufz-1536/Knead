@@ -64,6 +64,8 @@ export const Footer = () => {
   ]
 
   const { onCopy, hasCopied } = useClipboard()
+  // シークバー
+  const [seekbar, setSeekbar] = useState(0)
 
   // スラッシュスイッチ
   const [SlashSwitch, { toggle: toggleSlash }] = useBoolean(false)
@@ -94,6 +96,19 @@ export const Footer = () => {
     setPitch(value)
     if (selectedSound) AudioController.commands.setSpeed(selectedSound, parseFloat(value))
   }, [AudioController.commands, selectedSound])
+
+  useEffect(() => {
+    if (!AudioController.contexts.head) return
+    setSeekbar(AudioController.contexts.head.playbackTime * 100 / (AudioController.contexts.head.maxTime))
+  }, [AudioController.contexts.head, pitch])
+
+  const onChangeSeekbar = (value: number) => {
+    const percent = value / 100
+    setSeekbar(value)
+    if (!AudioController.contexts.head) return
+    const playbackTime = ((AudioController.contexts.head?.maxTime ?? 0) / (parseFloat(pitch) >= 1 ? parseFloat(pitch) : 1)) * percent
+    AudioController.commands.setPlaybackTime(selectedSound, playbackTime)
+  }
 
   const onChangeCoordinate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const str = e.target.value
@@ -157,13 +172,17 @@ export const Footer = () => {
 
   useEffect(() => {
     (async () => {
+      await AudioController.commands.stop()
       if (selectedSound) {
         const targetSound = sounds.filter(sound => sound.id == selectedSound)[0]
         const targetHashes = targetSound?.sounds ?? []
         const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
+        let target_pitch = parseFloat(pitch) * sound.pitch
+        if (target_pitch < 0.5) target_pitch = 0.5
+        else if (target_pitch > 2) target_pitch = 2
         try {
           const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
-          await AudioController.commands.setSound(selectedSound, hash)
+          await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume)
           AudioController.commands.play()
         }
         catch (e: unknown) {
@@ -171,7 +190,8 @@ export const Footer = () => {
         }
       }
     })()
-  }, [AudioController.commands, selectedSound, sounds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [soundSelectDetector])
 
   return (
     <>
@@ -181,14 +201,15 @@ export const Footer = () => {
           <Box alignContent="center" paddingX={1}>
             <Slider
               step={0.01} defaultValue={0} min={0} max={100}
-              value={AudioController.contexts.head ? AudioController.contexts.head.playbackTime * 100 / AudioController.contexts.head.maxTime : 0}
+              value={seekbar}
               filledTrackColor="primary" thumbColor="primary" trackColor="gray.200"
               thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }}
+              onChange={onChangeSeekbar}
             />
           </Box>
 
           <Flex w="full" marginTop={2}>
-            <IconButton onClick={AudioController.commands.stop} icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
+            <IconButton onClick={AudioController.commands.restart} icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
             <Spacer maxW={1} />
             <IconButton
               onClick={AudioController.context.isSomePlaying ? AudioController.commands.pause : AudioController.commands.play}

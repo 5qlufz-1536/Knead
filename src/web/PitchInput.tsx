@@ -1,6 +1,7 @@
 import { Slider, Spacer, Tooltip, NumberInput, Select, SelectItem } from '@yamada-ui/react'
 import React, { JSX, useCallback, useMemo } from 'react'
 import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 type PitchInputProps = {
   pitch: string
@@ -26,7 +27,7 @@ const pitchScales: PitchScale[] = [
   { name: 'd#1', value: '0.84' },
   { name: 'e1', value: '0.89' },
   { name: 'f1', value: '0.94' },
-  { name: 'f#1', value: '1.0' },
+  { name: 'f#1', value: '1' },
   { name: 'g1', value: '1.06' },
   { name: 'g#1', value: '1.12' },
   { name: 'a1', value: '1.19' },
@@ -38,7 +39,7 @@ const pitchScales: PitchScale[] = [
   { name: 'd#2', value: '1.68' },
   { name: 'e2', value: '1.78' },
   { name: 'f2', value: '1.89' },
-  { name: 'f#2', value: '2.0' },
+  { name: 'f#2', value: '2' },
 ]
 
 export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element => {

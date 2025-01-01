@@ -28,16 +28,16 @@ export const App = () => {
     })()
   }, [])
 
-  useEffect(() => {
-    (async () => {
-      try {
-        await myAPI.save(JSON.stringify({ volume: volumeSlider }), JSON.stringify(soundRatings), JSON.stringify({ version: targetVersion }))
-      }
-      catch (e: unknown) {
-        alert(e)
-      }
-    })()
-  }, [soundRatings, targetVersion, volumeSlider])
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       await myAPI.save(JSON.stringify({ volume: volumeSlider }), JSON.stringify(soundRatings), JSON.stringify({ version: targetVersion }))
+  //     }
+  //     catch (e: unknown) {
+  //       alert(e)
+  //     }
+  //   })()
+  // }, [soundRatings, targetVersion, volumeSlider])
 
   const { colorMode } = useColorMode()
 
