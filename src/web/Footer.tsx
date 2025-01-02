@@ -123,12 +123,25 @@ export const Footer = () => {
     setCoordinate((prev) => {
       const splitCoordinate: number[] = coordinateChars.reduce((prev, char) => prev.replaceAll(char, ''), prev).split(' ').map(v => Number(v))
       const formattedCoordinates = splitCoordinate.map(v => v != 0 && !Number.isNaN(v) ? v?.toString() : '')
-      return `${newCoordinateChar}${formattedCoordinates[0]} ${newCoordinateChar}${formattedCoordinates[1]} ${newCoordinateChar}${formattedCoordinates[2]}`
+      // シンボル削除時
+      if (newCoordinateChar === '') {
+        // 0でない数値が1つ以上あるか
+        const HasIndexes: boolean = splitCoordinate.map(v => v != 0).some(v => v)
+        // なければ何もない文字列を返す
+        if (!HasIndexes) return ''
+        // 3回ループ
+        const returnCoordinate: string[] = []
+        for (let i = 0; i <= 2; i++) {
+          returnCoordinate.push((typeof splitCoordinate[i] === 'number' && splitCoordinate[i] != 0 && splitCoordinate[i].toString() != 'NaN') ? splitCoordinate[i].toString() : (HasIndexes ? '0' : ''))
+        }
+        return returnCoordinate.join(' ')
+      }
+      return `${newCoordinateChar}${formattedCoordinates[0] ?? ''} ${newCoordinateChar}${formattedCoordinates[1] ?? ''} ${newCoordinateChar}${formattedCoordinates[2] ?? ''}`
     })
   }
   const onClickTilde = () => onChangeCoordinateChar('~')
   const onClickCaret = () => onChangeCoordinateChar('^')
-  const onClickRemoveSymbol = () => setCoordinate('')
+  const onClickRemoveSymbol = () => onChangeCoordinateChar('')
 
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     // スペースを削除した文字列を入手
