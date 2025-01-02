@@ -6,7 +6,7 @@ import { useAddDispatch, useAppSelector } from '../store/_store'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SoundName, updateSelectedSound } from '../store/fetchSlice'
 import { isAboveVersion, VersionInfoType } from '../types/VersionInfo'
-import { useAudioPlay } from './hooks/useAudioPlay'
+import { useAudioPlay } from '../hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
 import { PitchInput } from './PitchInput'
 import { secondsToString } from '../utils/NumberUtil'
@@ -182,7 +182,7 @@ export const Footer = () => {
         else if (target_pitch > 2) target_pitch = 2
         try {
           const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
-          await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume)
+          await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume - 1)
           AudioController.commands.play()
         }
         catch (e: unknown) {
@@ -192,6 +192,11 @@ export const Footer = () => {
     })()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [soundSelectDetector])
+
+  useEffect(() => {
+    if (selectedSound) AudioController.commands.setVolume(selectedSound, appVolume - 100)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appVolume])
 
   return (
     <>
@@ -209,7 +214,7 @@ export const Footer = () => {
           </Box>
 
           <Flex w="full" marginTop={2}>
-            <IconButton onClick={AudioController.commands.restart} icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
+            <IconButton onClick={() => dispatch(updateSelectedSound({ id: selectedSound }))} icon={<FaArrowRotateLeft size={20} />} variant="ghost" />
             <Spacer maxW={1} />
             <IconButton
               onClick={AudioController.context.isSomePlaying ? AudioController.commands.pause : AudioController.commands.play}

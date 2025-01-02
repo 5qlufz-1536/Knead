@@ -1,5 +1,5 @@
 import { useCallback, useState, useMemo, useEffect } from 'react'
-import { mapEntries } from '../../utils/ObjectUtil'
+import { mapEntries } from '../utils/ObjectUtil'
 
 type GlobalContext = {
   isSomePlaying: boolean
@@ -98,8 +98,8 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
     absn.connect(audioContext.destination)
 
     const gainController = audioContext.createGain()
-    gainController.gain.value = volume
     gainController.connect(audioContext.destination)
+    gainController.gain.value = volume
 
     return [absn, gainController]
   }, [audioContext])
@@ -221,11 +221,10 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   const setPlaybackTime = useCallback((soundKey: string, playbackTime: number) => {
     setAudioState((prev) => {
       if (prev[soundKey].isPlaying) {
-        // いろいろ試したけどこの書き方が一番思ってる挙動する 謎
+        // いろいろ試したけどこれが一番思ってる挙動する 謎
         const playTime = prev[soundKey].absn.context.currentTime - (playbackTime / (prev[soundKey].speed < 1 ? prev[soundKey].speed : 1))
         pause()
-        // どうやったら少しだけ待ってくれるん？これ
-        setTimeout(() => {}, 100)
+        // ここで少しだけ待ってもらうような処理書いたほうがバグ発生抑えれる？ でも待つ処理がわからん
         play()
         return { ...prev, [soundKey]: { ...prev[soundKey], playTime, pauseTime: 0, playbackTime } }
       }

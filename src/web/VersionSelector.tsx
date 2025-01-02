@@ -38,10 +38,11 @@ export const VersionSelector = () => {
     const pre_versions = versions.filter(v => v.kind === 'pre-release').sort(comparePreReleaseVersionInfo).reverse().map(v => v.raw)
     const rc_versions = versions.filter(v => v.kind === 'release-candidate').sort(compareReleaseCandidateVersionInfo).reverse().map(v => v.raw)
 
+    // 仮置きで最新バージョンが選択されるようにする
     const f = async () => {
       try {
         if (major_versions[0]) {
-          if (!targetVersion) return
+          if (!targetVersion) return dispatch(updateTargetVersion({ version: versions.find(v => v.raw == major_versions[0]) }))
           const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion)
           setSelectedVersion(targetVersion)
           dispatch(updateSoundList({ sounds }))
@@ -76,7 +77,7 @@ export const VersionSelector = () => {
         variant="filled"
         items={versionList}
         onChange={onChangeVersion}
-        maxW="xs"
+        maxW="sm"
         animation="top"
         value={SelectedVersion}
         gutter={0}

@@ -11,8 +11,8 @@ export const ThemeChange = () => {
   const isDarkColor = (internalColorMode == 'dark') ? 'primary' : ''
 
   return (
-    <Menu animation="top" gutter={0} trigger="hover">
-      <MenuButton as={IconButton} icon={<PaletteIcon fontSize="lg" />} variant="outline" disableRipple={true} />
+    <Menu animation="top" gutter={0}>
+      <MenuButton as={IconButton} icon={<PaletteIcon fontSize="lg" />} variant="outline" />
 
       <MenuList style={{ padding: 0, margin: 0 }}>
         <MenuItem

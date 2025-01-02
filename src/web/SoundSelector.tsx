@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAddDispatch, useAppSelector } from '../store/_store'
 import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBoolean } from '@yamada-ui/react'
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide'
-import { useVirtualScroll } from './hooks/useVirtualScroll'
+import { useVirtualScroll } from '../hooks/useVirtualScroll'
 import { RatingStars } from './RatingStars'
 import { updateSelectedSound, updateSoundRating } from '../store/fetchSlice'
-import { useWindowSize } from './hooks/useWindowSize'
+import { useWindowSize } from '../hooks/useWindowSize'
 import { useTranslation } from 'react-i18next'
 
 export const SoundSelector = () => {
