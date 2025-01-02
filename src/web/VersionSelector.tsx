@@ -39,24 +39,24 @@ export const VersionSelector = () => {
     const rc_versions = versions.filter(v => v.kind === 'release-candidate').sort(compareReleaseCandidateVersionInfo).reverse().map(v => v.raw)
 
     // 仮置きで最新バージョンが選択されるようにする
-    const f = async () => {
-      try {
-        if (major_versions[0]) {
-          if (!targetVersion) return dispatch(updateTargetVersion({ version: versions.find(v => v.raw == major_versions[0]) }))
-          const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion)
-          setSelectedVersion(targetVersion)
-          dispatch(updateSoundList({ sounds }))
-        }
-      }
-      catch (e: unknown) { alert(e) }
-    }
-    f()
+    // const f = async () => {
+    //   try {
+    //     if (major_versions[0]) {
+    //       if (!targetVersion) return dispatch(updateTargetVersion({ version: versions.find(v => v.raw == major_versions[0]) }))
+    //       const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion)
+    //       setSelectedVersion(targetVersion)
+    //       dispatch(updateSoundList({ sounds }))
+    //     }
+    //   }
+    //   catch (e: unknown) { alert(e) }
+    // }
+    // f()
 
     return [
       { label: t('release_version'), items: major_versions.map(v => ({ label: v, value: v })) },
       { label: t('snapshot_version'), items: [...rc_versions, ...pre_versions, ...snapshot_versions].map(v => ({ label: v, value: v })) },
     ]
-  }, [dispatch, t, targetVersion, versions])
+  }, [t, versions])
 
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
