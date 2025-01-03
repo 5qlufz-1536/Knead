@@ -13,21 +13,6 @@ import { secondsToString } from '../utils/NumberUtil'
 
 const { myAPI } = window
 
-type SelectorJson = {
-  x?: number
-  y?: number
-  z?: number
-  dx?: number
-  dy?: number
-  dz?: number
-  distance?: number
-  r?: number
-  rm?: number
-  scores?: unknown
-  tag?: number
-  team?: string
-}
-
 export const Footer = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
@@ -159,57 +144,14 @@ export const Footer = () => {
   const onClickRemoveSymbol = () => onChangeCoordinateChar('')
 
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // いろいろ変化させた文字列を入手
-    const selector = e.target.value.replaceAll(' ', '').replaceAll('=', ':').replaceAll(',', ',"').replaceAll(':', '":').replaceAll('{', '{"').replaceAll('[', '["').replaceAll('..', '')
-    // ターゲットがあっていればTRUE
-    const kind_is_correct = ['@a', '@p', '@e', '@n', '@r', '@s'].includes(selector.slice(0, 2))
-    // かっこで囲われていればTRUE
-    const parentheses = [selector.slice(2, 3) == '[', selector.slice(-1) == ']'].every(v => v)
-
-    // ターゲットが合っているか
-    if (kind_is_correct) {
-      // かっこで囲われているか
-      if (parentheses) {
-        offSelectorError()
-        // 変換処理用
-        const params = {
-          team: {
-            raw: '"team":' + (selector.slice(3, -1).split('"team":')?.map(v => v.split(','))[1] ? [0] : ''),
-            converted: '"team":"' + (selector.slice(3, -1).split('"team":')?.map(v => v.split(','))[1] ? [0] : '') + '"',
-          },
-        }
-        console.log(params.team)
-        const argument = `{${selector.slice(3, -1)}}`.replaceAll(params.team.raw, params.team.converted)
-        console.log('test ===> ', argument)
-        // パースチャレンジ！！！！！！！！
-        try {
-          offSelectorError()
-          const convertedJson = JSON.parse(argument) as SelectorJson
-          console.log(convertedJson)
-        }
-        // パース失敗時
-        catch {
-          onSelectorError()
-        }
-      }
-      // かっこで囲われていないとき
-      else {
-        // ターゲットの後ろの文字が空ならエラーOFF
-        if (selector.slice(2) == '') offSelectorError()
-        // ターゲットの後ろに何か入っていたらエラーON
-        else onSelectorError()
-      }
-    }
-    // ターゲットがあっていないとき
-    else {
-      onSelectorError()
-    }
+    // スペースを削除した文字列を入手
+    // const selector = e.target.value.replaceAll(" ", "")
 
     // コンマでスプリット > イコールでスプリット
 
     // offSelectorError()
     setSelector(e.target.value)
-  }, [offSelectorError, onSelectorError])
+  }, [setSelector])
 
   // コマンド生成
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
