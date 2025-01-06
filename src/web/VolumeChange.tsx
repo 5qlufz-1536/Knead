@@ -33,7 +33,28 @@ export const VolumeChange = () => {
 
       <Toggle icon={volumeIcon(volumeSlider, MuteSwitch)} onClick={onClickMute} variant="outline" colorScheme={MuteSwitch ? 'red' : 'primary'} />
       <Box w="full" textAlign="center" paddingX={2}>
-        <Slider value={volumeSlider} disabled={MuteSwitch} onChange={onChangeVolumeSlider} marginBottom={-2} step={0.01} min={0} max={1} w={40} filledTrackColor="primary" thumbColor="primary" trackColor="gray.200" thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' }, _disabled: { color: 'primary' } }} />
+        <Slider
+          value={volumeSlider} disabled={MuteSwitch} onChange={onChangeVolumeSlider}
+          marginBottom={-2} step={0.01} min={0} max={1} w={40}
+          filledTrackColor="primary" trackColor="gray.200"
+          thumbProps={{
+            visibility: 'hidden',
+            _after: {
+              content: '""',
+              display: 'block',
+              w: '2.5',
+              h: '2.5',
+              borderRadius: 'full',
+              bg: 'primary',
+              position: 'absolute',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              transition: 'left 0',
+              visibility: 'visible',
+            },
+            _disabled: { color: 'primary' },
+          }}
+        />
       </Box>
     </Flex>
 

@@ -218,11 +218,26 @@ export const Footer = () => {
 
           <Box alignContent="center" paddingX={1}>
             <Slider
-              step={0.01} defaultValue={0} min={0} max={100}
               value={seekbar}
-              filledTrackColor="primary" thumbColor="primary" trackColor="gray.200"
-              thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }}
               onChange={onChangeSeekbar}
+              step={0.01} min={0} max={100}
+              trackColor="gray.200"
+              thumbProps={{
+                visibility: 'hidden',
+                _after: {
+                  content: '""',
+                  display: 'block',
+                  w: '2.5',
+                  h: '2.5',
+                  borderRadius: 'full',
+                  bg: 'primary',
+                  position: 'absolute',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  transition: 'left 0',
+                  visibility: 'visible',
+                },
+              }}
             />
           </Box>
 
