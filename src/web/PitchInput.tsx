@@ -1,4 +1,4 @@
-import { Slider, Spacer, Tooltip, NumberInput, Select, SelectItem } from '@yamada-ui/react'
+import { Slider, Spacer, Tooltip, NumberInput, Select, SelectItem, Flex } from '@yamada-ui/react'
 import React, { JSX, useCallback, useMemo } from 'react'
 import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
@@ -56,18 +56,35 @@ export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element =>
   }, [onChange])
   return (
     <>
-      <Slider
-        onChange={onChangePitchSlider} value={parseFloat(pitch)}
-        w={32} h={10} step={0.01} min={0.5} max={2}
-        filledTrackColor="gray.200" thumbColor="primary" trackColor="gray.200"
-        thumbSize={2.5} thumbProps={{ _focusVisible: { boxShadow: '' } }}
-      />
-      <Spacer maxW={3} />
       <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
-        <NumberInput
-          onChange={onChangePitchInput} value={pitch}
-          w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2}
-        />
+        <Flex>
+          <Slider
+            onChange={onChangePitchSlider} value={parseFloat(pitch)}
+            w={32} h={10} step={0.01} min={0.5} max={2}
+            filledTrackColor="gray.200" trackColor="gray.200"
+            thumbProps={{
+              visibility: 'hidden',
+              _after: {
+                content: '""',
+                display: 'block',
+                w: '2.5',
+                h: '2.5',
+                borderRadius: 'full',
+                bg: 'primary',
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                transition: 'left 0',
+                visibility: 'visible',
+              },
+            }}
+          />
+          <Spacer minW={3} />
+          <NumberInput
+            onChange={onChangePitchInput} value={pitch}
+            w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2}
+          />
+        </Flex>
       </Tooltip>
       <Spacer maxW={1} />
       <Tooltip label={t('pitch_scale')} placement="bottom" animation="top">
