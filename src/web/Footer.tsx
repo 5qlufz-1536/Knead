@@ -179,7 +179,7 @@ export const Footer = () => {
           ((MaxVolume == 1 && pitch == '1' && MinVolume == 0) ? '' : MaxVolume),
           ((pitch == '1' && MinVolume == 0) ? '' : pitch),
           (MinVolume == 0 ? '' : MinVolume),
-        ].join(' '))
+        ].join(' ')).trim()
       : ''
   }, [Coordinate, selectedSound, SlashSwitch, isTargetVersion15w49aOrHigher, isTargetVersion24w09aOrHigher, PlaySource, Selector, MaxVolume, pitch, MinVolume, SelectorX0])
 
