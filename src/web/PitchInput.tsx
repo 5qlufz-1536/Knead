@@ -82,7 +82,7 @@ export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element =>
           <Spacer minW={3} />
           <NumberInput
             onChange={onChangePitchInput} value={pitch}
-            w={20} placeholder="pitch" step={0.1} precision={2} min={0.5} max={2}
+            w={20} placeholder="pitch" step={0.01} precision={2} min={0.5} max={2}
           />
         </Flex>
       </Tooltip>
