@@ -10,6 +10,7 @@ import { useAudioPlay } from '../hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
 import { PitchInput } from './PitchInput'
 import { secondsToString } from '../utils/NumberUtil'
+import { SelectorCheck } from '../utils/SelectorCheck'
 
 const { myAPI } = window
 
@@ -24,25 +25,44 @@ export const Footer = () => {
   const targetVersion = useAppSelector(state => state.fetch.targetVersion)
   const appVolume = useAppSelector(state => state.fetch.appVolume)
 
+  // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
   const isTargetVersion24w09aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 20, patch: 5 },
-    { kind: 'release-candidate', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
-    { kind: 'pre-release', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 1 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 0 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 20, patch: 5, releaseNumber: 0 },
     { kind: 'snapshot', raw: '', year: 24, releaseNumber: 9, letter: '' },
   ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
 
+  // 1.13(17w45a)以降は<selector>の記述方式が変更された
   const isTargetVersion17w45aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 13, patch: 0 },
-    { kind: 'release-candidate', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
-    { kind: 'pre-release', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 1 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 0 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 13, patch: 0, releaseNumber: 0 },
     { kind: 'snapshot', raw: '', year: 17, releaseNumber: 45, letter: '' },
   ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
 
+  // 1.12(17w16b)以降は@sが追加された
+  const isTargetVersion17w16bOrHigher = ([
+    { kind: 'release', raw: '', major: 1, minor: 12, patch: 0 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 12, patch: 0, releaseNumber: 0 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 12, patch: 0, releaseNumber: 0 },
+    { kind: 'snapshot', raw: '', year: 17, releaseNumber: 16, letter: 'b' },
+  ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
+
+  // 1.9(15w49a)以降は<source>が必要になった
   const isTargetVersion15w49aOrHigher = ([
     { kind: 'release', raw: '', major: 1, minor: 9, patch: 0 },
-    { kind: 'release-candidate', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
-    { kind: 'pre-release', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 1 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 0 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 9, patch: 0, releaseNumber: 0 },
     { kind: 'snapshot', raw: '', year: 15, releaseNumber: 49, letter: '' },
+  ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
+
+  // 1.8(14w02a)以降は@eが追加された
+  const isTargetVersion14w02aOrHigher = ([
+    { kind: 'release', raw: '', major: 1, minor: 8, patch: 0 },
+    { kind: 'release-candidate', raw: '', major: 1, minor: 8, patch: 0, releaseNumber: 0 },
+    { kind: 'pre-release', raw: '', major: 1, minor: 8, patch: 0, releaseNumber: 0 },
+    { kind: 'snapshot', raw: '', year: 14, releaseNumber: 2, letter: '' },
   ] satisfies VersionInfoType[]).some(v => isAboveVersion(targetVersion, v))
 
   const PlaySourceItems: SelectItem[] = [
@@ -144,18 +164,18 @@ export const Footer = () => {
   const onClickRemoveSymbol = () => onChangeCoordinateChar('')
 
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // スペースを削除した文字列を入手
-    // const selector = e.target.value.replaceAll(" ", "")
+    const [valid, checkedSelector] = SelectorCheck(e.target.value, SelectorX0)
 
-    // コンマでスプリット > イコールでスプリット
+    // セレクターが有効でないならエラーON
+    if (!valid) return onSelectorError()
+    else offSelectorError()
 
     // offSelectorError()
-    setSelector(e.target.value)
-  }, [setSelector])
+    setSelector(checkedSelector)
+  }, [SelectorX0, offSelectorError, onSelectorError])
 
   // コマンド生成
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
-  // 1.13(17w45a)以降は<selector>の記述方式が変更された
   // 1.9(15w49a)以降は<source>が必要になった
   const command = useMemo(() => {
     const splitCoordinate: number[] = Coordinate.replaceAll('~', '').replaceAll('^', '').split(' ').map(v => v == '' ? NaN : Number(v))
@@ -167,7 +187,7 @@ export const Footer = () => {
     }
     const CorrectedCoordinate = Coordinate.includes('~') ? Coordinate : Coordinate.includes('^') ? Coordinate : returnCoordinate.join('')
 
-    const CorrectedSelector = Selector == '@a' ? (SelectorX0 ? '@a[x=0]' : Selector) : Selector
+    const [_, CorrectedSelector] = SelectorCheck(Selector, SelectorX0)
 
     return selectedSound != ''
       ? ([

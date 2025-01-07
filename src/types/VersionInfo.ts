@@ -126,6 +126,7 @@ export const isAboveVersion = (targetVersion: VersionInfoType | undefined, searc
       return comparePreReleaseVersionInfo(targetVersion, searchVersion) >= 0
     case 'snapshot':
       if (targetVersion.kind !== 'snapshot') return false
+      if (compareSnapshotVersionInfo(targetVersion, searchVersion) >= 0 && searchVersion.letter == 'b') return /^[c-z]$/.test(targetVersion.letter)
       return compareSnapshotVersionInfo(targetVersion, searchVersion) >= 0
   }
 }
