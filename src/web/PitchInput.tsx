@@ -47,7 +47,7 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
 
   const { t } = useTranslation()
 
-  const [unsafePitch, setUnsafePitch] = useState(safePitch)
+  const [internalPitch, setInternalPitch] = useState(safePitch)
 
   const safePitchFloat = useMemo(() => parseFloat(safePitch), [safePitch])
   const selectedPitchScale = useMemo(
@@ -55,16 +55,20 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
     [safePitchFloat, floatPitchScale],
   )
 
-  const onChangePitchSlider = useCallback((value: number) => onChange(value.toString()), [onChange])
+  const onChangePitchSlider = useCallback((value: number) => {
+    setInternalPitch(value.toString())
+    onChange(value.toString())
+  }, [onChange])
   const onChangePitchInput = useCallback((value: string) => {
-    setUnsafePitch(value)
+    setInternalPitch(value)
     if (!Number.isNaN(value) && (0.5 <= parseFloat(value) && parseFloat(value) <= 2)) {
       onChange(value)
     }
-  }, [onChange, setUnsafePitch])
+  }, [onChange, setInternalPitch])
 
   const onChangePitchScaleMenu = useCallback((value: string) => {
     if (value !== unsupportedPitch) {
+      setInternalPitch(value.toString())
       onChange(value)
     }
   }, [onChange])
@@ -96,7 +100,7 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
           />
           <Spacer minW={3} />
           <NumberInput
-            onChange={onChangePitchInput} value={unsafePitch}
+            onChange={onChangePitchInput} value={internalPitch}
             w={20} placeholder="pitch" step={0.01} precision={2} min={0.5} max={2}
           />
         </Flex>
