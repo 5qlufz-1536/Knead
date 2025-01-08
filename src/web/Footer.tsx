@@ -137,7 +137,7 @@ export const Footer = () => {
     const percent = value / 100
     setSeekbar(value)
     if (!AudioController.contexts.head) return
-    const playbackTime = ((AudioController.contexts.head?.maxTime ?? 0) / (parseFloat(pitch) >= 1 ? parseFloat(pitch) : 1)) * percent
+    const playbackTime = (AudioController.contexts.head?.maxTime ?? 0) * percent
     AudioController.commands.setPlaybackTime(selectedSound, playbackTime)
   }
 

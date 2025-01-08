@@ -27,8 +27,6 @@ type Context = (PlayingContext | StoppingContext) & {
   buffer: AudioBuffer
   /** 再生開始時刻 */
   playTime: number
-  /** 一時停止時刻 */
-  pauseTime?: number
 }
 
 type PublicContext = Pick<Context, 'isPlaying' | 'playbackTime' | 'maxTime' | 'volume' | 'speed'>
@@ -113,8 +111,8 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
       const playOffset = ctx.playbackTime !== ctx.maxTime ? ctx.playbackTime : 0
       absn.start(0, playOffset)
       absn.onended = () => setAudioState(prev2 => ({ ...prev2, [k]: { ...prev2[k], isPlaying: false, playbackTime: ctx.maxTime } }))
-      const playTime = ctx.pauseTime ? ctx.playTime + (absn.context.currentTime - ctx.pauseTime) : absn.context.currentTime
-      return { ...ctx, isPlaying: true, absn, gc, playTime, pauseTime: undefined }
+      const playTime = absn.context.currentTime - playOffset / ctx.speed
+      return { ...ctx, isPlaying: true, absn, gc, playTime }
     }))
   }, [createAudioContext])
 
@@ -126,18 +124,18 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
       console.log('pause', ctx)
       ctx.absn.onended = null
       ctx.absn.stop()
-      return { ...ctx, isPlaying: false, pauseTime: ctx.absn.context.currentTime }
+      return { ...ctx, isPlaying: false, playTime: 0 }
     }))
   }, [])
 
   // MARK: stop
   const stop = useCallback(() => {
     setAudioState(prev => mapEntries(prev, (ctx) => {
-      if (!ctx.isPlaying) return { ...ctx, playbackTime: 0, playTime: 0, pauseTime: undefined }
+      if (!ctx.isPlaying) return { ...ctx, playbackTime: 0, playTime: 0 }
 
       ctx.absn.onended = null
       ctx.absn.stop()
-      return { ...ctx, isPlaying: false, playbackTime: 0, playTime: 0, pauseTime: undefined }
+      return { ...ctx, isPlaying: false, playbackTime: 0, playTime: 0 }
     }))
   }, [setAudioState])
 
@@ -189,37 +187,26 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   // MARK: setSpeed
   const setSpeed = useCallback((soundKey: string, speed: number) => {
     setAudioState((prev) => {
-      const percent = prev[soundKey].playbackTime / prev[soundKey].maxTime
-      const playbackTime = (prev[soundKey].maxTime / prev[soundKey].speed) * percent
-      if (prev[soundKey].isPlaying) {
-        prev[soundKey].absn.playbackRate.value = speed
-        // これまで再生してきた時間を考慮してplayTimeが変化するようにする
-        console.log(playbackTime)
-        prev[soundKey].playTime = prev[soundKey].absn.context.currentTime - Math.abs(playbackTime)
-      }
-      else {
-        prev[soundKey].playTime -= Math.abs(playbackTime)
-        if (prev[soundKey].pauseTime) prev[soundKey].pauseTime -= Math.abs(playbackTime)
-      }
-      return { ...prev, [soundKey]: { ...prev[soundKey], speed } }
+      if (!prev[soundKey].isPlaying) return { ...prev, [soundKey]: { ...prev[soundKey], speed } }
+
+      prev[soundKey].absn.playbackRate.value = speed
+
+      const time = prev[soundKey].absn.context.currentTime
+      const playTime = time - prev[soundKey].playbackTime / speed
+      return { ...prev, [soundKey]: { ...prev[soundKey], speed, playTime } }
     })
   }, [])
 
   // MARK: setPlaybackTime
   const setPlaybackTime = useCallback((soundKey: string, playbackTime: number) => {
-    setAudioState((prev) => {
-      if (prev[soundKey].isPlaying) {
-        // いろいろ試したけどこれが一番思ってる挙動する 謎
-        const playTime = prev[soundKey].absn.context.currentTime - (playbackTime / (prev[soundKey].speed < 1 ? prev[soundKey].speed : 1))
-        pause()
-        // ここで少しだけ待ってもらうような処理書いたほうがバグ発生抑えれる？ でも待つ処理がわからん
-        play()
-        return { ...prev, [soundKey]: { ...prev[soundKey], playTime, pauseTime: 0, playbackTime } }
-      }
-
-      return { ...prev, [soundKey]: { ...prev[soundKey], playTime: 0, pauseTime: playbackTime, playbackTime } }
-    })
-  }, [pause, play])
+    if (audioState[soundKey].isPlaying) {
+      pause()
+    }
+    setAudioState(prev => ({ ...prev, [soundKey]: { ...prev[soundKey], playbackTime } }))
+    if (audioState[soundKey].isPlaying) {
+      play()
+    }
+  }, [audioState, pause, play])
 
   const globalContext = useMemo(() => ({ isSomePlaying: Object.values(audioState).some(ctx => ctx.isPlaying) }), [audioState])
 
