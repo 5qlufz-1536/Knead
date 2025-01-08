@@ -54,7 +54,10 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
       const rv = selectedPitchScale !== unsupportedPitch
         ? pitchScales.filter(item => item.value !== unsupportedPitch)
         : pitchScales
-      return rv.map(v => ({ label: [t(v.label), '-', parseFloat(v.value).toFixed(2).toString()].join(' '), value: v.value }))
+      return rv.map((v) => {
+        if (v.label === unsupportedPitch) return { label: v.label, value: v.value }
+        return { label: [t(v.label), '-', parseFloat(v.value).toFixed(2).toString()].join(' '), value: v.value }
+      })
     },
     [selectedPitchScale, t],
   )
@@ -79,7 +82,11 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
   }, [onChange])
 
   const style = document.getElementById('pitchScaleItems')?.lastElementChild
-  if (style?.innerHTML) style.innerHTML = [t(pitchScales.find(v => v.value == selectedPitchScale)?.label ?? ''), '-', parseFloat(internalPitch).toFixed(2).toString()].join(' ')
+  if (style?.innerHTML) {
+    const label = pitchScales.find(v => v.value == selectedPitchScale)?.label ?? ''
+    if (label === unsupportedPitch) style.innerHTML = label
+    else style.innerHTML = [t(label), '-', parseFloat(internalPitch).toFixed(2).toString()].join(' ')
+  }
 
   return (
     <>
