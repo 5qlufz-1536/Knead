@@ -26,7 +26,7 @@ const pitchScales: PitchScale[] = [
   { name: 'd#1', value: '0.84' },
   { name: 'e1', value: '0.89' },
   { name: 'f1', value: '0.94' },
-  { name: 'f#1', value: '1' },
+  { name: 'f#1', value: '1.00' },
   { name: 'g1', value: '1.06' },
   { name: 'g#1', value: '1.12' },
   { name: 'a1', value: '1.19' },
@@ -38,14 +38,18 @@ const pitchScales: PitchScale[] = [
   { name: 'd#2', value: '1.68' },
   { name: 'e2', value: '1.78' },
   { name: 'f2', value: '1.89' },
-  { name: 'f#2', value: '2' },
+  { name: 'f#2', value: '2.00' },
 ]
 
 export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element => {
   const { t } = useTranslation()
-  const pitchScaleItems: SelectItem[] = pitchScales.map(item => ({ label: t(item.name), value: item.value }))
+  const floatPitch = useMemo(() => parseFloat(pitch), [pitch])
+  const floatPitchScale = useMemo(() => pitchScales.map(item => ({ ...item, float: parseFloat(item.value) })), [])
+  const pitchScaleItems: SelectItem[] = useMemo(() => pitchScales.map(item => ({ label: item.name, value: item.value })), [])
 
-  const selectedPitchScale = useMemo(() => pitchScales.find(item => item.value === pitch)?.value ?? unsupportedPitch, [pitch])
+  const selectedPitchScale = useMemo(
+    () => floatPitchScale.find(({ float }) => (float - 0.005 < floatPitch) && (floatPitch < float + 0.005))?.value ?? unsupportedPitch
+    , [floatPitch, floatPitchScale])
 
   const onChangePitchSlider = useCallback((value: number) => onChange(value.toString()), [onChange])
   const onChangePitchInput = useCallback((value: string) => onChange(value), [onChange])
@@ -59,7 +63,7 @@ export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element =>
       <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
         <Flex>
           <Slider
-            onChange={onChangePitchSlider} value={parseFloat(pitch)}
+            onChange={onChangePitchSlider} value={floatPitch}
             w={32} h={10} step={0.01} min={0.5} max={2}
             filledTrackColor="gray.200" trackColor="gray.200"
             thumbProps={{
