@@ -40,25 +40,11 @@ export const fetchSlice = createSlice({
   initialState,
   reducers: {
 
-    updateTargetVersion: (
-      state,
-      action: PayloadAction<{ version: VersionInfoType | undefined }>,
-    ) => {
-      state.targetVersion = action.payload.version
-    },
-
     updateSoundList: (
       state,
       action: PayloadAction<{ sounds: Sound[] }>,
     ) => {
       state.sounds = action.payload.sounds
-    },
-
-    updateSoundRating: (
-      state,
-      action: PayloadAction<{ soundRatings: { [key: string]: number } }>,
-    ) => {
-      state.soundRatings = action.payload.soundRatings
     },
 
     updateSelectedSound: (
@@ -69,23 +55,7 @@ export const fetchSlice = createSlice({
       state.soundSelectDetector = state.soundSelectDetector ? false : true
     },
 
-    updateAppVolume: (
-      state,
-      action: PayloadAction<{ volume: number, mute: boolean }>,
-    ) => {
-      state.volumeSlider = action.payload.volume
-      state.appMute = action.payload.mute
-      state.appVolume = state.appMute ? 0 : state.volumeSlider
-    },
-
-    updateLanguage: (
-      state,
-      action: PayloadAction<{ lang: string }>,
-    ) => {
-      state.lang = action.payload.lang
-    },
-
   },
 })
 export default fetchSlice.reducer
-export const { updateTargetVersion, updateSoundList, updateSoundRating, updateSelectedSound, updateAppVolume, updateLanguage } = fetchSlice.actions
+export const { updateSoundList, updateSelectedSound } = fetchSlice.actions

@@ -1,24 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Volume1Icon, Volume2Icon, VolumeOffIcon, VolumeXIcon } from '@yamada-ui/lucide'
 import { Box, Flex, Slider, Toggle, useBoolean } from '@yamada-ui/react'
-import { useAddDispatch, useAppSelector } from '../store/_store'
-import { updateAppVolume } from '../store/fetchSlice'
 
 export const VolumeChange = () => {
-  const dispatch = useAddDispatch()
-
   const [MuteSwitch, { toggle: toggleMute }] = useBoolean(false)
 
-  const volumeSlider = useAppSelector(state => state.fetch.volumeSlider)
+  const [volumeSlider, setVolumeSlider] = useState<number>(-1)
+  if (volumeSlider === -1) setVolumeSlider(parseFloat(localStorage.getItem('volume') ?? '1'))
 
   const onClickMute = () => {
-    const mute_invert = !MuteSwitch
-    dispatch(updateAppVolume({ volume: volumeSlider, mute: mute_invert }))
+    console.log(volumeSlider)
+    const appVolume = !MuteSwitch ? 0 : volumeSlider
+    sessionStorage.setItem('appVolume', `${appVolume}`)
     toggleMute()
   }
 
   const onChangeVolumeSlider = (value: number) => {
-    dispatch(updateAppVolume({ volume: value, mute: MuteSwitch }))
+    setVolumeSlider(value)
+    const appVolume = MuteSwitch ? 0 : value
+    sessionStorage.setItem('appVolume', `${appVolume}`)
+    localStorage.setItem('volume', `${value}`)
   }
 
   const volumeIcon = (volume: number, mute: boolean) => {

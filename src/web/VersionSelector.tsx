@@ -1,8 +1,8 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { Autocomplete, HTMLUIProps, Select } from '@yamada-ui/react'
-import { useAddDispatch, useAppSelector } from '../store/_store'
-import { Sound, updateSoundList, updateTargetVersion } from '../store/fetchSlice'
+import { Select } from '@yamada-ui/react'
+import { useAddDispatch } from '../store/_store'
+import { Sound, updateSoundList } from '../store/fetchSlice'
 import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from '../types/VersionInfo'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +12,8 @@ export const VersionSelector = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
 
-  const targetVersion = useAppSelector(state => state.fetch.targetVersion)?.raw
+  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
+  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
   const [versions, setVersions] = useState<VersionInfoType[]>([])
   const [SelectedVersion, setSelectedVersion] = useState('')
 
@@ -39,28 +40,27 @@ export const VersionSelector = () => {
     const rc_versions = versions.filter(v => v.kind === 'release-candidate').sort(compareReleaseCandidateVersionInfo).reverse().map(v => v.raw)
 
     // 仮置きで最新バージョンが選択されるようにする
-    // const f = async () => {
-    //   try {
-    //     if (major_versions[0]) {
-    //       if (!targetVersion) return dispatch(updateTargetVersion({ version: versions.find(v => v.raw == major_versions[0]) }))
-    //       const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion)
-    //       setSelectedVersion(targetVersion)
-    //       dispatch(updateSoundList({ sounds }))
-    //     }
-    //   }
-    //   catch (e: unknown) { alert(e) }
-    // }
-    // f()
+    const f = async () => {
+      try {
+        if (targetVersion?.raw) {
+          const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion.raw)
+          setSelectedVersion(targetVersion.raw)
+          dispatch(updateSoundList({ sounds }))
+        }
+      }
+      catch (e: unknown) { alert(e) }
+    }
+    f()
 
     return [
       { label: t('release_version'), items: major_versions.map(v => ({ label: v, value: v })) },
       { label: t('snapshot_version'), items: [...rc_versions, ...pre_versions, ...snapshot_versions].map(v => ({ label: v, value: v })) },
     ]
-  }, [t, versions])
+  }, [dispatch, t, targetVersion?.raw, versions])
 
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
-    dispatch(updateTargetVersion({ version: versions.find(v => v.raw == version) }))
+    localStorage.setItem('targetVersion', JSON.stringify(versions.find(v => v.raw == version)))
 
     const sounds: Sound[] = await myAPI.get_mcSounds(version)
     // console.log(oggs)

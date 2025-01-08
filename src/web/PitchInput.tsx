@@ -1,6 +1,5 @@
 import { Slider, Spacer, Tooltip, NumberInput, Select, SelectItem, Flex } from '@yamada-ui/react'
 import React, { JSX, useCallback, useMemo } from 'react'
-import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 type PitchInputProps = {
@@ -43,6 +42,7 @@ const pitchScales: PitchScale[] = [
 ]
 
 export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element => {
+  const { t } = useTranslation()
   const pitchScaleItems: SelectItem[] = pitchScales.map(item => ({ label: t(item.name), value: item.value }))
 
   const selectedPitchScale = useMemo(() => pitchScales.find(item => item.value === pitch)?.value ?? unsupportedPitch, [pitch])

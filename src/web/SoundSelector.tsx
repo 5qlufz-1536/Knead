@@ -4,17 +4,21 @@ import { Box, Flex, Input, InputGroup, InputLeftElement, Spacer, Toggle, useBool
 import { FilterIcon, FilterXIcon, SearchIcon } from '@yamada-ui/lucide'
 import { useVirtualScroll } from '../hooks/useVirtualScroll'
 import { RatingStars } from './RatingStars'
-import { updateSelectedSound, updateSoundRating } from '../store/fetchSlice'
+import { updateSelectedSound } from '../store/fetchSlice'
 import { useWindowSize } from '../hooks/useWindowSize'
 import { useTranslation } from 'react-i18next'
+import { VersionInfoType } from '../types/VersionInfo'
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch()
   const { t } = useTranslation()
 
   const Sounds = useAppSelector(state => state.fetch.sounds)
-  const soundRatings = useAppSelector(state => state.fetch.soundRatings)
-  const targetVersion = useAppSelector(state => state.fetch.targetVersion)?.raw
+  // const soundRatings = useAppSelector(state => state.fetch.soundRatings)
+  const [soundRatings, setSoundRatings] = useState<({ [key: string]: number })>({})
+  if (!Object.keys(soundRatings).some(v => v)) setSoundRatings(JSON.parse(localStorage.getItem('soundRatings') ?? '{"_":0}'))
+  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
+  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
 
   const [txtFilters, setTxtFilters] = useState<string[]>([])
@@ -36,7 +40,7 @@ export const SoundSelector = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const CorrectedRatingFilter = ratingFilterSwitch ? ratingFilter : 0
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0 }), [txtFilters, CorrectedRatingFilter, ratingFilterSwitch, targetVersion])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0 }), [txtFilters, CorrectedRatingFilter, ratingFilterSwitch, targetVersion?.raw])
 
   const itemHeight = 40
 
@@ -59,7 +63,13 @@ export const SoundSelector = () => {
   }, [dispatch])
 
   const onChangeRating = (id: string, rating: number) => {
-    dispatch(updateSoundRating({ soundRatings: { ...soundRatings, [id]: rating } }))
+    const CorrectSoundRatings = { ...soundRatings, [id]: rating }
+    // 値が0のプロパティを削除
+    Object.keys(soundRatings).map((v) => {
+      if (CorrectSoundRatings[v] === 0 && v != '_') delete CorrectSoundRatings[v]
+    })
+    setSoundRatings(CorrectSoundRatings)
+    localStorage.setItem('soundRatings', JSON.stringify(CorrectSoundRatings))
   }
   const items = displayingItems.map(item => (
     <li

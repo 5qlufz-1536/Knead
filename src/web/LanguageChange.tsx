@@ -1,18 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Menu, MenuButton, MenuList, MenuItem, IconButton, Box } from '@yamada-ui/react'
 
 import { CheckIcon, GlobeIcon } from '@yamada-ui/lucide'
 import { useTranslation } from 'react-i18next'
-import { useAddDispatch } from '../store/_store'
-import { updateLanguage } from '../store/fetchSlice'
 
 export const LanguageChange = () => {
   const { i18n } = useTranslation()
-  const dispatch = useAddDispatch()
+
+  const [lang, setLang] = useState('')
+  if (lang === '') {
+    const get_lang = localStorage.getItem('lang') ?? 'ja'
+    setLang(get_lang)
+    i18n.changeLanguage(get_lang)
+  }
 
   const onClickLang = (lang: string) => {
     i18n.changeLanguage(lang)
-    dispatch(updateLanguage({ lang }))
+    localStorage.setItem('lang', lang)
   }
 
   return (
@@ -28,7 +32,7 @@ export const LanguageChange = () => {
         </MenuItem>
         <MenuItem
           icon={<CheckIcon opacity={i18n.language === 'ja' ? 1 : 0} fontSize="lg" />}
-          onClick={() => i18n.changeLanguage('ja')}
+          onClick={() => onClickLang('ja')}
         >
           <Box paddingBottom={0.5}>日本語</Box>
         </MenuItem>
