@@ -28,7 +28,7 @@ export const Footer = () => {
   const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `-1`)
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
   useEffect(() => {
-    if (selectedSound) AudioController.commands.setVolume(selectedSound, appVolume - 1)
+    if (selectedSound && AudioController.context.isSomePlaying) AudioController.commands.setVolume(selectedSound, appVolume - 1)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appVolume])
 
