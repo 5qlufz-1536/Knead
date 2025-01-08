@@ -3,8 +3,8 @@ import { FaPlay, FaPause, FaArrowRotateLeft } from 'react-icons/fa6'
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from '@yamada-ui/lucide'
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
 import { useAddDispatch, useAppSelector } from '../store/_store'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { SoundName, updateSelectedSound } from '../store/fetchSlice'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { updateSelectedSound } from '../store/fetchSlice'
 import { isAboveVersion, VersionInfoType } from '../types/VersionInfo'
 import { useAudioPlay } from '../hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
@@ -22,8 +22,14 @@ export const Footer = () => {
   const sounds = useAppSelector(state => state.fetch.sounds)
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
-  const targetVersion = useAppSelector(state => state.fetch.targetVersion)
-  const appVolume = useAppSelector(state => state.fetch.appVolume)
+  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
+  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
+  const [appVolume, setAppVolume] = useState<number>(-1)
+  if (appVolume === -1) {
+    const get_volume = parseFloat(localStorage.getItem('volume') ?? '1')
+    setAppVolume(get_volume)
+    sessionStorage.setItem('appVolume', `${get_volume}`)
+  }
 
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
   const isTargetVersion24w09aOrHigher = ([
@@ -91,7 +97,12 @@ export const Footer = () => {
   const [SlashSwitch, { toggle: toggleSlash }] = useBoolean(false)
 
   // サウンドを流すターゲット(masterとか)
-  const [PlaySource, setPlaySource] = useState('master')
+  const [PlaySource, setPlaySource] = useState('')
+  if (PlaySource === '') setPlaySource(localStorage.getItem('PlaySource') ?? 'master')
+  const onChangePlaySource = (v: string) => {
+    localStorage.setItem('PlaySource', v)
+    setPlaySource(v)
+  }
 
   // ピッチ関係
   const [pitch, setPitch] = useState('1')
@@ -285,7 +296,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('play_source')} placement="bottom" animation="top">
-              <Select disabled={!isTargetVersion15w49aOrHigher} items={PlaySourceItems} onChange={setPlaySource} defaultValue="master" placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
+              <Select value={PlaySource} disabled={!isTargetVersion15w49aOrHigher} items={PlaySourceItems} onChange={onChangePlaySource} placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }} />
             </Tooltip>
             <Spacer />
             <Tooltip label={t('max_volume')} placement="bottom" animation="top">

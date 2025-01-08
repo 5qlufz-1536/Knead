@@ -100,8 +100,4 @@ export const initIpcMain = (): void => {
     const file = hash === '' ? '' : path.join(...getMinecraftDir(), 'assets', 'objects', hash.slice(0, 2), hash)
     return file
   })
-
-  ipcMain.handle('save', (event, Volume: string, SoundRatings: string, TargetVersion: string) => {
-
-  })
 }
