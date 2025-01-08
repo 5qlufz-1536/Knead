@@ -22,7 +22,7 @@ const pitchScales: Record<'label' | 'value', string>[] = [
   { label: 'd#1', value: '0.84' },
   { label: 'e1', value: '0.89' },
   { label: 'f1', value: '0.94' },
-  { label: 'f#1', value: '1.00' },
+  { label: 'f#1', value: '1' },
   { label: 'g1', value: '1.06' },
   { label: 'g#1', value: '1.12' },
   { label: 'a1', value: '1.19' },
@@ -34,7 +34,7 @@ const pitchScales: Record<'label' | 'value', string>[] = [
   { label: 'd#2', value: '1.68' },
   { label: 'e2', value: '1.78' },
   { label: 'f2', value: '1.89' },
-  { label: 'f#2', value: '2.00' },
+  { label: 'f#2', value: '2' },
 ]
 
 export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX.Element => {
@@ -50,10 +50,13 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
     [safePitchFloat, floatPitchScale],
   )
   const pitchScaleItems: SelectItem[] = useMemo(
-    () => selectedPitchScale !== unsupportedPitch
-      ? pitchScales.filter(item => item.value !== unsupportedPitch)
-      : pitchScales,
-    [selectedPitchScale],
+    () => {
+      const rv = selectedPitchScale !== unsupportedPitch
+        ? pitchScales.filter(item => item.value !== unsupportedPitch)
+        : pitchScales
+      return rv.map(v => ({ label: [t(v.label), '-', parseFloat(v.value).toFixed(2).toString()].join(' '), value: v.value }))
+    },
+    [selectedPitchScale, t],
   )
 
   const onChangePitchSlider = useCallback((value: number) => {
@@ -61,9 +64,10 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
     onChange(value.toString())
   }, [onChange])
   const onChangePitchInput = useCallback((value: string) => {
-    setInternalPitch(value)
-    if (!Number.isNaN(value) && (0.5 <= parseFloat(value) && parseFloat(value) <= 2)) {
-      onChange(value)
+    const pitch = parseFloat(value).toString()
+    setInternalPitch(pitch)
+    if (!Number.isNaN(pitch) && (0.5 <= parseFloat(pitch) && parseFloat(pitch) <= 2)) {
+      onChange(pitch)
     }
   }, [onChange, setInternalPitch])
 
@@ -73,6 +77,9 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
       onChange(value)
     }
   }, [onChange])
+
+  const style = document.getElementById('pitchScaleItems')?.lastElementChild
+  if (style?.innerHTML) style.innerHTML = [t(pitchScales.find(v => v.value == selectedPitchScale)?.label ?? ''), '-', parseFloat(internalPitch).toFixed(2).toString()].join(' ')
 
   return (
     <>
@@ -111,6 +118,7 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
         <Select
           onChange={onChangePitchScaleMenu} items={pitchScaleItems} value={selectedPitchScale}
           placeholderInOptions={false} w={32} animation="bottom" listProps={{ padding: 0, margin: 0 }}
+          id="pitchScaleItems"
         />
       </Tooltip>
     </>
