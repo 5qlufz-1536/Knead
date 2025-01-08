@@ -7,43 +7,38 @@ type PitchInputProps = {
   onChange: (pitch: string) => void
 }
 
-type PitchScale = {
-  name: string
-  value: string
-}
 const unsupportedPitch = '-'
-const pitchScales: PitchScale[] = [
-  { name: '-', value: unsupportedPitch },
-  { name: 'f#0', value: '0.5' },
-  { name: 'g0', value: '0.53' },
-  { name: 'g#0', value: '0.56' },
-  { name: 'a0', value: '0.59' },
-  { name: 'a#0', value: '0.63' },
-  { name: 'b0', value: '0.67' },
-  { name: 'c1', value: '0.71' },
-  { name: 'c#1', value: '0.75' },
-  { name: 'd1', value: '0.79' },
-  { name: 'd#1', value: '0.84' },
-  { name: 'e1', value: '0.89' },
-  { name: 'f1', value: '0.94' },
-  { name: 'f#1', value: '1.00' },
-  { name: 'g1', value: '1.06' },
-  { name: 'g#1', value: '1.12' },
-  { name: 'a1', value: '1.19' },
-  { name: 'a#1', value: '1.26' },
-  { name: 'b1', value: '1.33' },
-  { name: 'c2', value: '1.41' },
-  { name: 'c#2', value: '1.5' },
-  { name: 'd2', value: '1.59' },
-  { name: 'd#2', value: '1.68' },
-  { name: 'e2', value: '1.78' },
-  { name: 'f2', value: '1.89' },
-  { name: 'f#2', value: '2.00' },
+const pitchScales: Record<'label' | 'value', string>[] = [
+  { label: '-', value: unsupportedPitch },
+  { label: 'f#0', value: '0.5' },
+  { label: 'g0', value: '0.53' },
+  { label: 'g#0', value: '0.56' },
+  { label: 'a0', value: '0.59' },
+  { label: 'a#0', value: '0.63' },
+  { label: 'b0', value: '0.67' },
+  { label: 'c1', value: '0.71' },
+  { label: 'c#1', value: '0.75' },
+  { label: 'd1', value: '0.79' },
+  { label: 'd#1', value: '0.84' },
+  { label: 'e1', value: '0.89' },
+  { label: 'f1', value: '0.94' },
+  { label: 'f#1', value: '1.00' },
+  { label: 'g1', value: '1.06' },
+  { label: 'g#1', value: '1.12' },
+  { label: 'a1', value: '1.19' },
+  { label: 'a#1', value: '1.26' },
+  { label: 'b1', value: '1.33' },
+  { label: 'c2', value: '1.41' },
+  { label: 'c#2', value: '1.5' },
+  { label: 'd2', value: '1.59' },
+  { label: 'd#2', value: '1.68' },
+  { label: 'e2', value: '1.78' },
+  { label: 'f2', value: '1.89' },
+  { label: 'f#2', value: '2.00' },
 ]
 
 export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX.Element => {
   const floatPitchScale = useMemo(() => pitchScales.map(item => ({ ...item, float: parseFloat(item.value) })), [])
-  const pitchScaleItems: SelectItem[] = useMemo(() => pitchScales.map(item => ({ label: item.name, value: item.value })), [])
 
   const { t } = useTranslation()
 
@@ -53,6 +48,12 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
   const selectedPitchScale = useMemo(
     () => floatPitchScale.find(({ float: v }) => (v - 0.005 < safePitchFloat) && (safePitchFloat < v + 0.005))?.value ?? unsupportedPitch,
     [safePitchFloat, floatPitchScale],
+  )
+  const pitchScaleItems: SelectItem[] = useMemo(
+    () => selectedPitchScale !== unsupportedPitch
+      ? pitchScales.filter(item => item.value !== unsupportedPitch)
+      : pitchScales,
+    [selectedPitchScale],
   )
 
   const onChangePitchSlider = useCallback((value: number) => {
