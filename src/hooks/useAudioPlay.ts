@@ -99,6 +99,7 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
 
     const gainController = audioContext.createGain()
     gainController.connect(audioContext.destination)
+    absn.connect(gainController)
     gainController.gain.value = volume
 
     return [absn, gainController]

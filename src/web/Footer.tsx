@@ -24,12 +24,13 @@ export const Footer = () => {
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
   const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
   if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
-  const [appVolume, setAppVolume] = useState<number>(-1)
-  if (appVolume === -1) {
-    const get_volume = parseFloat(localStorage.getItem('volume') ?? '1')
-    setAppVolume(get_volume)
-    sessionStorage.setItem('appVolume', `${get_volume}`)
-  }
+  const volume = parseFloat(localStorage.getItem('volume') ?? '1')
+  const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `-1`)
+  if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
+  useEffect(() => {
+    if (selectedSound) AudioController.commands.setVolume(selectedSound, appVolume - 1)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appVolume])
 
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
   const isTargetVersion24w09aOrHigher = ([
@@ -235,11 +236,6 @@ export const Footer = () => {
     })()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [soundSelectDetector])
-
-  useEffect(() => {
-    if (selectedSound) AudioController.commands.setVolume(selectedSound, appVolume - 100)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appVolume])
 
   return (
     <>
