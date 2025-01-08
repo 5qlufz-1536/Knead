@@ -1,16 +1,13 @@
 import './App.css'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { VersionSelector } from './VersionSelector'
 import { SoundSelector } from './SoundSelector'
 import { ThemeChange } from './ThemeChange'
 import { Footer } from './Footer'
-import { Configuration } from './Configuration'
+// import { Configuration } from './Configuration'
 import { VolumeChange } from './VolumeChange'
 import { LanguageChange } from './LanguageChange'
-import { useAppSelector } from '../store/_store'
 import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/react'
-
-const { myAPI } = window
 
 export const App = () => {
   const { colorMode } = useColorMode()

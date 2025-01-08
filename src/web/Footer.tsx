@@ -22,8 +22,7 @@ export const Footer = () => {
   const sounds = useAppSelector(state => state.fetch.sounds)
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
-  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
-  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
+  const targetVersion: VersionInfoType = JSON.parse(localStorage.getItem('targetVersion') ?? '{"kind":"release","raw":""}')
   const volume = parseFloat(localStorage.getItem('volume') ?? '1')
   const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `-1`)
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
@@ -138,7 +137,7 @@ export const Footer = () => {
     const percent = value / 100
     setSeekbar(value)
     if (!AudioController.contexts.head) return
-    const playbackTime = ((AudioController.contexts.head?.maxTime ?? 0) / (parseFloat(pitch) >= 1 ? parseFloat(pitch) : 1)) * percent
+    const playbackTime = (AudioController.contexts.head?.maxTime ?? 0) * percent
     AudioController.commands.setPlaybackTime(selectedSound, playbackTime)
   }
 
