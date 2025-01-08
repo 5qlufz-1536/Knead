@@ -1,5 +1,5 @@
 import { Slider, Spacer, Tooltip, NumberInput, Select, SelectItem, Flex } from '@yamada-ui/react'
-import React, { JSX, useCallback, useMemo } from 'react'
+import React, { JSX, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type PitchInputProps = {
@@ -41,29 +41,40 @@ const pitchScales: PitchScale[] = [
   { name: 'f#2', value: '2.00' },
 ]
 
-export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element => {
-  const { t } = useTranslation()
-  const floatPitch = useMemo(() => parseFloat(pitch), [pitch])
+export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX.Element => {
   const floatPitchScale = useMemo(() => pitchScales.map(item => ({ ...item, float: parseFloat(item.value) })), [])
   const pitchScaleItems: SelectItem[] = useMemo(() => pitchScales.map(item => ({ label: item.name, value: item.value })), [])
 
+  const { t } = useTranslation()
+
+  const [unsafePitch, setUnsafePitch] = useState(safePitch)
+
+  const safePitchFloat = useMemo(() => parseFloat(safePitch), [safePitch])
   const selectedPitchScale = useMemo(
-    () => floatPitchScale.find(({ float }) => (float - 0.005 < floatPitch) && (floatPitch < float + 0.005))?.value ?? unsupportedPitch
-    , [floatPitch, floatPitchScale])
+    () => floatPitchScale.find(({ float: v }) => (v - 0.005 < safePitchFloat) && (safePitchFloat < v + 0.005))?.value ?? unsupportedPitch,
+    [safePitchFloat, floatPitchScale],
+  )
 
   const onChangePitchSlider = useCallback((value: number) => onChange(value.toString()), [onChange])
-  const onChangePitchInput = useCallback((value: string) => onChange(value), [onChange])
+  const onChangePitchInput = useCallback((value: string) => {
+    setUnsafePitch(value)
+    if (!Number.isNaN(value) && (0.5 <= parseFloat(value) && parseFloat(value) <= 2)) {
+      onChange(value)
+    }
+  }, [onChange, setUnsafePitch])
+
   const onChangePitchScaleMenu = useCallback((value: string) => {
     if (value !== unsupportedPitch) {
       onChange(value)
     }
   }, [onChange])
+
   return (
     <>
       <Tooltip label={t('pitch_input')} placement="bottom" animation="top">
         <Flex>
           <Slider
-            onChange={onChangePitchSlider} value={floatPitch}
+            onChange={onChangePitchSlider} value={parseFloat(safePitch)}
             w={32} h={10} step={0.01} min={0.5} max={2}
             filledTrackColor="gray.200" trackColor="gray.200"
             thumbProps={{
@@ -85,7 +96,7 @@ export const PitchInput = ({ pitch, onChange }: PitchInputProps): JSX.Element =>
           />
           <Spacer minW={3} />
           <NumberInput
-            onChange={onChangePitchInput} value={pitch}
+            onChange={onChangePitchInput} value={unsafePitch}
             w={20} placeholder="pitch" step={0.01} precision={2} min={0.5} max={2}
           />
         </Flex>
