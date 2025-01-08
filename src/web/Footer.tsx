@@ -175,14 +175,13 @@ export const Footer = () => {
   const onClickRemoveSymbol = () => onChangeCoordinateChar('')
 
   const onChangeSelector = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const [valid, checkedSelector] = SelectorCheck(e.target.value, SelectorX0)
+    const [valid, _] = SelectorCheck(e.target.value, SelectorX0)
 
     // セレクターが有効でないならエラーON
     if (!valid) return onSelectorError()
     else offSelectorError()
 
-    // offSelectorError()
-    setSelector(checkedSelector)
+    setSelector(e.target.value)
   }, [SelectorX0, offSelectorError, onSelectorError])
 
   // コマンド生成
