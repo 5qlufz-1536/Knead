@@ -37,7 +37,6 @@ type Commands = {
   play: () => void
   pause: () => void
   stop: () => void
-  restart: () => void
 
   setSound: (soundKey: string, uri: string, speed?: number, volume?: number) => Promise<void>
   setSounds: (sounds: { [k: string]: string | [uri: string, speed?: number, volume?: number] }) => Promise<void>
@@ -142,18 +141,6 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
     }))
   }, [setAudioState])
 
-  // MARK: restart
-  const restart = useCallback(() => {
-    setAudioState(prev => mapEntries(prev, (ctx) => {
-      if (!ctx.isPlaying) return { ...ctx, playbackTime: 0, playTime: 0, pauseTime: undefined }
-
-      stop()
-      play()
-
-      return { ...ctx, isPlaying: true, playTime: 0, pauseTime: ctx.absn.context.currentTime, playbackTime: 0 }
-    }))
-  }, [stop, play])
-
   // MARK: createAudioBuffer
   const createAudioBuffer = useCallback(async (uri: string): Promise<AudioBuffer> => {
     const res = await fetch(uri)
@@ -242,8 +229,8 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   }, [audioState])
 
   const commands = useMemo(
-    () => ({ play, pause, stop, restart, setSound, setSounds, setVolume, setSpeed, setPlaybackTime }),
-    [play, pause, stop, restart, setSound, setSounds, setVolume, setSpeed, setPlaybackTime],
+    () => ({ play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime }),
+    [play, pause, stop, setSound, setSounds, setVolume, setSpeed, setPlaybackTime],
   )
 
   return { context: globalContext, contexts, commands }
