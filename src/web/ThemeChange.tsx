@@ -1,42 +1,50 @@
 import React from 'react'
-import { useColorMode, Menu, MenuButton, MenuList, MenuItem, IconButton, Box } from '@yamada-ui/react'
+import { useColorMode, HStack, Text, SegmentedControl, SegmentedControlButton, ColorModeWithSystem, CardBody, CardHeader } from '@yamada-ui/react'
 
 import { MoonIcon, PaletteIcon, SunIcon, MonitorCogIcon } from '@yamada-ui/lucide'
+import { useTranslation } from 'react-i18next'
 
 export const ThemeChange = () => {
   const { changeColorMode, internalColorMode } = useColorMode()
+  const { t } = useTranslation()
 
-  const isSystemColor = (internalColorMode == 'system') ? 'primary' : ''
-  const isLightColor = (internalColorMode == 'light') ? 'primary' : ''
-  const isDarkColor = (internalColorMode == 'dark') ? 'primary' : ''
+  const getColorModeWithSystem = (v: string): ColorModeWithSystem => {
+    if (v == 'system') return 'system'
+    if (v == 'light') return 'light'
+    if (v == 'dark') return 'dark'
+    return internalColorMode
+  }
 
   return (
-    <Menu animation="top" gutter={0}>
-      <MenuButton as={IconButton} icon={<PaletteIcon fontSize="lg" />} variant="outline" />
-
-      <MenuList style={{ padding: 0, margin: 0 }}>
-        <MenuItem
-          icon={<MonitorCogIcon color={isSystemColor} fontSize="lg" />}
-          textColor={isSystemColor}
-          onClick={() => changeColorMode('system')}
-        >
-          <Box paddingBottom={0.5}>System</Box>
-        </MenuItem>
-        <MenuItem
-          icon={<SunIcon color={isLightColor} fontSize="lg" />}
-          textColor={isLightColor}
-          onClick={() => changeColorMode('light')}
-        >
-          <Box paddingBottom={0.5}>Light</Box>
-        </MenuItem>
-        <MenuItem
-          icon={<MoonIcon color={isDarkColor} fontSize="lg" />}
-          textColor={isDarkColor}
-          onClick={() => changeColorMode('dark')}
-        >
-          <Box paddingBottom={0.5}>Dark</Box>
-        </MenuItem>
-      </MenuList>
-    </Menu>
+    <>
+      <CardHeader>
+        <HStack>
+          <PaletteIcon fontSize="xl" />
+          <Text>{t('theme_select')}</Text>
+        </HStack>
+      </CardHeader>
+      <CardBody>
+        <SegmentedControl value={internalColorMode} onChange={v => changeColorMode(getColorModeWithSystem(v))}>
+          <SegmentedControlButton value="system">
+            <HStack>
+              <MonitorCogIcon fontSize="xl" />
+              <Text>System</Text>
+            </HStack>
+          </SegmentedControlButton>
+          <SegmentedControlButton value="light">
+            <HStack>
+              <SunIcon fontSize="xl" />
+              <Text>Light</Text>
+            </HStack>
+          </SegmentedControlButton>
+          <SegmentedControlButton value="dark">
+            <HStack>
+              <MoonIcon fontSize="xl" />
+              <Text>Dark</Text>
+            </HStack>
+          </SegmentedControlButton>
+        </SegmentedControl>
+      </CardBody>
+    </>
   )
 }

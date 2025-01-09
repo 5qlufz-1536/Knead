@@ -1,18 +1,14 @@
 import React, { useState } from 'react'
-import { Menu, MenuButton, MenuList, MenuItem, IconButton, Box } from '@yamada-ui/react'
+import { SegmentedControl, SegmentedControlButton, HStack, Text, CardHeader, CardBody } from '@yamada-ui/react'
 
-import { CheckIcon, GlobeIcon } from '@yamada-ui/lucide'
+import { GlobeIcon } from '@yamada-ui/lucide'
 import { useTranslation } from 'react-i18next'
 
 export const LanguageChange = () => {
   const { i18n } = useTranslation()
 
   const [lang, setLang] = useState('')
-  if (lang === '') {
-    const get_lang = localStorage.getItem('lang') ?? 'ja'
-    setLang(get_lang)
-    i18n.changeLanguage(get_lang)
-  }
+  if (lang === '') setLang(localStorage.getItem('lang') ?? 'en')
 
   const onClickLang = (lang: string) => {
     i18n.changeLanguage(lang)
@@ -20,23 +16,19 @@ export const LanguageChange = () => {
   }
 
   return (
-    <Menu animation="top" gutter={0}>
-      <MenuButton as={IconButton} icon={<GlobeIcon fontSize="lg" />} variant="outline" />
-
-      <MenuList style={{ padding: 0, margin: 0 }}>
-        <MenuItem
-          icon={<CheckIcon opacity={i18n.language === 'en' ? 1 : 0} fontSize="lg" />}
-          onClick={() => onClickLang('en')}
-        >
-          <Box paddingBottom={0.5}>English</Box>
-        </MenuItem>
-        <MenuItem
-          icon={<CheckIcon opacity={i18n.language === 'ja' ? 1 : 0} fontSize="lg" />}
-          onClick={() => onClickLang('ja')}
-        >
-          <Box paddingBottom={0.5}>日本語</Box>
-        </MenuItem>
-      </MenuList>
-    </Menu>
+    <>
+      <CardHeader>
+        <HStack>
+          <GlobeIcon fontSize="xl" />
+          <Text>Language / 言語</Text>
+        </HStack>
+      </CardHeader>
+      <CardBody>
+        <SegmentedControl value={i18n.language} onChange={onClickLang}>
+          <SegmentedControlButton value="en">English</SegmentedControlButton>
+          <SegmentedControlButton value="ja">日本語</SegmentedControlButton>
+        </SegmentedControl>
+      </CardBody>
+    </>
   )
 }
