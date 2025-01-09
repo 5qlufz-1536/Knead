@@ -1,16 +1,23 @@
 import './App.css'
-import React from 'react'
+import React, { useState } from 'react'
 import { VersionSelector } from './VersionSelector'
 import { SoundSelector } from './SoundSelector'
-import { ThemeChange } from './ThemeChange'
 import { Footer } from './Footer'
-// import { Configuration } from './Configuration'
+import { Configuration } from './Configuration'
 import { VolumeChange } from './VolumeChange'
-import { LanguageChange } from './LanguageChange'
 import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/react'
+import { useTranslation } from 'react-i18next'
 
 export const App = () => {
   const { colorMode } = useColorMode()
+  const { i18n } = useTranslation()
+
+  const [lang, setLang] = useState('')
+  if (lang === '') {
+    const get_lang = localStorage.getItem('lang') ?? 'en'
+    setLang(get_lang)
+    i18n.changeLanguage(get_lang)
+  }
 
   const style = document.createElement('style')
   style.textContent += '::-webkit-scrollbar { width: 7px; height: 7px; }'
@@ -28,15 +35,13 @@ export const App = () => {
     <>
       <VStack h="100vh">
         <Box padding={2}>
-          <Flex w="full" gap="md" paddingBottom={0}>
+          <Flex w="full" gap={2} paddingBottom={0}>
             <VersionSelector />
 
             <Spacer />
 
             <VolumeChange />
-            <LanguageChange />
-            <ThemeChange />
-            {/* <Configuration /> */}
+            <Configuration />
           </Flex>
           <Separator marginY={2} size="xs" />
           <SoundSelector />

@@ -93,7 +93,10 @@ export const initIpcMain = (): void => {
       result.push(sound)
     }
 
-    return result
+    return result.sort((a, b) => {
+      if (a.id > b.id) return 1
+      else return -1
+    })
   })
 
   ipcMain.handle('get_mcSoundHash', async (event, hash: string): Promise<string> => {

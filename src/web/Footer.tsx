@@ -28,7 +28,7 @@ export const Footer = () => {
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
   useEffect(() => {
     if (selectedSound && AudioController.context.isSomePlaying) AudioController.commands.setVolume(selectedSound, appVolume - 1)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appVolume])
 
   // 1.20.5(24w09a)以降は<source>と<selector>を省略できるようになった
@@ -233,7 +233,7 @@ export const Footer = () => {
         }
       }
     })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [soundSelectDetector])
 
   return (
@@ -286,7 +286,7 @@ export const Footer = () => {
 
           <Flex w="full" marginTop={1}>
             <Tooltip label={t('add_slash')} placement="bottom" animation="top">
-              <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="lg" />} onClick={toggleSlash} />
+              <Toggle variant="outline" colorScheme="primary" icon={<SlashIcon fontSize="xl" />} onClick={toggleSlash} />
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('play_source')} placement="bottom" animation="top">
@@ -298,7 +298,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('min_volume')} placement="bottom" animation="top">
-              <NumberInput onChange={onChangeMinVolumeInput} w={32} defaultValue={0.0} precision={2} min={0.0} max={1.0} step={0.1} />
+              <NumberInput onChange={onChangeMinVolumeInput} w={20} defaultValue={0.0} precision={2} min={0.0} max={1.0} step={0.1} />
             </Tooltip>
           </Flex>
 
@@ -308,21 +308,15 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label={t('tilde_symbol')} placement="bottom" animation="top">
-              <Box border="1px solid" borderColor="inherit" borderRadius={5}>
-                <IconButton onClick={onClickTilde} icon={<PiTildeBold size={20} />} variant="ghost" />
-              </Box>
+              <IconButton onClick={onClickTilde} icon={<PiTildeBold size={20} />} variant="outline" borderColor="inherit" />
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('caret_symbol')} placement="bottom" animation="top">
-              <Box border="1px solid" borderColor="inherit" borderRadius={5}>
-                <IconButton onClick={onClickCaret} icon={<PiCaretUpBold size={20} />} variant="ghost" />
-              </Box>
+              <IconButton onClick={onClickCaret} icon={<PiCaretUpBold size={20} />} variant="outline" borderColor="inherit" />
             </Tooltip>
             <Spacer maxW={1} />
             <Tooltip label={t('symbol_clear')} placement="bottom" animation="top">
-              <Box border="1px solid" borderColor="inherit" borderRadius={5}>
-                <IconButton onClick={onClickRemoveSymbol} icon={<PiSelectionBold size={20} />} variant="ghost" />
-              </Box>
+              <IconButton onClick={onClickRemoveSymbol} icon={<PiSelectionBold size={20} />} variant="outline" borderColor="inherit" />
             </Tooltip>
           </Flex>
 
@@ -332,7 +326,7 @@ export const Footer = () => {
             </Tooltip>
             <Spacer maxW={10} />
             <Tooltip label={t('this_dimension_only')} placement="bottom" animation="top" maxW="full">
-              <Toggle onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="lg" />} />
+              <Toggle onClick={toggleSelectorX0} variant="outline" colorScheme="primary" defaultSelected icon={<MegaphoneOffIcon fontSize="xl" />} />
             </Tooltip>
           </Flex>
 
@@ -341,7 +335,7 @@ export const Footer = () => {
               <Box alignContent="center" paddingX={3} style={{ userSelect: 'none' }}>{command}</Box>
               <Spacer />
               <Box><Separator orientation="vertical" borderColor="bg" /></Box>
-              <Tooltip label={hasCopied ? 'Copied!' : 'Copy'} placement="bottom" animation="top">
+              <Tooltip label={hasCopied ? 'Copied!' : 'Copy'} placement="bottom" animation="bottom">
                 <IconButton icon={hasCopied ? <CheckIcon color="success" marginX={6} /> : <CopyIcon marginX={6} />} onClick={() => onCopy(command)} variant="ghost" borderLeftRadius={0} borderRightRadius={2} />
               </Tooltip>
             </Flex>

@@ -23,15 +23,14 @@ export const VolumeChange = () => {
   }
 
   const volumeIcon = (volume: number, mute: boolean) => {
-    if (mute) return <VolumeXIcon fontSize="lg" />
-    else if (volume <= 0.0) return <VolumeOffIcon fontSize="lg" />
-    else if (volume <= 0.5) return <Volume1Icon fontSize="lg" />
-    else return <Volume2Icon fontSize="lg" />
+    if (mute) return <VolumeXIcon fontSize="xl" />
+    else if (volume <= 0.0) return <VolumeOffIcon fontSize="xl" />
+    else if (volume <= 0.5) return <Volume1Icon fontSize="xl" />
+    else return <Volume2Icon fontSize="xl" />
   }
 
   return (
     <Flex>
-
       <Toggle icon={volumeIcon(volumeSlider, MuteSwitch)} onClick={onClickMute} variant="outline" colorScheme={MuteSwitch ? 'red' : 'primary'} />
       <Box w="full" textAlign="center" paddingX={2}>
         <Slider
