@@ -196,7 +196,7 @@ export const SoundSelector = () => {
         <Menu animation="top" gutter={0}>
           <MenuButton as={IconButton} icon={<ArrowDownAZIcon fontSize="xl" />} variant="outline" borderColor="inherit" />
 
-          <MenuList style={{ padding: 0, margin: 0 }}>
+          <MenuList style={{ userSelect: 'none', padding: 0, margin: 0 }}>
             <MenuOptionGroup label={t('id_sort')} type="radio" value={SoundsSort?.id} onChange={value => changeSoundSorts({ id: value })}>
               <MenuOptionItem value="ascending">{t('ascending')}</MenuOptionItem>
               <MenuOptionItem value="descending">{t('descending')}</MenuOptionItem>
@@ -220,7 +220,7 @@ export const SoundSelector = () => {
             colorScheme="primary"
           />
 
-          <MenuList style={{ padding: 0, margin: 0 }}>
+          <MenuList style={{ userSelect: 'none', padding: 0, margin: 0 }}>
             <MenuGroup label={t('rating_filter')}>
               <MenuItem onClick={() => clearRatingFilters()} icon={<XIcon fontSize="lg" />}>{t('clear_filter')}</MenuItem>
               <MenuItem onClick={() => allOnRatingFilters()} icon={<SquareCheckBigIcon fontSize="lg" />}>{t('all_on_filter')}</MenuItem>
