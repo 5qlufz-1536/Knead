@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { LanguageChange } from './LanguageChange'
 
 export const Configuration = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { open, onOpen, onClose } = useDisclosure()
 
   const { t } = useTranslation()
 
@@ -28,7 +28,7 @@ export const Configuration = () => {
     <>
       <IconButton onClick={onOpen} icon={<SettingsIcon fontSize="xl" />} />
 
-      <Drawer isOpen={isOpen} onClose={onClose} size="lg" placement="right" style={{ userSelect: 'none' }}>
+      <Drawer open={open} onClose={onClose} size="lg" placement="right" style={{ userSelect: 'none' }}>
         <DrawerHeader>{t('settings')}</DrawerHeader>
 
         <DrawerBody>
