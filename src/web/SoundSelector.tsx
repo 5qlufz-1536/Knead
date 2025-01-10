@@ -104,7 +104,7 @@ export const SoundSelector = () => {
     items: filteredSounds,
   })
 
-  const listBoxHeightCSS = 'calc(100vh - 391px)'
+  const listBoxHeightCSS = 'calc(100vh - 388.5px)'
 
   const onChangeSearchWord = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTxt(e.target.value)
