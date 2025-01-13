@@ -71,22 +71,22 @@ export const initIpcMain = (): void => {
 
       for (const element of soundsJson[id].sounds) {
         if (typeof element == 'string') {
-          sound.sounds.push({ hash: getHashBySoundName(objects, element), pitch: 1 })
+          sound.sounds.push({ path: element, hash: getHashBySoundName(objects, element), pitch: 1 })
         }
         else if (element.type != null && element.type == 'event') {
           const pitch: number = element?.pitch ?? 1
 
           for (const element2 of soundsJson[element.name].sounds) {
             if (typeof element2 == 'string') {
-              sound.sounds.push({ hash: getHashBySoundName(objects, element2), pitch })
+              sound.sounds.push({ path: element2, hash: getHashBySoundName(objects, element2), pitch })
             }
             else {
-              sound.sounds.push({ hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5, 2) })
+              sound.sounds.push({ path: element2.name, hash: getHashBySoundName(objects, element2.name), pitch: clamp((element2?.pitch ?? 1) * (element?.pitch ?? 1), 0.5, 2) })
             }
           }
         }
         else {
-          sound.sounds.push({ hash: getHashBySoundName(objects, element.name), pitch: element?.pitch ?? 1 })
+          sound.sounds.push({ path: element.name, hash: getHashBySoundName(objects, element.name), pitch: element?.pitch ?? 1 })
         }
       }
 

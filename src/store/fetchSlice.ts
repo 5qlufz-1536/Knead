@@ -7,6 +7,7 @@ export interface Sound {
 }
 
 export interface SoundName {
+  path: string
   hash: string
   pitch: number
 }
