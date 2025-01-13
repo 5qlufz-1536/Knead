@@ -16,7 +16,7 @@ build({
       allowToChangeInstallationDirectory: true,
     },
     win: {
-      target: ['nsis', 'zip'],
+      target: ['zip'],
       publisherName: 'NeAc',
       icon: 'build/icon.png',
     },
