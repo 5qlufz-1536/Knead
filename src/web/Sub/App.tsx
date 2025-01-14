@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text } from '@yamada-ui/react'
+import { Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text, IconButton } from '@yamada-ui/react'
+import { FaPlay } from 'react-icons/fa6'
 
 export const SubApp = () => {
   // こいつもバーチャルスクロールで実装しなければいけなさそう？
@@ -7,6 +8,7 @@ export const SubApp = () => {
     <ReorderItem value={item} key={item} padding={2}>
       <HStack>
         <ReorderTrigger />
+        <IconButton size="xs" icon={<FaPlay size={10} />} />
         <Text>{item}</Text>
       </HStack>
     </ReorderItem>
