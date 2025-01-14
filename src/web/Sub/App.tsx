@@ -2,6 +2,7 @@ import React from 'react'
 import { Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text } from '@yamada-ui/react'
 
 export const SubApp = () => {
+  // こいつもバーチャルスクロールで実装しなければいけなさそう？
   const items = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7', 'test8', 'test9', 'test10'].map(item => (
     <ReorderItem value={item} key={item} padding={2}>
       <HStack>
@@ -10,9 +11,6 @@ export const SubApp = () => {
       </HStack>
     </ReorderItem>
   ))
-
-  const a = localStorage.getItem('ui-color-mode')
-  console.log(a)
 
   return (
     <>
