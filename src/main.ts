@@ -15,6 +15,7 @@ app.whenReady().then(() => {
     center: true,
     title: 'Knead',
     opacity: 1,
+    show: false,
     icon: path.join(__dirname, 'assets/icon.png'),
     webPreferences: {
       // webpack が出力したプリロードスクリプトを読み込み
@@ -28,6 +29,10 @@ app.whenReady().then(() => {
   mainWindow.loadFile('dist/index.html')
   if (process.env.NODE_ENV == 'development') mainWindow.webContents.openDevTools()
 
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
+
   // サブウインドウを作成するハンドラ
   ipcMain.handle('make_sub_window', (): void => {
     // 子ウィンドウを作成
@@ -40,6 +45,7 @@ app.whenReady().then(() => {
       title: 'Knead',
       parent: mainWindow,
       opacity: 1,
+      show: false,
       icon: path.join(__dirname, 'assets/icon.png'),
     })
     // メニューバー削除
@@ -47,6 +53,10 @@ app.whenReady().then(() => {
     // 子ウィンドウ用 HTML
     subWindow.loadFile('dist/index.html', { hash: 'sub' })
     if (process.env.NODE_ENV == 'development') subWindow.webContents.openDevTools()
+
+    subWindow.once('ready-to-show', () => {
+      subWindow.show()
+    })
   })
 })
 
