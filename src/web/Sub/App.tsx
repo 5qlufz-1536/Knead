@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
-import { Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text, useColorMode } from '@yamada-ui/react'
+import React from 'react'
+import { Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text } from '@yamada-ui/react'
 
 export const SubApp = () => {
-  const { changeColorMode, internalColorMode } = useColorMode()
-
   const items = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7', 'test8', 'test9', 'test10'].map(item => (
-    <ReorderItem value={item} key={item}>
+    <ReorderItem value={item} key={item} padding={2}>
       <HStack>
         <ReorderTrigger />
         <Text>{item}</Text>
@@ -13,18 +11,18 @@ export const SubApp = () => {
     </ReorderItem>
   ))
 
-  useEffect(() => {
-    console.log(internalColorMode)
-    changeColorMode(internalColorMode)
-  }, [changeColorMode, internalColorMode])
+  const a = localStorage.getItem('ui-color-mode')
+  console.log(a)
 
   return (
     <>
       <VStack h="100vh">
         <Box padding={2}>
-          <Reorder>
-            {items}
-          </Reorder>
+          <Box padding={2} border="1px solid" borderColor="inherit" borderRadius={5} h="calc(100vh - 30px)" overflowY="scroll">
+            <Reorder position="relative" gap={2}>
+              {items}
+            </Reorder>
+          </Box>
         </Box>
       </VStack>
     </>
