@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useAddDispatch, useAppSelector } from '../store/_store'
+import { useAddDispatch, useAppSelector } from '../../store/_store'
 import { Box, Flex, IconButton, Input, InputGroup, InputLeftElement, InputRightElement, Menu, MenuButton, MenuGroup, MenuItem, MenuList, MenuOptionGroup, MenuOptionItem, MenuSeparator, Spacer, Toggle, useColorModeValue } from '@yamada-ui/react'
 import { ArrowDownAZIcon, FilterIcon, SearchIcon, SquareCheckBigIcon, XIcon } from '@yamada-ui/lucide'
-import { useVirtualScroll } from '../hooks/useVirtualScroll'
+import { useVirtualScroll } from '../../hooks/useVirtualScroll'
 import { RatingStars } from './RatingStars'
-import { updateSelectedSound } from '../store/fetchSlice'
-import { useWindowSize } from '../hooks/useWindowSize'
+import { updateSelectedSound } from '../../store/fetchSlice'
+import { useWindowSize } from '../../hooks/useWindowSize'
 import { useTranslation } from 'react-i18next'
-import { VersionInfoType } from '../types/VersionInfo'
+import { VersionInfoType } from '../../types/VersionInfo'
 import { GoStarFill } from 'react-icons/go'
 
 export const SoundSelector = () => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { App } from './App'
+import { App } from './Main/App'
 import { SubApp } from './Sub/App'
 import { createRoot } from 'react-dom/client'
 import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript } from '@yamada-ui/react'

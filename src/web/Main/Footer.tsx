@@ -2,15 +2,15 @@ import { Box, Flex, IconButton, Input, NumberInput, Select, SelectItem, Separato
 import { FaPlay, FaPause, FaArrowRotateLeft } from 'react-icons/fa6'
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from '@yamada-ui/lucide'
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
-import { useAddDispatch, useAppSelector } from '../store/_store'
+import { useAddDispatch, useAppSelector } from '../../store/_store'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { updateSelectedSound } from '../store/fetchSlice'
-import { isAboveVersion, VersionInfoType } from '../types/VersionInfo'
-import { useAudioPlay } from '../hooks/useAudioPlay'
+import { updateSelectedSound } from '../../store/fetchSlice'
+import { isAboveVersion, VersionInfoType } from '../../types/VersionInfo'
+import { useAudioPlay } from '../../hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
 import { PitchInput } from './PitchInput'
-import { secondsToString } from '../utils/NumberUtil'
-import { SelectorCheck } from '../utils/SelectorCheck'
+import { secondsToString } from '../../utils/NumberUtil'
+import { SelectorCheck } from '../../utils/SelectorCheck'
 
 const { myAPI } = window
 

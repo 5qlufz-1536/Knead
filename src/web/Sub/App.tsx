@@ -1,4 +1,4 @@
-import '../App.css'
+import './App.css'
 import React, { useState } from 'react'
 import { useColorMode, Box, VStack, Reorder, ReorderItem, ReorderTrigger, HStack, Text } from '@yamada-ui/react'
 import { useTranslation } from 'react-i18next'

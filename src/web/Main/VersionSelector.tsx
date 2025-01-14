@@ -1,9 +1,9 @@
 import React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Select } from '@yamada-ui/react'
-import { useAddDispatch } from '../store/_store'
-import { Sound, updateSoundList } from '../store/fetchSlice'
-import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from '../types/VersionInfo'
+import { useAddDispatch } from '../../store/_store'
+import { Sound, updateSoundList } from '../../store/fetchSlice'
+import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from '../../types/VersionInfo'
 import { useTranslation } from 'react-i18next'
 
 const { myAPI } = window
