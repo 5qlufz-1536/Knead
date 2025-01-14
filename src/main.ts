@@ -46,6 +46,7 @@ app.whenReady().then(() => {
     subWindow.setMenu(null)
     // 子ウィンドウ用 HTML
     subWindow.loadFile('dist/index.html', { hash: 'sub' })
+    if (process.env.NODE_ENV == 'development') subWindow.webContents.openDevTools()
   })
 })
 

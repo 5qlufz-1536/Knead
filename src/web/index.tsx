@@ -1,5 +1,7 @@
 import React from 'react'
+import './Style.css'
 import { App } from './Main/App'
+import { AppInitialize } from './AppInitialize'
 import { SubApp } from './Sub/App'
 import { createRoot } from 'react-dom/client'
 import { extendConfig, extendTheme, ThemeConfig, UIProvider, getColorModeScript } from '@yamada-ui/react'
@@ -41,6 +43,7 @@ injectColorModeScript()
 createRoot(document.getElementById('root') as Element).render(
   <Provider store={store}>
     <UIProvider config={customConfig} theme={customTheme}>
+      <AppInitialize />
       <HashRouter>
         <Routes>
           <Route index element={<App />} />

@@ -1,8 +1,0 @@
-footer.fixed_bottom {
-    width: 100%;
-    padding: 0;
-    /*絶対位置*/
-    position: absolute;
-    /*下に固定*/
-    bottom: 0;
-}
