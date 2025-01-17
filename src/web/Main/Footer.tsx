@@ -101,6 +101,7 @@ export const Footer = () => {
   if (PlaySource === '') setPlaySource(localStorage.getItem('PlaySource') ?? 'master')
   const onChangePlaySource = (v: string) => {
     localStorage.setItem('PlaySource', v)
+    window.myAPI.updateSettings({ playbackCategory: v })
     setPlaySource(v)
   }
 

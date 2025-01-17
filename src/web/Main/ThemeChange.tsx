@@ -15,6 +15,8 @@ export const ThemeChange = () => {
     return internalColorMode
   }
 
+  window.myAPI.updateSettings({theme: internalColorMode})
+
   return (
     <>
       <CardHeader>

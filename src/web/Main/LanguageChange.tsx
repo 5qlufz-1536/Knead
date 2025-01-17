@@ -13,6 +13,7 @@ export const LanguageChange = () => {
   const onClickLang = (lang: string) => {
     i18n.changeLanguage(lang)
     localStorage.setItem('lang', lang)
+    window.myAPI.updateSettings({language: lang})
   }
 
   return (

@@ -61,7 +61,7 @@ export const VersionSelector = () => {
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
     localStorage.setItem('targetVersion', JSON.stringify(versions.find(v => v.raw == version)))
-
+    window.myAPI.updateSettings({ selectedVersion: version })
     const sounds: Sound[] = await myAPI.get_mcSounds(version)
     // console.log(oggs)
     dispatch(updateSoundList({ sounds }))

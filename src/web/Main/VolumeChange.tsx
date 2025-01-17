@@ -20,6 +20,7 @@ export const VolumeChange = () => {
     const appVolume = MuteSwitch ? 0 : value
     sessionStorage.setItem('appVolume', `${appVolume}`)
     localStorage.setItem('volume', `${value}`)
+    window.myAPI.updateSettings({volume: appVolume})
   }
 
   const volumeIcon = (volume: number, mute: boolean) => {
