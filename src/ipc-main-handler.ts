@@ -3,6 +3,7 @@ import { ipcMain } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Sound } from './store/fetchSlice'
+import { loadSettings, saveSettings } from './config'
 
 const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max)
@@ -103,4 +104,29 @@ export const initIpcMain = (): void => {
     const file = hash === '' ? '' : path.join(...getMinecraftDir(), 'assets', 'objects', hash.slice(0, 2), hash)
     return file
   })
+
+  //設定を読み込む (例: レンダラープロセスが invoke したら返す)
+  ipcMain.handle('settings:load', async () => {
+    return loadSettings();
+  });
+
+  //設定を更新する (例: レンダラープロセスが send したら保存)
+  ipcMain.on('settings:update', (_event, partialSettings) => {
+    const current = loadSettings();
+    const updated = { ...current, ...partialSettings };
+    saveSettings(updated);
+  });
+
+  // 特定のキーの設定値を取得
+  ipcMain.handle('settings:get', (_event, key: string) => {
+    const settings = loadSettings();
+    return settings[key] ?? null;
+  });
+
+  // 特定のキーの設定値を更新
+  ipcMain.on('settings:set', (_event, { key, value }) => {
+    const settings = loadSettings();
+    settings[key] = value;
+    console.log(`Updated setting: ${key} = ${value}`);
+  });
 }

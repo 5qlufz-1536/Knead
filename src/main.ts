@@ -1,7 +1,6 @@
 import path from 'node:path'
 import { BrowserWindow, app, ipcMain } from 'electron'
 import { initIpcMain } from './ipc-main-handler'
-import { loadSettings, saveSettings } from './config'
 
 initIpcMain()
 
@@ -63,28 +62,3 @@ app.whenReady().then(() => {
 
 // すべてのウィンドウが閉じられたらアプリを終了する
 app.once('window-all-closed', () => app.quit())
-
-//設定を読み込む (例: レンダラープロセスが invoke したら返す)
-ipcMain.handle('settings:load', async () => {
-  return loadSettings();
-});
-
-//設定を更新する (例: レンダラープロセスが send したら保存)
-ipcMain.on('settings:update', (event, partialSettings) => {
-  const current = loadSettings();
-  const updated = { ...current, ...partialSettings };
-  saveSettings(updated);
-});
-
-// 特定のキーの設定値を取得
-ipcMain.handle('settings:get', (event, key: string) => {
-  const settings = loadSettings();
-  return settings[key] ?? null;
-});
-
-// 特定のキーの設定値を更新
-ipcMain.on('settings:set', (event, { key, value }) => {
-  const settings = loadSettings();
-  settings[key] = value;
-  console.log(`Updated setting: ${key} = ${value}`);
-});
