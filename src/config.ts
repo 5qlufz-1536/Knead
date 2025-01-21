@@ -32,7 +32,7 @@ const configPath = path.join(app.getPath('userData'), 'settings.json');
 const ratingStarPath = path.join(app.getPath('userData'), 'ratingStar.json');
 
 /**
- * 設定ファイルを読み込む関数
+ * 各設定ファイルを読み込む関数
  */
 export function loadSettings(): KneadSettings {
     try {
@@ -51,6 +51,20 @@ export function loadSettings(): KneadSettings {
     } catch (err) {
     console.error('[loadSettings] Failed:', err);
     return defaultSettings;
+    }
+}
+
+export function loadRatingStar(): RatingStar {
+    try {
+        if (!fs.existsSync(ratingStarPath)) {
+            saveRatingStar(defaultRatingStar);
+            return defaultRatingStar;
+        }
+        const raw = fs.readFileSync(ratingStarPath, 'utf-8');
+        return JSON.parse(raw) as RatingStar;
+    } catch (err) {
+        console.error('[loadRatingStar] Failed:', err);
+        return defaultRatingStar;
     }
 }
 
@@ -76,7 +90,7 @@ export function setSetting<Key extends keyof KneadSettings>(key: Key, value: Kne
 }
 
 /**
- * 設定ファイルに書き込む関数
+ * 各設定ファイルに書き込む関数
  */
 export function saveSettings(settings: KneadSettings) {
     try {
@@ -84,4 +98,26 @@ export function saveSettings(settings: KneadSettings) {
     } catch (err) {
     console.error('[saveSettings] Failed:', err);
     }
+}
+
+export function saveRatingStar(ratingStar: RatingStar) {
+    try {
+        fs.writeFileSync(ratingStarPath, JSON.stringify(ratingStar, null, 2));
+    } catch (err) {
+        console.error('[saveRatingStar] Failed:', err);
+    }
+}
+
+export function saveRatingStarAsString(ratingStar: string): void {
+    try {
+        fs.writeFileSync(ratingStarPath, ratingStar, 'utf-8');
+    } catch (err) {
+        console.error('[saveRatingStarAsString] Failed:', err);
+    }
+}
+
+export function updateRatingStar(key: string, value: number): void {
+    const ratingStar = loadRatingStar();
+    ratingStar[key] = value;
+    saveRatingStar(ratingStar);
 }

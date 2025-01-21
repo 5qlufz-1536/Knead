@@ -10,5 +10,9 @@ contextBridge.exposeInMainWorld('myAPI', {
   loadSettings: () => ipcRenderer.invoke('settings:load'),
   updateSettings: (partial: any) => ipcRenderer.send('settings:update', partial),
   getSetting: (key: string): Promise<any> => ipcRenderer.invoke('settings:get', key),
-  setSetting: (key: string, value: any) => ipcRenderer.send('settings:set', { key, value })
+  setSetting: (key: string, value: any) => ipcRenderer.send('settings:set', { key, value }),
+  loadRatingStar: async (): Promise<{ [key: string]: number }> => {return await ipcRenderer.invoke('load-rating-star')},
+  saveRatingStar: async (data: string): Promise<void> => {await ipcRenderer.invoke('save-rating-star', data)},
+  saveRatingStarAsString: async (data: string): Promise<void> => {await ipcRenderer.invoke('save-rating-star-as-string', data)},
+  updateRatingStar: async (key: string, value: number): Promise<void> => {await ipcRenderer.invoke('update-rating-star', key, value)},
 })

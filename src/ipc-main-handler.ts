@@ -3,7 +3,7 @@ import { ipcMain } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
 import { Sound } from './store/fetchSlice'
-import { loadSettings, saveSettings } from './config'
+import { loadSettings, saveSettings, loadRatingStar, saveRatingStar, updateRatingStar, saveRatingStarAsString } from './config'
 
 const clamp = (num: number, min: number, max: number): number => {
   return Math.min(Math.max(num, min), max)
@@ -128,5 +128,21 @@ export const initIpcMain = (): void => {
     const settings = loadSettings();
     settings[key] = value;
     console.log(`Updated setting: ${key} = ${value}`);
+  });
+
+  ipcMain.handle('load-rating-star', () => {
+    return loadRatingStar(); // 現在のデータを文字列で返す
+  });
+
+  ipcMain.handle('save-rating-star', (_, data: string) => {
+    saveRatingStarAsString(data); // 文字列として保存
+  });
+
+  ipcMain.handle('update-rating-star', (_, key: string, value: number) => {
+    updateRatingStar(key, value); // 指定されたキーと値を更新
+  });
+
+  ipcMain.handle('save-rating-star-as-string', (_, data: string) => {
+    saveRatingStarAsString(data); // データを保存
   });
 }
