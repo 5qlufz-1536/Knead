@@ -7,8 +7,8 @@ import { RatingStars } from './RatingStars'
 import { updateSelectedSound } from '../../store/fetchSlice'
 import { useWindowSize } from '../../hooks/useWindowSize'
 import { useTranslation } from 'react-i18next'
-import { VersionInfoType } from '../../types/VersionInfo'
 import { GoStarFill } from 'react-icons/go'
+import { SoundSort } from '../../config'
 
 export const SoundSelector = () => {
   const dispatch = useAddDispatch()
@@ -17,28 +17,26 @@ export const SoundSelector = () => {
   const Sounds = useAppSelector(state => state.fetch.sounds)
   const [soundRatings, setSoundRatings] = useState<({ [key: string]: number })>({})
   useEffect(() => {
-    const loadSoundRatings = async () => {
-      const ratingStar = await window.myAPI.loadRatingStar();
-      setSoundRatings(ratingStar);
-    };
-    loadSoundRatings();
+    (async () => {
+      const ratingStar = await window.myAPI.loadRatingStar()
+      setSoundRatings(ratingStar)
+    })()
   }, [])
-  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
-  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
+
+  const targetVersion = useAppSelector(state => state.fetch.targetVersion ?? '')
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
 
   const [searchTxt, setSearchTxt] = useState<string>('')
   const [txtFilters, setTxtFilters] = useState<string[]>([])
 
-  const [holdSoundsSort, setHoldSoundsSort] = useState<boolean | undefined>(undefined)
-  if (holdSoundsSort === undefined) setHoldSoundsSort(JSON.parse(localStorage.getItem('holdSoundsSort') ?? 'false'))
-
-  // ソート情報を保存しないパターン
-  const [SoundsSort, setSoundsSort] = useState<{ id: string, rating: string } | undefined>(undefined)
-  if (SoundsSort === undefined) {
-    if (holdSoundsSort == true) setSoundsSort(JSON.parse(localStorage.getItem('soundsSort') ?? '{ "id": "ascending", "rating": "none" }'))
-    else if (holdSoundsSort == false) setSoundsSort({ id: 'ascending', rating: 'none' })
-  }
+  const [SoundsSort, setSoundsSort] = useState<{ id: string, rating: string }>({ id: 'ascending', rating: 'none' })
+  useEffect(() => {
+    (async () => {
+      const holdSoundsSort = await window.myAPI.getSetting('holdSoundsSort') as boolean
+      const sort_data = await window.myAPI.getSetting('lastSoundSort') as SoundSort
+      if (holdSoundsSort == true) setSoundsSort(sort_data)
+    })()
+  }, [])
 
   const changeSoundSorts = ({ id, rating }: { id?: string, rating?: string }) => {
     if (!SoundsSort) return
@@ -49,28 +47,29 @@ export const SoundSelector = () => {
       return SoundsSort
     })()
     setSoundsSort(newSort)
-    localStorage.setItem('soundsSort', JSON.stringify(newSort))
+    window.myAPI.updateSettings({ lastSoundSort: newSort })
   }
 
-  const [holdRatingFilter, setHoldRatingFilter] = useState<boolean | undefined>(undefined)
-  if (holdRatingFilter === undefined) setHoldRatingFilter(JSON.parse(localStorage.getItem('holdRatingFilter') ?? 'false'))
+  const [ratingFilter, setRatingFilter] = useState<number[]>([])
+  useEffect(() => {
+    (async () => {
+      const holdRatingFilter = await window.myAPI.getSetting('holdRatingFilter') as boolean
+      const filter_data = await window.myAPI.getSetting('lastRatingFilter') as number[]
+      if (holdRatingFilter == true) setRatingFilter(filter_data)
+    })()
+  }, [])
 
-  const [ratingFilter, setRatingFilter] = useState<number[] | undefined>(undefined)
-  if (ratingFilter === undefined) {
-    if (holdRatingFilter == true) setRatingFilter(localStorage.getItem('ratingFilter')?.split(',').map(v => parseInt(v)).filter(v => !Number.isNaN(v)) ?? [])
-    else if (holdRatingFilter == false) setRatingFilter([])
-  }
   const clearRatingFilters = () => {
     setRatingFilter([])
-    localStorage.setItem('ratingFilter', '')
+    window.myAPI.updateSettings({ lastRatingFilter: [] })
   }
   const allOnRatingFilters = () => {
     setRatingFilter([0, 1, 2, 3, 4, 5])
-    localStorage.setItem('ratingFilter', '0, 1, 2, 3, 4, 5')
+    window.myAPI.updateSettings({ lastRatingFilter: [0, 1, 2, 3, 4, 5] })
   }
   const changeRatingFilters = (v: string[]) => {
     setRatingFilter(v.map(v => parseInt(v)))
-    localStorage.setItem('ratingFilter', v.join(','))
+    window.myAPI.updateSettings({ lastRatingFilter: v.map(v => parseInt(v)) })
   }
 
   const filteredSounds = (() => {
@@ -96,7 +95,7 @@ export const SoundSelector = () => {
   })()
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => scrollRef.current?.scrollTo({ top: 0 }), [txtFilters, ratingFilter, targetVersion?.raw])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0 }), [txtFilters, ratingFilter, targetVersion])
 
   const itemHeight = 40
 

@@ -21,7 +21,6 @@ interface State {
   volumeSlider: number
   appVolume: number
   appMute: boolean
-  lang: string
 }
 
 const initialState: State = {
@@ -33,13 +32,19 @@ const initialState: State = {
   volumeSlider: 1,
   appVolume: 1,
   appMute: false,
-  lang: 'ja',
 }
 
 export const fetchSlice = createSlice({
   name: 'fetch',
   initialState,
   reducers: {
+
+    updateTargetVersion: (
+      state,
+      action: PayloadAction<{ targetVersion: VersionInfoType | undefined }>,
+    ) => {
+      state.targetVersion = action.payload.targetVersion
+    },
 
     updateSoundList: (
       state,
@@ -59,4 +64,4 @@ export const fetchSlice = createSlice({
   },
 })
 export default fetchSlice.reducer
-export const { updateSoundList, updateSelectedSound } = fetchSlice.actions
+export const { updateTargetVersion, updateSoundList, updateSelectedSound } = fetchSlice.actions

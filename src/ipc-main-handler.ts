@@ -105,48 +105,48 @@ export const initIpcMain = (): void => {
     return file
   })
 
-  //設定を読み込む (例: レンダラープロセスが invoke したら返す)
+  // 設定を読み込む (例: レンダラープロセスが invoke したら返す)
   ipcMain.handle('settings:load', async () => {
-    return loadSettings();
-  });
+    return loadSettings()
+  })
 
-  //設定を更新する (例: レンダラープロセスが send したら保存)
+  // 設定を更新する (例: レンダラープロセスが send したら保存)
   ipcMain.on('settings:update', (_event, partialSettings) => {
-    const current = loadSettings();
-    const updated = { ...current, ...partialSettings };
-    saveSettings(updated);
-  });
+    const current = loadSettings()
+    const updated = { ...current, ...partialSettings }
+    saveSettings(updated)
+  })
 
   // 特定のキーの設定値を取得
   ipcMain.handle('settings:get', (_event, key: string) => {
-    const settings = loadSettings();
-    return settings[key] ?? null;
-  });
+    const settings = loadSettings()
+    return settings[key] ?? null
+  })
 
   // 特定のキーの設定値を更新
   ipcMain.on('settings:set', (_event, { key, value }) => {
-    const settings = loadSettings();
-    settings[key] = value;
-    console.log(`Updated setting: ${key} = ${value}`);
-  });
+    const settings = loadSettings()
+    settings[key] = value
+    console.log(`Updated setting: ${key} = ${value}`)
+  })
 
   // 現在のデータを文字列で返す
   ipcMain.handle('load-rating-star', () => {
-    return loadRatingStar();
-  });
+    return loadRatingStar()
+  })
 
   // 文字列として保存
   ipcMain.handle('save-rating-star', (_, data: string) => {
-    saveRatingStarAsString(data);
-  });
+    saveRatingStarAsString(data)
+  })
 
   // 指定されたキーと値を更新
   ipcMain.handle('update-rating-star', (_, key: string, value: number) => {
-    updateRatingStar(key, value);
-  });
+    updateRatingStar(key, value)
+  })
 
   // データを保存
   ipcMain.handle('save-rating-star-as-string', (_, data: string) => {
-    saveRatingStarAsString(data);
-  });
+    saveRatingStarAsString(data)
+  })
 }

@@ -2,28 +2,25 @@ import React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Select } from '@yamada-ui/react'
 import { useAddDispatch } from '../../store/_store'
-import { Sound, updateSoundList } from '../../store/fetchSlice'
+import { Sound, updateSoundList, updateTargetVersion } from '../../store/fetchSlice'
 import { VersionInfoType, compareReleaseVersionInfo, compareSnapshotVersionInfo, comparePreReleaseVersionInfo, compareReleaseCandidateVersionInfo, parseVersion } from '../../types/VersionInfo'
 import { useTranslation } from 'react-i18next'
-
-const { myAPI } = window
 
 export const VersionSelector = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
 
-  const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
   const [versions, setVersions] = useState<VersionInfoType[]>([])
   const [SelectedVersion, setSelectedVersion] = useState('')
 
   useEffect(() => {
     (async () => {
-      const version = await myAPI.getSetting('selectedVersion');
+      const version = await window.myAPI.getSetting('selectedVersion') as string | undefined
       if (version) {
-        setSelectedVersion(version);
+        setSelectedVersion(version)
       }
-    })();
-  }, []);
+    })()
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -31,7 +28,7 @@ export const VersionSelector = () => {
         return versions.map(parseVersion).filter((v): v is VersionInfoType => !!v)
       }
       try {
-        const versions = await myAPI.get_versions()
+        const versions = await window.myAPI.get_versions()
         // const versions = ["1.21", "1.21.2", "1.42.3", "1.19", "1.21.4", "Ffff-1.3.421.21", "22.31.321", "22...31.321", "1.19.3-rc3", "1.19.3-pre2", "", "1.13.1-pre2", "1.13.1-pre1", "23w44a", "12w3421a", "1.1232-foa", "a-tr-test-1.32116.325-1.21", "23w13a_or_b", "1.19.2-AAA_DSA_GA_H2", "3.28.1-aaaasd21.3.3-41.5555.3.32118-3.3.3"]
         setVersions(get_mcVersions(versions))
       }
@@ -50,7 +47,7 @@ export const VersionSelector = () => {
     const f = async () => {
       try {
         if (SelectedVersion) {
-          const sounds: Sound[] = await myAPI.get_mcSounds(SelectedVersion)
+          const sounds: Sound[] = await window.myAPI.get_mcSounds(SelectedVersion)
           dispatch(updateSoundList({ sounds }))
         }
       }
@@ -66,9 +63,9 @@ export const VersionSelector = () => {
 
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
-    localStorage.setItem('targetVersion', JSON.stringify(versions.find(v => v.raw == version)))
+    dispatch(updateTargetVersion({ targetVersion: versions.find(v => v.raw == version) }))
     window.myAPI.updateSettings({ selectedVersion: version })
-    const sounds: Sound[] = await myAPI.get_mcSounds(version)
+    const sounds: Sound[] = await window.myAPI.get_mcSounds(version)
     dispatch(updateSoundList({ sounds }))
   }
 

@@ -1,5 +1,6 @@
 node_modules
 dist
+userData
 release
 ..build.bat
 ..run.bat

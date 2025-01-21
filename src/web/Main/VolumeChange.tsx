@@ -5,14 +5,14 @@ import { Box, Flex, Slider, Toggle, useBoolean } from '@yamada-ui/react'
 export const VolumeChange = () => {
   const [MuteSwitch, { toggle: toggleMute }] = useBoolean(false)
 
-  const [volumeSlider, setVolumeSlider] = useState<number>(-1)
+  const [volumeSlider, setVolumeSlider] = useState<number>(1)
 
   useEffect(() => {
     (async () => {
-      const volume = await window.myAPI.getSetting('volume');
-      setVolumeSlider(volume ?? 1);
-    })();
-  }, []);
+      const volume = await window.myAPI.getSetting('volume') as number
+      setVolumeSlider(volume ?? 1)
+    })()
+  }, [])
 
   const onClickMute = () => {
     console.log(volumeSlider)
@@ -25,8 +25,7 @@ export const VolumeChange = () => {
     setVolumeSlider(value)
     const appVolume = MuteSwitch ? 0 : value
     sessionStorage.setItem('appVolume', `${appVolume}`)
-    localStorage.setItem('volume', `${value}`)
-    window.myAPI.updateSettings({volume: appVolume})
+    window.myAPI.updateSettings({ volume: appVolume })
   }
 
   const volumeIcon = (volume: number, mute: boolean) => {
@@ -43,22 +42,10 @@ export const VolumeChange = () => {
         <Slider
           value={volumeSlider} disabled={MuteSwitch} onChange={onChangeVolumeSlider}
           marginBottom={-2} step={0.01} min={0} max={1} w={40}
-          filledTrackColor="primary" trackColor="gray.200"
+          filledTrackColor="primary" trackColor="gray.200" thumbColor="primary"
+          thumbSize={2.5}
+          focusThumbOnChange={false} readOnly={false}
           thumbProps={{
-            visibility: 'hidden',
-            _after: {
-              content: '""',
-              display: 'block',
-              w: '2.5',
-              h: '2.5',
-              borderRadius: 'full',
-              bg: 'primary',
-              position: 'absolute',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              transition: 'left 0',
-              visibility: 'visible',
-            },
             _disabled: { color: 'primary' },
           }}
         />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SettingsIcon, ArrowDownAZIcon, FilterIcon } from '@yamada-ui/lucide'
 import { Drawer, DrawerHeader, DrawerBody, useDisclosure, IconButton, Switch, Text, HStack, Card, CardHeader, CardBody, VStack } from '@yamada-ui/react'
 import { ThemeChange } from './ThemeChange'
@@ -10,18 +10,26 @@ export const Configuration = () => {
 
   const { t } = useTranslation()
 
-  const [holdSoundsSort, setHoldSoundsSort] = useState<boolean | undefined>(undefined)
-  if (holdSoundsSort === undefined) setHoldSoundsSort(JSON.parse(localStorage.getItem('holdSoundsSort') ?? 'false'))
+  const [holdSoundsSort, setHoldSoundsSort] = useState<boolean>(false)
+  const [holdRatingFilter, setHoldRatingFilter] = useState<boolean>(false)
+
+  useEffect(() => {
+    (async () => {
+      const load_holdSoundsSort = await window.myAPI.getSetting('holdSoundsSort') as boolean
+      setHoldSoundsSort(load_holdSoundsSort)
+      const load_holdRatingFilter = await window.myAPI.getSetting('holdRatingFilter') as boolean
+      setHoldRatingFilter(load_holdRatingFilter)
+    })()
+  }, [])
+
   const changesetHoldSoundsSort = (v: boolean) => {
     setHoldSoundsSort(v)
-    localStorage.setItem('holdSoundsSort', v.toString())
+    window.myAPI.updateSettings({ holdSoundsSort: v })
   }
 
-  const [holdRatingFilter, setHoldRatingFilter] = useState<boolean | undefined>(undefined)
-  if (holdRatingFilter === undefined) setHoldRatingFilter(JSON.parse(localStorage.getItem('holdRatingFilter') ?? 'false'))
   const changeHoldRatingFilter = (v: boolean) => {
     setHoldRatingFilter(v)
-    localStorage.setItem('holdRatingFilter', v.toString())
+    window.myAPI.updateSettings({ holdRatingFilter: v })
   }
 
   return (

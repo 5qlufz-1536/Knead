@@ -95,22 +95,11 @@ export const PitchInput = ({ pitch: safePitch, onChange }: PitchInputProps): JSX
           <Slider
             onChange={onChangePitchSlider} value={parseFloat(safePitch)}
             w={32} h={10} step={0.01} min={0.5} max={2}
-            filledTrackColor="gray.200" trackColor="gray.200"
+            filledTrackColor="gray.200" trackColor="gray.200" thumbColor="primary"
+            thumbSize={2.5}
+            focusThumbOnChange={false} readOnly={false}
             thumbProps={{
-              visibility: 'hidden',
-              _after: {
-                content: '""',
-                display: 'block',
-                w: '2.5',
-                h: '2.5',
-                borderRadius: 'full',
-                bg: 'primary',
-                position: 'absolute',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                transition: 'left 0',
-                visibility: 'visible',
-              },
+              _disabled: { color: 'primary' },
             }}
           />
           <Spacer minW={3} />

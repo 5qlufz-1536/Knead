@@ -12,8 +12,6 @@ import { PitchInput } from './PitchInput'
 import { secondsToString } from '../../utils/NumberUtil'
 import { SelectorCheck } from '../../utils/SelectorCheck'
 
-const { myAPI } = window
-
 export const Footer = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
@@ -101,10 +99,10 @@ export const Footer = () => {
 
   useEffect(() => {
     (async () => {
-      const playbackCategory = await myAPI.getSetting('playbackCategory');
-      setPlaySource(playbackCategory ?? 'master');
-    })();
-  }, []);
+      const playbackCategory = await window.myAPI.getSetting('playbackCategory') as string
+      setPlaySource(playbackCategory ?? 'master')
+    })()
+  }, [])
 
   const onChangePlaySource = (v: string) => {
     window.myAPI.updateSettings({ playbackCategory: v })
@@ -231,7 +229,7 @@ export const Footer = () => {
         if (target_pitch < 0.5) target_pitch = 0.5
         else if (target_pitch > 2) target_pitch = 2
         try {
-          const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
+          const hash = await window.myAPI.get_mcSoundHash(sound?.hash ?? '')
           await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume - 1)
           AudioController.commands.play()
         }
@@ -253,22 +251,11 @@ export const Footer = () => {
               value={seekbar}
               onChange={onChangeSeekbar}
               step={0.01} min={0} max={100}
-              trackColor="gray.200"
+              filledTrackColor="primary" trackColor="gray.200" thumbColor="primary"
+              thumbSize={2.5}
+              focusThumbOnChange={false} readOnly={false}
               thumbProps={{
-                visibility: 'hidden',
-                _after: {
-                  content: '""',
-                  display: 'block',
-                  w: '2.5',
-                  h: '2.5',
-                  borderRadius: 'full',
-                  bg: 'primary',
-                  position: 'absolute',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  transition: 'left 0',
-                  visibility: 'visible',
-                },
+                _disabled: { color: 'primary' },
               }}
             />
           </Box>

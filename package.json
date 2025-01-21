@@ -15,7 +15,8 @@
   "author": "NeAc",
   "electronmon": {
     "patterns": [
-      "dist/**/*"
+      "dist/**/*",
+      "!userData/**"
     ]
   },
   "license": "Apache-2.0",
