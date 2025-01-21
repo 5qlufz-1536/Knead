@@ -24,7 +24,7 @@ export const Footer = () => {
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
   const targetVersion: VersionInfoType = JSON.parse(localStorage.getItem('targetVersion') ?? '{"kind":"release","raw":""}')
   const volume = parseFloat(localStorage.getItem('volume') ?? '1')
-  const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `-1`)
+  const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `${volume}`)
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
   useEffect(() => {
     if (selectedSound && AudioController.context.isSomePlaying) AudioController.commands.setVolume(selectedSound, appVolume - 1)
@@ -98,9 +98,15 @@ export const Footer = () => {
 
   // サウンドを流すターゲット(masterとか)
   const [PlaySource, setPlaySource] = useState('')
-  if (PlaySource === '') setPlaySource(localStorage.getItem('PlaySource') ?? 'master')
+
+  useEffect(() => {
+    (async () => {
+      const playbackCategory = await myAPI.getSetting('playbackCategory');
+      setPlaySource(playbackCategory ?? 'master');
+    })();
+  }, []);
+
   const onChangePlaySource = (v: string) => {
-    localStorage.setItem('PlaySource', v)
     window.myAPI.updateSettings({ playbackCategory: v })
     setPlaySource(v)
   }
