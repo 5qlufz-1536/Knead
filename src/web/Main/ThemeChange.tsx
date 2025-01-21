@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useColorMode, HStack, Text, SegmentedControl, SegmentedControlButton, ColorModeWithSystem, CardBody, CardHeader } from '@yamada-ui/react'
 
 import { MoonIcon, PaletteIcon, SunIcon, MonitorCogIcon } from '@yamada-ui/lucide'
@@ -7,6 +7,13 @@ import { useTranslation } from 'react-i18next'
 export const ThemeChange = () => {
   const { changeColorMode, internalColorMode } = useColorMode()
   const { t } = useTranslation()
+
+  useEffect(() => {
+    (async () => {
+      const theme = await window.myAPI.getSetting('theme');
+      changeColorMode(theme ?? 'dark');
+    })();
+  }, [changeColorMode]);
 
   const getColorModeWithSystem = (v: string): ColorModeWithSystem => {
     if (v == 'system') return 'system'
