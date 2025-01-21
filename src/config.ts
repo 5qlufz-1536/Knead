@@ -11,6 +11,10 @@ export interface KneadSettings {
     [key: string]: string | number | undefined;
 }
 
+export interface RatingStar {
+    [key: string]: number;
+}
+
 export const defaultSettings: KneadSettings = {
     volume: 0.5,
     language: 'en',
@@ -19,11 +23,13 @@ export const defaultSettings: KneadSettings = {
     playbackCategory: 'master',
 };
 
+export const defaultRatingStar: RatingStar = {};
+
 /**
  * Electron のユーザーデータフォルダに置く設定ファイル
- * 例: Windows -> C:\Users\<User>\AppData\Roaming\knead\settings.json
  */
 const configPath = path.join(app.getPath('userData'), 'settings.json');
+const ratingStarPath = path.join(app.getPath('userData'), 'ratingStar.json');
 
 /**
  * 設定ファイルを読み込む関数
