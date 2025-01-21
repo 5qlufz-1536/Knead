@@ -130,19 +130,23 @@ export const initIpcMain = (): void => {
     console.log(`Updated setting: ${key} = ${value}`);
   });
 
+  // 現在のデータを文字列で返す
   ipcMain.handle('load-rating-star', () => {
-    return loadRatingStar(); // 現在のデータを文字列で返す
+    return loadRatingStar();
   });
 
+  // 文字列として保存
   ipcMain.handle('save-rating-star', (_, data: string) => {
-    saveRatingStarAsString(data); // 文字列として保存
+    saveRatingStarAsString(data);
   });
 
+  // 指定されたキーと値を更新
   ipcMain.handle('update-rating-star', (_, key: string, value: number) => {
-    updateRatingStar(key, value); // 指定されたキーと値を更新
+    updateRatingStar(key, value);
   });
 
+  // データを保存
   ipcMain.handle('save-rating-star-as-string', (_, data: string) => {
-    saveRatingStarAsString(data); // データを保存
+    saveRatingStarAsString(data);
   });
 }
