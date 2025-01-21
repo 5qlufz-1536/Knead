@@ -42,9 +42,8 @@ export const defaultRatingStar: RatingStar = {}
  * 設定ファイル配置場所
  */
 const userData = path.join('userData')
-const ratingsDir = path.join(userData, 'ratingStar')
 const configPath = path.join(userData, 'settings.json')
-const ratingStarPath = path.join(ratingsDir, 'stable.json')
+const ratingStarPath = path.join(userData, 'ratingStar.json')
 console.log(process.env.PORTABLE_EXECUTABLE_DIR)
 
 /**
@@ -75,7 +74,7 @@ export function loadSettings(): KneadSettings {
 export function loadRatingStar(): RatingStar {
   try {
     if (!fs.existsSync(ratingStarPath)) {
-      fs.mkdirSync(ratingsDir, { recursive: true })
+      fs.mkdirSync(userData, { recursive: true })
       saveRatingStar(defaultRatingStar)
       return defaultRatingStar
     }
