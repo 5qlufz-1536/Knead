@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useColorMode } from '@yamada-ui/react'
 import { useTranslation } from 'react-i18next'
+import { error } from 'console'
 
 export const AppInitialize = () => {
   const { colorMode } = useColorMode()
@@ -8,9 +9,12 @@ export const AppInitialize = () => {
 
   const [lang, setLang] = useState('')
   if (lang === '') {
-    const get_lang = localStorage.getItem('lang') ?? 'en'
-    setLang(get_lang)
-    i18n.changeLanguage(get_lang)
+    window.myAPI.getSetting('language').then((get_lang) => {
+      setLang(get_lang)
+      i18n.changeLanguage(get_lang)
+    }).catch((error) => {
+      console.error('Failed to get language setting:', error);
+    });
   }
 
   const style = document.createElement('style')
