@@ -35,6 +35,7 @@ export const SoundSelector = () => {
       const holdSoundsSort = await window.myAPI.getSetting('holdSoundsSort') as boolean
       const sort_data = await window.myAPI.getSetting('lastSoundSort') as SoundSort
       if (holdSoundsSort == true) setSoundsSort(sort_data)
+      else window.myAPI.updateSettings({ lastSoundSort: { id: 'ascending', rating: 'none' } })
     })()
   }, [])
 
@@ -56,6 +57,7 @@ export const SoundSelector = () => {
       const holdRatingFilter = await window.myAPI.getSetting('holdRatingFilter') as boolean
       const filter_data = await window.myAPI.getSetting('lastRatingFilter') as number[]
       if (holdRatingFilter == true) setRatingFilter(filter_data)
+      else window.myAPI.updateSettings({ lastRatingFilter: [] })
     })()
   }, [])
 
