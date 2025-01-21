@@ -11,6 +11,7 @@ export const VolumeChange = () => {
     (async () => {
       const volume = await window.myAPI.getSetting('volume') as number
       setVolumeSlider(volume ?? 1)
+      sessionStorage.setItem('appVolume', `${volume}`)
     })()
   }, [])
 
