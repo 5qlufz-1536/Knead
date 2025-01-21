@@ -16,7 +16,13 @@ export const SoundSelector = () => {
 
   const Sounds = useAppSelector(state => state.fetch.sounds)
   const [soundRatings, setSoundRatings] = useState<({ [key: string]: number })>({})
-  if (!Object.keys(soundRatings).some(v => v)) setSoundRatings(JSON.parse(localStorage.getItem('soundRatings') ?? '{"_":0}'))
+  useEffect(() => {
+    const loadSoundRatings = async () => {
+      const ratingStar = await window.myAPI.loadRatingStar();
+      setSoundRatings(ratingStar);
+    };
+    loadSoundRatings();
+  }, [])
   const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
   if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
@@ -122,7 +128,7 @@ export const SoundSelector = () => {
       if (CorrectSoundRatings[v] === 0 && v != '_') delete CorrectSoundRatings[v]
     })
     setSoundRatings(CorrectSoundRatings)
-    localStorage.setItem('soundRatings', JSON.stringify(CorrectSoundRatings))
+    window.myAPI.saveRatingStarAsString(JSON.stringify(CorrectSoundRatings))
   }
 
   const activeStarColor = useColorModeValue('var(--ui-colors-amber-500)', 'var(--ui-colors-amber-400)')
