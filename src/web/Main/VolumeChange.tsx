@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Volume1Icon, Volume2Icon, VolumeOffIcon, VolumeXIcon } from '@yamada-ui/lucide'
 import { Box, Flex, Slider, Toggle, useBoolean } from '@yamada-ui/react'
 
@@ -6,7 +6,13 @@ export const VolumeChange = () => {
   const [MuteSwitch, { toggle: toggleMute }] = useBoolean(false)
 
   const [volumeSlider, setVolumeSlider] = useState<number>(-1)
-  if (volumeSlider === -1) setVolumeSlider(parseFloat(localStorage.getItem('volume') ?? '1'))
+
+  useEffect(() => {
+    (async () => {
+      const volume = await window.myAPI.getSetting('volume');
+      setVolumeSlider(volume ?? 1);
+    })();
+  }, []);
 
   const onClickMute = () => {
     console.log(volumeSlider)
@@ -20,6 +26,7 @@ export const VolumeChange = () => {
     const appVolume = MuteSwitch ? 0 : value
     sessionStorage.setItem('appVolume', `${appVolume}`)
     localStorage.setItem('volume', `${value}`)
+    window.myAPI.updateSettings({volume: appVolume})
   }
 
   const volumeIcon = (volume: number, mute: boolean) => {
