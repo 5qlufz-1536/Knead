@@ -13,9 +13,17 @@ export const VersionSelector = () => {
   const dispatch = useAddDispatch()
 
   const [targetVersion, setTargetVersion] = useState<VersionInfoType | undefined>(undefined)
-  if (targetVersion === undefined) setTargetVersion(JSON.parse(localStorage.getItem('targetVersion') ?? '{"_":0}'))
   const [versions, setVersions] = useState<VersionInfoType[]>([])
   const [SelectedVersion, setSelectedVersion] = useState('')
+
+  useEffect(() => {
+    (async () => {
+      const version = await myAPI.getSetting('selectedVersion');
+      if (version) {
+        setSelectedVersion(version);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -39,12 +47,10 @@ export const VersionSelector = () => {
     const pre_versions = versions.filter(v => v.kind === 'pre-release').sort(comparePreReleaseVersionInfo).reverse().map(v => v.raw)
     const rc_versions = versions.filter(v => v.kind === 'release-candidate').sort(compareReleaseCandidateVersionInfo).reverse().map(v => v.raw)
 
-    // 仮置きで最新バージョンが選択されるようにする
     const f = async () => {
       try {
-        if (targetVersion?.raw) {
-          const sounds: Sound[] = await myAPI.get_mcSounds(targetVersion.raw)
-          setSelectedVersion(targetVersion.raw)
+        if (SelectedVersion) {
+          const sounds: Sound[] = await myAPI.get_mcSounds(SelectedVersion)
           dispatch(updateSoundList({ sounds }))
         }
       }
@@ -56,14 +62,13 @@ export const VersionSelector = () => {
       { label: t('release_version'), items: major_versions.map(v => ({ label: v, value: v })) },
       { label: t('snapshot_version'), items: [...rc_versions, ...pre_versions, ...snapshot_versions].map(v => ({ label: v, value: v })) },
     ]
-  }, [dispatch, t, targetVersion?.raw, versions])
+  }, [dispatch, t, SelectedVersion, versions])
 
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
     localStorage.setItem('targetVersion', JSON.stringify(versions.find(v => v.raw == version)))
-
+    window.myAPI.updateSettings({ selectedVersion: version })
     const sounds: Sound[] = await myAPI.get_mcSounds(version)
-    // console.log(oggs)
     dispatch(updateSoundList({ sounds }))
   }
 
@@ -72,8 +77,6 @@ export const VersionSelector = () => {
       <Select
         placeholder={t('version_select')}
         placeholderInOptions={false}
-        // emptyMessage={t('version_not_found')}
-        // closeOnSelect={false}
         variant="filled"
         items={versionList}
         onChange={onChangeVersion}
@@ -82,7 +85,6 @@ export const VersionSelector = () => {
         value={SelectedVersion}
         gutter={0}
         listProps={{ padding: 0, margin: 0 }}
-      // contentProps={{ h: "lg" }}
       />
     </>
   )

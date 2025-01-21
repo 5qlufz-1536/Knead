@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SegmentedControl, SegmentedControlButton, HStack, Text, CardHeader, CardBody } from '@yamada-ui/react'
 
 import { GlobeIcon } from '@yamada-ui/lucide'
@@ -8,11 +8,18 @@ export const LanguageChange = () => {
   const { i18n } = useTranslation()
 
   const [lang, setLang] = useState('')
-  if (lang === '') setLang(localStorage.getItem('lang') ?? 'en')
+
+  useEffect(() => {
+    (async () => {
+      const language = await window.myAPI.getSetting('language');
+      setLang(language ?? 'en');
+      i18n.changeLanguage(language ?? 'en');
+    })();
+  }, [i18n]);
 
   const onClickLang = (lang: string) => {
     i18n.changeLanguage(lang)
-    localStorage.setItem('lang', lang)
+    window.myAPI.updateSettings({language: lang})
   }
 
   return (
