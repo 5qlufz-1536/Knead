@@ -33,9 +33,9 @@ export const SoundSelector = () => {
   useEffect(() => {
     (async () => {
       const holdSoundsSort = await window.myAPI.getSetting('holdSoundsSort') as boolean
-      const sort_data = await window.myAPI.getSetting('lastSoundSort') as SoundSort
+      const sort_data = await window.myAPI.getSetting('lastSoundsSort') as SoundSort
       if (holdSoundsSort == true) setSoundsSort(sort_data)
-      else window.myAPI.updateSettings({ lastSoundSort: { id: 'ascending', rating: 'none' } })
+      else window.myAPI.updateSettings({ lastSoundsSort: { id: 'ascending', rating: 'none' } })
     })()
   }, [])
 
@@ -48,7 +48,7 @@ export const SoundSelector = () => {
       return SoundsSort
     })()
     setSoundsSort(newSort)
-    window.myAPI.updateSettings({ lastSoundSort: newSort })
+    window.myAPI.updateSettings({ lastSoundsSort: newSort })
   }
 
   const [ratingFilter, setRatingFilter] = useState<number[]>([])

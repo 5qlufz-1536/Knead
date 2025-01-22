@@ -18,7 +18,7 @@ export interface KneadSettings {
   playbackCategory: string
   holdSoundsSort: boolean
   holdRatingFilter: boolean
-  lastSoundSort: SoundSort
+  lastSoundsSort: SoundSort
   lastRatingFilter: number[]
   [key: string]: SettingType
 }
@@ -35,7 +35,7 @@ export const defaultSettings: KneadSettings = {
   playbackCategory: 'master',
   holdSoundsSort: false,
   holdRatingFilter: false,
-  lastSoundSort: { id: 'ascending', rating: 'none' },
+  lastSoundsSort: { id: 'ascending', rating: 'none' },
   lastRatingFilter: [],
 }
 
@@ -52,7 +52,7 @@ console.log(process.env.PORTABLE_EXECUTABLE_DIR)
 /**
  * 各設定ファイルを読み込む関数
  */
-export function loadSettings(): KneadSettings {
+export const loadSettings = (): KneadSettings => {
   try {
     if (!fs.existsSync(configPath)) {
       // ファイルがなければデフォルトを書き込み
@@ -74,7 +74,7 @@ export function loadSettings(): KneadSettings {
   }
 }
 
-export function loadRatingStar(): RatingStar {
+export const loadRatingStar = (): RatingStar => {
   try {
     if (!fs.existsSync(ratingStarPath)) {
       fs.mkdirSync(userData, { recursive: true })
@@ -93,7 +93,7 @@ export function loadRatingStar(): RatingStar {
 /**
  * 指定されたキーの値を取得する関数
  */
-export function getSetting<Key extends keyof KneadSettings>(key: Key): KneadSettings[Key] {
+export const getSetting = <Key extends keyof KneadSettings>(key: Key): KneadSettings[Key] => {
   const settings = loadSettings()
   return settings[key]
 }
@@ -101,7 +101,7 @@ export function getSetting<Key extends keyof KneadSettings>(key: Key): KneadSett
 /**
  * 設定ファイルに指定されたキーの値を書き込む関数
  */
-export function setSetting<Key extends keyof KneadSettings>(key: Key, value: KneadSettings[Key]): void {
+export const setSetting = <Key extends keyof KneadSettings>(key: Key, value: KneadSettings[Key]): void => {
   const settings = loadSettings()
   settings[key] = value
   try {
@@ -115,7 +115,7 @@ export function setSetting<Key extends keyof KneadSettings>(key: Key, value: Kne
 /**
  * 各設定ファイルに書き込む関数
  */
-export function saveSettings(settings: KneadSettings) {
+export const saveSettings = (settings: KneadSettings) => {
   try {
     fs.writeFileSync(configPath, JSON.stringify(settings, null, 2))
   }
@@ -124,7 +124,7 @@ export function saveSettings(settings: KneadSettings) {
   }
 }
 
-export function saveRatingStar(ratingStar: RatingStar) {
+export const saveRatingStar = (ratingStar: RatingStar) => {
   try {
     fs.writeFileSync(ratingStarPath, JSON.stringify(ratingStar, null, 2))
   }
@@ -133,7 +133,7 @@ export function saveRatingStar(ratingStar: RatingStar) {
   }
 }
 
-export function saveRatingStarAsString(ratingStar: string): void {
+export const saveRatingStarAsString = (ratingStar: string): void => {
   try {
     fs.writeFileSync(ratingStarPath, ratingStar, 'utf-8')
   }
@@ -142,7 +142,7 @@ export function saveRatingStarAsString(ratingStar: string): void {
   }
 }
 
-export function updateRatingStar(key: string, value: number): void {
+export const updateRatingStar = (key: string, value: number): void => {
   const ratingStar = loadRatingStar()
   ratingStar[key] = value
   saveRatingStar(ratingStar)
