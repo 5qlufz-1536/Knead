@@ -4,9 +4,9 @@ import { initIpcMain } from './ipc-main-handler'
 
 initIpcMain()
 
-app.whenReady().then(() => {
-  // アプリの起動イベント発火で BrowserWindow インスタンスを作成
-  const mainWindow = new BrowserWindow({
+let mainWindow: BrowserWindow
+const createMainWindow = () => {
+  mainWindow = new BrowserWindow({
     width: 950,
     height: 790 + 40,
     minWidth: 650,
@@ -24,7 +24,6 @@ app.whenReady().then(() => {
   })
   // メニューバー削除
   mainWindow.setMenu(null)
-
   // レンダラープロセスをロード
   mainWindow.loadFile('dist/index.html')
   if (process.env.NODE_ENV == 'development') mainWindow.webContents.openDevTools()
@@ -32,33 +31,53 @@ app.whenReady().then(() => {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
   })
+}
+
+const createSubWindow = () => {
+  const subWindow = new BrowserWindow({
+    width: 950,
+    height: 650 + 40,
+    minWidth: 650,
+    minHeight: 650,
+    frame: true,
+    title: 'Knead',
+    parent: mainWindow,
+    opacity: 1,
+    show: false,
+    icon: path.join(__dirname, 'assets/icon.png'),
+  })
+  // メニューバー削除
+  subWindow.setMenu(null)
+  // レンダラープロセスをロード
+  subWindow.loadFile('dist/index.html', { hash: 'sub' })
+  if (process.env.NODE_ENV == 'development') subWindow.webContents.openDevTools()
+
+  subWindow.once('ready-to-show', () => {
+    subWindow.show()
+  })
+
+  subWindow.once('closed', () => mainWindow.focus())
+}
+
+app.on('ready', () => {
+  // 多重起動禁止
+  if (!app.requestSingleInstanceLock()) app.quit()
+  // メインウインドウ作成
+  createMainWindow()
 
   // サブウインドウを作成するハンドラ
   ipcMain.handle('make_sub_window', (): void => {
     // 子ウィンドウを作成
-    const subWindow = new BrowserWindow({
-      width: 950,
-      height: 650 + 40,
-      minWidth: 650,
-      minHeight: 650,
-      frame: true,
-      title: 'Knead',
-      parent: mainWindow,
-      opacity: 1,
-      show: false,
-      icon: path.join(__dirname, 'assets/icon.png'),
-    })
-    // メニューバー削除
-    subWindow.setMenu(null)
-    // 子ウィンドウ用 HTML
-    subWindow.loadFile('dist/index.html', { hash: 'sub' })
-    if (process.env.NODE_ENV == 'development') subWindow.webContents.openDevTools()
-
-    subWindow.once('ready-to-show', () => {
-      subWindow.show()
-    })
+    createSubWindow()
   })
 })
 
 // すべてのウィンドウが閉じられたらアプリを終了する
 app.once('window-all-closed', () => app.quit())
+
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus() // 既存のウィンドウにフォーカスを当てる
+  }
+})
