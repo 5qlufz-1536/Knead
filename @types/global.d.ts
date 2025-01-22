@@ -1,4 +1,4 @@
-import { SoundSort } from '../src/config'
+import { SettingType } from '../src/config'
 import { Sound } from '../src/store/fetchSlice'
 
 declare global {
@@ -12,10 +12,10 @@ export interface Sandbox {
   get_mcSounds: (version: string) => Promise<Sound[]>
   get_mcSoundHash: (hash: string) => Promise<string>
   make_sub_window: () => void
-  loadSettings: () => Promise<string | number | number[] | boolean | SoundSort>
-  updateSettings: (partial: Record<string, string | number | number[] | boolean | SoundSort>) => void
-  getSetting: <Key extends string>(key: Key) => Promise<string | number | number[] | boolean | SoundSort>
-  setSetting: <Key extends string>(key: Key, value: string | number | number[] | boolean | SoundSort) => void
+  loadSettings: () => Promise<SettingType>
+  updateSettings: (partial: Record<string, SettingType>) => void
+  getSetting: <Key extends string>(key: Key) => Promise<SettingType>
+  setSetting: <Key extends string>(key: Key, value: SettingType) => void
   loadRatingStar: () => Promise<{ [key: string]: number }>
   saveRatingStar: (data: string) => Promise<void>
   saveRatingStarAsString: (data: string) => Promise<void>

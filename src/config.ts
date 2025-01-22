@@ -1,23 +1,26 @@
 import { app } from 'electron'
 import * as fs from 'fs'
 import * as path from 'path'
+import { VersionInfoType } from './types/VersionInfo'
 
 export interface SoundSort {
   id: string
   rating: string
 }
 
+export type SettingType = string | number | number[] | boolean | SoundSort | VersionInfoType | undefined
+
 export interface KneadSettings {
   volume: number
   language: string
   theme: string
-  selectedVersion: string
+  selectedVersion: VersionInfoType | undefined
   playbackCategory: string
   holdSoundsSort: boolean
   holdRatingFilter: boolean
   lastSoundSort: SoundSort
   lastRatingFilter: number[]
-  [key: string]: string | number | number[] | boolean | SoundSort | undefined
+  [key: string]: SettingType
 }
 
 export interface RatingStar {
@@ -28,7 +31,7 @@ export const defaultSettings: KneadSettings = {
   volume: 0.5,
   language: 'en',
   theme: 'system',
-  selectedVersion: '',
+  selectedVersion: undefined,
   playbackCategory: 'master',
   holdSoundsSort: false,
   holdRatingFilter: false,

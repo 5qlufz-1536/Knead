@@ -15,12 +15,13 @@ export const VersionSelector = () => {
 
   useEffect(() => {
     (async () => {
-      const version = await window.myAPI.getSetting('selectedVersion') as string | undefined
+      const version = await window.myAPI.getSetting('selectedVersion') as VersionInfoType | undefined
       if (version) {
-        setSelectedVersion(version)
+        setSelectedVersion(version.raw)
+        dispatch(updateTargetVersion({ targetVersion: version }))
       }
     })()
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     (async () => {
@@ -64,7 +65,7 @@ export const VersionSelector = () => {
   const onChangeVersion = async (version: string) => {
     setSelectedVersion(version)
     dispatch(updateTargetVersion({ targetVersion: versions.find(v => v.raw == version) }))
-    window.myAPI.updateSettings({ selectedVersion: version })
+    window.myAPI.updateSettings({ selectedVersion: versions.find(v => v.raw == version) })
     const sounds: Sound[] = await window.myAPI.get_mcSounds(version)
     dispatch(updateSoundList({ sounds }))
   }

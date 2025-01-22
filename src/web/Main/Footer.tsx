@@ -20,7 +20,8 @@ export const Footer = () => {
   const sounds = useAppSelector(state => state.fetch.sounds)
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
-  const targetVersion: VersionInfoType = JSON.parse(localStorage.getItem('targetVersion') ?? '{"kind":"release","raw":""}')
+  const targetVersion: VersionInfoType | undefined = useAppSelector(state => state.fetch.targetVersion ?? undefined)
+
   const volume = parseFloat(localStorage.getItem('volume') ?? '1')
   const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `${volume}`)
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
