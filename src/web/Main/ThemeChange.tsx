@@ -1,18 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useColorMode, HStack, Text, SegmentedControl, SegmentedControlButton, ColorModeWithSystem, CardBody, CardHeader } from '@yamada-ui/react'
 
 import { MoonIcon, PaletteIcon, SunIcon, MonitorCogIcon } from '@yamada-ui/lucide'
 import { useTranslation } from 'react-i18next'
 
 export const ThemeChange = () => {
-  const { changeColorMode, internalColorMode } = useColorMode()
+  const { changeColorMode } = useColorMode()
   const { t } = useTranslation()
+
+  const [Theme, setTheme] = useState('system')
 
   const getColorModeWithSystem = (v: string): ColorModeWithSystem => {
     if (v == 'system') return 'system'
     if (v == 'light') return 'light'
     if (v == 'dark') return 'dark'
-    return internalColorMode
+    return 'system'
+  }
+
+  useEffect(() => {
+    (async () => {
+      const theme = await window.myAPI.getSetting('theme') as string
+      changeColorMode(getColorModeWithSystem(theme ?? 'system'))
+      setTheme(theme ?? 'system')
+    })()
+  }, [changeColorMode])
+
+  const changeTheme = (v: ColorModeWithSystem) => {
+    window.myAPI.updateSettings({ theme: v })
+    changeColorMode(v)
+    setTheme(v)
   }
 
   return (
@@ -24,7 +40,7 @@ export const ThemeChange = () => {
         </HStack>
       </CardHeader>
       <CardBody>
-        <SegmentedControl value={internalColorMode} onChange={v => changeColorMode(getColorModeWithSystem(v))}>
+        <SegmentedControl value={Theme} onChange={v => changeTheme(getColorModeWithSystem(v))}>
           <SegmentedControlButton value="system">
             <HStack>
               <MonitorCogIcon fontSize="xl" />

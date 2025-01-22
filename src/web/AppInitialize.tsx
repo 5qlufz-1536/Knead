@@ -1,22 +1,21 @@
-import './App.css'
 import React, { useState } from 'react'
-import { VersionSelector } from './VersionSelector'
-import { SoundSelector } from './SoundSelector'
-import { Footer } from './Footer'
-import { Configuration } from './Configuration'
-import { VolumeChange } from './VolumeChange'
-import { Separator, Flex, Spacer, useColorMode, Box, VStack } from '@yamada-ui/react'
+import { useColorMode } from '@yamada-ui/react'
 import { useTranslation } from 'react-i18next'
 
-export const App = () => {
+export const AppInitialize = () => {
   const { colorMode } = useColorMode()
   const { i18n } = useTranslation()
 
   const [lang, setLang] = useState('')
   if (lang === '') {
-    const get_lang = localStorage.getItem('lang') ?? 'en'
-    setLang(get_lang)
-    i18n.changeLanguage(get_lang)
+    window.myAPI.getSetting('language').then((get_lang) => {
+      if (typeof get_lang === 'string') {
+        setLang(get_lang)
+        i18n.changeLanguage(get_lang)
+      }
+    }).catch((error) => {
+      console.error('Failed to get language setting:', error)
+    })
   }
 
   const style = document.createElement('style')
@@ -31,23 +30,5 @@ export const App = () => {
   }
   document.head.appendChild(style)
 
-  return (
-    <>
-      <VStack h="100vh">
-        <Box padding={2}>
-          <Flex w="full" gap={2} paddingBottom={0}>
-            <VersionSelector />
-
-            <Spacer />
-
-            <VolumeChange />
-            <Configuration />
-          </Flex>
-          <Separator marginY={2} size="xs" />
-          <SoundSelector />
-        </Box>
-        <Footer />
-      </VStack>
-    </>
-  )
+  return (<></>)
 }

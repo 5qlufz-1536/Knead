@@ -2,17 +2,15 @@ import { Box, Flex, IconButton, Input, NumberInput, Select, SelectItem, Separato
 import { FaPlay, FaPause, FaArrowRotateLeft } from 'react-icons/fa6'
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from '@yamada-ui/lucide'
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
-import { useAddDispatch, useAppSelector } from '../store/_store'
+import { useAddDispatch, useAppSelector } from '../../store/_store'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { updateSelectedSound } from '../store/fetchSlice'
-import { isAboveVersion, VersionInfoType } from '../types/VersionInfo'
-import { useAudioPlay } from '../hooks/useAudioPlay'
+import { updateSelectedSound } from '../../store/fetchSlice'
+import { isAboveVersion, VersionInfoType } from '../../types/VersionInfo'
+import { useAudioPlay } from '../../hooks/useAudioPlay'
 import { useTranslation } from 'react-i18next'
 import { PitchInput } from './PitchInput'
-import { secondsToString } from '../utils/NumberUtil'
-import { SelectorCheck } from '../utils/SelectorCheck'
-
-const { myAPI } = window
+import { secondsToString } from '../../utils/NumberUtil'
+import { SelectorCheck } from '../../utils/SelectorCheck'
 
 export const Footer = () => {
   const { t } = useTranslation()
@@ -22,9 +20,10 @@ export const Footer = () => {
   const sounds = useAppSelector(state => state.fetch.sounds)
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
   const soundSelectDetector = useAppSelector(state => state.fetch.soundSelectDetector)
-  const targetVersion: VersionInfoType = JSON.parse(localStorage.getItem('targetVersion') ?? '{"kind":"release","raw":""}')
+  const targetVersion: VersionInfoType | undefined = useAppSelector(state => state.fetch.targetVersion ?? undefined)
+
   const volume = parseFloat(localStorage.getItem('volume') ?? '1')
-  const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `-1`)
+  const appVolume = parseFloat(sessionStorage.getItem('appVolume') ?? `${volume}`)
   if (!sessionStorage.getItem('appVolume')) sessionStorage.setItem('appVolume', `${volume}`)
   useEffect(() => {
     if (selectedSound && AudioController.context.isSomePlaying) AudioController.commands.setVolume(selectedSound, appVolume - 1)
@@ -98,9 +97,16 @@ export const Footer = () => {
 
   // サウンドを流すターゲット(masterとか)
   const [PlaySource, setPlaySource] = useState('')
-  if (PlaySource === '') setPlaySource(localStorage.getItem('PlaySource') ?? 'master')
+
+  useEffect(() => {
+    (async () => {
+      const playbackCategory = await window.myAPI.getSetting('playbackCategory') as string
+      setPlaySource(playbackCategory ?? 'master')
+    })()
+  }, [])
+
   const onChangePlaySource = (v: string) => {
-    localStorage.setItem('PlaySource', v)
+    window.myAPI.updateSettings({ playbackCategory: v })
     setPlaySource(v)
   }
 
@@ -224,7 +230,7 @@ export const Footer = () => {
         if (target_pitch < 0.5) target_pitch = 0.5
         else if (target_pitch > 2) target_pitch = 2
         try {
-          const hash = await myAPI.get_mcSoundHash(sound?.hash ?? '')
+          const hash = await window.myAPI.get_mcSoundHash(sound?.hash ?? '')
           await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume - 1)
           AudioController.commands.play()
         }
@@ -246,22 +252,11 @@ export const Footer = () => {
               value={seekbar}
               onChange={onChangeSeekbar}
               step={0.01} min={0} max={100}
-              trackColor="gray.200"
+              filledTrackColor="primary" trackColor="gray.200" thumbColor="primary"
+              thumbSize={2.5}
+              focusThumbOnChange={false} readOnly={false}
               thumbProps={{
-                visibility: 'hidden',
-                _after: {
-                  content: '""',
-                  display: 'block',
-                  w: '2.5',
-                  h: '2.5',
-                  borderRadius: 'full',
-                  bg: 'primary',
-                  position: 'absolute',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  transition: 'left 0',
-                  visibility: 'visible',
-                },
+                _disabled: { color: 'primary' },
               }}
             />
           </Box>
