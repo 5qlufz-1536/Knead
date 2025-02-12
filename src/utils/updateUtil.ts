@@ -11,11 +11,11 @@ export function compareVersions(v1: string, v2: string): number {
 export function getUpdaterExecutableName(): string {
     switch (process.platform) {
         case 'win32':
-            return 'MyUpdater.exe';
+            return 'Knead-Updater.exe';
         case 'darwin':
-            return 'MyUpdater-macos'; //仮
+            return 'Knead-Updater-macos'; //仮
         case 'linux':
-            return 'MyUpdater-linux';  //仮
+            return 'Knead-Updater-linux';  //仮
         default:
             return '';
     }

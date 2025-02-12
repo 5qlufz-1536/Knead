@@ -119,7 +119,7 @@ export const initAutoUpdateChecker = async () => {
           }
 
           // アップデーター起動
-          const cmd = `"${updaterPath}" --zip "${zipPath}" --appExe "${process.execPath}"`;
+          const cmd = `"${updaterPath}" --zip "${zipPath}" --appExe "${process.execPath}" --called-from-parent`;
           log.info('[Updater] Spawning updater with command:', cmd);
           const child = spawn(cmd, {
             cwd: exeDir,
@@ -133,8 +133,8 @@ export const initAutoUpdateChecker = async () => {
             showErrorUI(progressWin, `spawn error: ${err.message}`).catch(console.error);
           });
           child.on('spawn', () => {
-            log.info('[Updater] MyUpdater.exe process spawned successfully.');
-            appendLogUI(progressWin, 'MyUpdater.exe spawned successfully.').catch(console.error);
+            log.info('[Updater] Knead-Updater.exe process spawned successfully.');
+            appendLogUI(progressWin, 'Knead-Updater.exe spawned successfully.').catch(console.error);
           });
 
           // 数秒後にメインアプリを終了
