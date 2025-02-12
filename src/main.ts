@@ -1,11 +1,13 @@
 import path from 'node:path'
 import { BrowserWindow, app, ipcMain } from 'electron'
 import { initIpcMain } from './ipc-main-handler'
+import { initAutoUpdateChecker } from './update-checker'
 
 initIpcMain()
 
 let mainWindow: BrowserWindow
 const createMainWindow = () => {
+  initAutoUpdateChecker();
   mainWindow = new BrowserWindow({
     width: 950,
     height: 790 + 40,
