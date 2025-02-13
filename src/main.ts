@@ -7,7 +7,7 @@ initIpcMain()
 
 let mainWindow: BrowserWindow
 const createMainWindow = () => {
-  initAutoUpdateChecker();
+  initAutoUpdateChecker()
   mainWindow = new BrowserWindow({
     width: 950,
     height: 790 + 40,
