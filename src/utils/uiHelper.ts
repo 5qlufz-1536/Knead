@@ -1,18 +1,18 @@
-import { BrowserWindow, nativeTheme } from 'electron';
-import fs from 'fs';
-import path from 'path';
+import { BrowserWindow, nativeTheme } from 'electron'
+import fs from 'fs'
+import path from 'path'
 
 export interface ThemeStyles {
-    background: string;
-    text: string;
-    border: string;
-    progressBg: string;
-    logAreaBg: string;
+    background: string
+    text: string
+    border: string
+    progressBg: string
+    logAreaBg: string
 }
 
 export function getThemeStyles(theme: 'system' | 'dark' | 'light'): ThemeStyles {
     if (theme === 'system') {
-            theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+        theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
     }
     const styles: Record<'dark' | 'light', ThemeStyles> = {
         dark: {
@@ -20,24 +20,24 @@ export function getThemeStyles(theme: 'system' | 'dark' | 'light'): ThemeStyles 
         text: '#ffffff',
         border: '#404040',
         progressBg: '#2d2d2d',
-        logAreaBg: '#2d2d2d'
+        logAreaBg: '#2d2d2d',
         },
         light: {
         background: '#ffffff',
         text: '#000000',
         border: '#cccccc',
         progressBg: '#f0f0f0',
-        logAreaBg: '#f9f9f9'
-        }
-    };
-    return styles[theme];
+        logAreaBg: '#f9f9f9',
+        },
+    }
+    return styles[theme]
 }
 
 export async function createProgressWindow(
-        title: string,
-        colors: ThemeStyles,
-        exeDir: string
-    ): Promise<BrowserWindow> {
+    title: string,
+    colors: ThemeStyles,
+    exeDir: string,
+): Promise<BrowserWindow> {
     const progressWin = new BrowserWindow({
         width: 500,
         height: 280,
@@ -48,10 +48,10 @@ export async function createProgressWindow(
         autoHideMenuBar: true,
         minimizable: false,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        }
-    });
+        nodeIntegration: true,
+        contextIsolation: false,
+        },
+    })
 
     const progressHtml = `
     <!DOCTYPE html>
@@ -85,42 +85,42 @@ export async function createProgressWindow(
             <div id="logarea"></div>
         </body>
     </html>
-    `;
-    const tempHtmlPath = path.join(exeDir, `update_progress_${Date.now()}.html`);
-    fs.writeFileSync(tempHtmlPath, progressHtml, 'utf-8');
-    await progressWin.loadFile(tempHtmlPath);
+    `
+    const tempHtmlPath = path.join(exeDir, `update_progress_${Date.now()}.html`)
+    fs.writeFileSync(tempHtmlPath, progressHtml, 'utf-8')
+    await progressWin.loadFile(tempHtmlPath)
     progressWin.once('ready-to-show', () => {
-        progressWin.show();
+        progressWin.show()
         if (fs.existsSync(tempHtmlPath)) {
-        fs.unlinkSync(tempHtmlPath);
+        fs.unlinkSync(tempHtmlPath)
         }
-    });
-    return progressWin;
+    })
+    return progressWin
 }
 
 export async function updateProgressUI(win: BrowserWindow, percent: number): Promise<void> {
     if (!win.isDestroyed()) {
         await win.webContents.executeJavaScript(`
-            document.getElementById('progress').value = ${percent};
-            document.getElementById('message').textContent = '${percent}%';
-        `);
+                document.getElementById('progress').value = ${percent};
+                document.getElementById('message').textContent = '${percent}%';
+            `)
     }
 }
 
 export async function showErrorUI(win: BrowserWindow, errorMessage: string): Promise<void> {
     if (!win.isDestroyed()) {
         await win.webContents.executeJavaScript(`
-        document.getElementById('error').textContent = '${errorMessage.replace(/'/g, "\\'")}';
-        `);
+            document.getElementById('error').textContent = '${errorMessage.replace(/'/g, '\\\'')}';
+            `)
     }
 }
 
 export async function appendLogUI(win: BrowserWindow, msg: string): Promise<void> {
     if (!win.isDestroyed()) {
         await win.webContents.executeJavaScript(`
-        const logArea = document.getElementById('logarea');
-        logArea.textContent += '\\n${msg.replace(/'/g, "\\'")}';
-        logArea.scrollTop = logArea.scrollHeight;
-        `);
+            const logArea = document.getElementById('logarea');
+            logArea.textContent += '\\n${msg.replace(/'/g, '\\\'')}';
+            logArea.scrollTop = logArea.scrollHeight;
+            `)
     }
 }
