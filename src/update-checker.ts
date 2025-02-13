@@ -5,7 +5,7 @@ import path from 'path'
 import { spawn } from 'child_process'
 import fs from 'fs'
 import { getSetting } from './config'
-import { compareVersions, getUpdaterExecutableName } from './utils/updateUtil'
+import { compareVersions, getUpdaterExecutableName } from './utils/UpdateUtil'
 import { getThemeStyles, createProgressWindow, updateProgressUI, showErrorUI, appendLogUI } from './utils/uiHelper'
 
 interface ReleaseAsset {
