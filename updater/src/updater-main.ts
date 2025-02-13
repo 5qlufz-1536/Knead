@@ -67,10 +67,10 @@ async function main() {
         const srcPath = path.join(exeDir, item);
         const dstPath = path.join(backupDir, item);
         try {
-        fs.renameSync(srcPath, dstPath);
-        console.log(`[Updater] Moved "${item}" -> backup folder`);
+            fs.renameSync(srcPath, dstPath);
+            console.log(`[Updater] Moved "${item}" -> backup folder`);
         } catch (err) {
-        console.error(`[Updater] Failed to move "${item}" to backup:`, err);
+            console.error(`[Updater] Failed to move "${item}" to backup:`, err);
         }
     }
 
