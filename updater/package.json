@@ -1,0 +1,35 @@
+{
+    "name": "knead-updater",
+    "version": "1.0.0",
+    "description": "Updater for Knead application",
+    "author": "NeAc",
+    "main": "dist/updater-main.js",
+    "build": {
+        "productName": "KneadUpdater",
+        "appId": "com.neac.knead.updater",
+        "files": [
+            "dist/**/*"
+        ],
+        "win": {
+            "target": "portable",
+            "icon": "assets/icon.ico"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "pkg-build": "pkg . --targets node16-win-x64 --output Knead-Updater.exe",
+        "start": "node dist/updater-main.js"
+    },
+    "devDependencies": {
+        "@types/adm-zip": "^0.5.7",
+        "adm-zip": "^0.5.16",
+        "typescript": "^5.7.2",
+        "electron": "^33.2.1"
+    },
+    "bin": "dist/updater-main.js",
+    "pkg": {
+        "targets": [
+            "node16-win-x64"
+        ]
+    }
+}
