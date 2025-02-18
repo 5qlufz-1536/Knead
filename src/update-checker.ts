@@ -7,6 +7,7 @@ import fs from 'fs'
 import { getSetting } from './config'
 import { compareVersions, getUpdaterExecutableName } from './utils/UpdateUtil'
 import { getThemeStyles, createProgressWindow, updateProgressUI, showErrorUI, appendLogUI } from './utils/uiHelper'
+import { getUpdaterTexts } from './web/i18n/updaterTexts'
 
 interface ReleaseAsset {
   name: string
@@ -18,28 +19,13 @@ interface ReleaseInfo {
   assets: ReleaseAsset[]
 }
 
-// 言語に応じたテキストを定義
-const getUpdateText = (lang = 'ja') => ({
-  title: lang === 'en' ? 'Update Available' : 'アップデートが利用可能です',
-  updatetitle: lang === 'en' ? 'Updating' : 'アップデート中',
-  message: (latest: string, current: string) =>
-    lang === 'en'
-      ? `New version (${latest}) is available. Would you like to update?\nCurrent version: ${current}`
-      : `新しいバージョン (${latest}) が見つかりました。アップデートしますか？\n現在のバージョン: ${current}`,
-  buttons: lang === 'en' ? ['Update', 'Later'] : ['アップデート', '後で'],
-  progressTitle: lang === 'en' ? 'Downloading update files...' : 'アップデートファイルをダウンロードしています...',
-  launchingUpdater: lang === 'en' ? 'Launching updater...' : 'アップデーターを起動しています...',
-  errorTitle: lang === 'en' ? 'Update Error' : 'アップデートエラー',
-  notfoundUpdater: lang === 'en' ? 'Updater not found' : 'アップデーターが見つかりません',
-})
-
 export const initAutoUpdateChecker = async () => {
   const currentVersion = app.getVersion()
   log.info('[Updater] Current version:', currentVersion)
   // 言語設定を取得
   const lang = await getSetting('language')
   const themeSettings = await getSetting('theme') as 'system' | 'dark' | 'light'
-  const texts = getUpdateText(lang)
+  const texts = getUpdaterTexts(lang)
   const colors = getThemeStyles(themeSettings)
   const exeDir = path.dirname(process.execPath)
 
@@ -72,7 +58,7 @@ export const initAutoUpdateChecker = async () => {
       const result = await dialog.showMessageBox(mainWin, {
         type: 'info',
         title: texts.title,
-        message: texts.message(latestVersion, currentVersion),
+        message: texts.message.replace('{latest}', latestVersion).replace('{current}', currentVersion),
         buttons: texts.buttons,
         defaultId: 0,
       })

@@ -55,5 +55,15 @@
   "caret_symbol": "向き相対",
   "symbol_clear": "シンボル削除",
   "selector": "セレクター",
-  "this_dimension_only": "実行ディメンションでのみ再生"
+  "this_dimension_only": "実行ディメンションでのみ再生",
+  "updater": {
+    "title": "アップデートが利用可能です",
+    "updatetitle": "アップデート中",
+    "message": "新しいバージョン ({latest}) が見つかりました。アップデートしますか？\n現在のバージョン: {current}",
+    "buttons": ["アップデート", "後で"],
+    "progressTitle": "アップデートファイルをダウンロードしています...",
+    "launchingUpdater": "アップデーターを起動しています...",
+    "errorTitle": "アップデートエラー",
+    "notfoundUpdater": "アップデーターが見つかりません"
+  }
 }
