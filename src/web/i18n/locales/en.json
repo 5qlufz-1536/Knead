@@ -55,5 +55,15 @@
   "caret_symbol": "Directional",
   "symbol_clear": "Clear Symbols",
   "selector": "Selector",
-  "this_dimension_only": "Playback only in the execution dimension"
+  "this_dimension_only": "Playback only in the execution dimension",
+  "updater": {
+    "title": "Update Available",
+    "updatetitle": "Updating",
+    "message": "New version ({latest}) is available. Would you like to update?\nCurrent version: {current}",
+    "buttons": ["Update", "Later"],
+    "progressTitle": "Downloading update files...",
+    "launchingUpdater": "Launching updater...", 
+    "errorTitle": "Update Error",
+    "notfoundUpdater": "Updater not found"
+  }
 }

@@ -3,7 +3,7 @@ import { FaPlay, FaPause, FaArrowRotateLeft } from 'react-icons/fa6'
 import { CheckIcon, CopyIcon, SlashIcon, MegaphoneOffIcon } from '@yamada-ui/lucide'
 import { PiTildeBold, PiCaretUpBold, PiSelectionBold } from 'react-icons/pi'
 import { useAddDispatch, useAppSelector } from '../../store/_store'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { updateSelectedSound } from '../../store/fetchSlice'
 import { isAboveVersion, VersionInfoType } from '../../types/VersionInfo'
 import { useAudioPlay } from '../../hooks/useAudioPlay'
@@ -16,6 +16,7 @@ export const Footer = () => {
   const { t } = useTranslation()
   const dispatch = useAddDispatch()
   const AudioController = useAudioPlay()
+  const isPlayingRef = useRef(false)
 
   const sounds = useAppSelector(state => state.fetch.sounds)
   const selectedSound = useAppSelector(state => state.fetch.selectedSound)
@@ -221,22 +222,36 @@ export const Footer = () => {
 
   useEffect(() => {
     (async () => {
-      await AudioController.commands.stop()
-      if (selectedSound) {
-        const targetSound = sounds.filter(sound => sound.id == selectedSound)[0]
-        const targetHashes = targetSound?.sounds ?? []
-        const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
-        let target_pitch = parseFloat(pitch) * sound.pitch
-        if (target_pitch < 0.5) target_pitch = 0.5
-        else if (target_pitch > 2) target_pitch = 2
-        try {
-          const hash = await window.myAPI.get_mcSoundHash(sound?.hash ?? '')
-          await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume - 1)
-          AudioController.commands.play()
+      if (isPlayingRef.current) return
+
+      try {
+        isPlayingRef.current = true
+
+        await AudioController.commands.stop()
+
+        if (selectedSound) {
+          const targetSound = sounds.filter(sound => sound.id == selectedSound)[0]
+          const targetHashes = targetSound?.sounds ?? []
+          const sound = targetHashes[Math.floor(Math.random() * targetHashes.length)]
+          let target_pitch = parseFloat(pitch) * sound.pitch
+          if (target_pitch < 0.5) target_pitch = 0.5
+          else if (target_pitch > 2) target_pitch = 2
+
+          try {
+            const hash = await window.myAPI.get_mcSoundHash(sound?.hash ?? '')
+            // 再度stopを呼び出して確実に停止させる
+            await AudioController.commands.stop()
+            await AudioController.commands.setSound(selectedSound, hash, target_pitch, appVolume - 1)
+            await new Promise(resolve => setTimeout(resolve, 50))
+            AudioController.commands.play()
+          }
+          catch (e: unknown) {
+            alert(e)
+          }
         }
-        catch (e: unknown) {
-          alert(e)
-        }
+      }
+      finally {
+        isPlayingRef.current = false
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps

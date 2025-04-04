@@ -7,12 +7,7 @@ import { useTranslation } from 'react-i18next'
 export const LanguageChange = () => {
   const { i18n } = useTranslation()
 
-  useEffect(() => {
-    (async () => {
-      const language = await window.myAPI.getSetting('language') as string
-      i18n.changeLanguage(language ?? 'en')
-    })()
-  }, [i18n])
+  useEffect(() => {}, [i18n])
 
   const onClickLang = (lang: string) => {
     i18n.changeLanguage(lang)
