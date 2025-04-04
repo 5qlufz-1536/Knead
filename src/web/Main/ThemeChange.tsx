@@ -20,7 +20,6 @@ export const ThemeChange = () => {
   useEffect(() => {
     (async () => {
       const theme = await window.myAPI.getSetting('theme') as string
-      changeColorMode(getColorModeWithSystem(theme ?? 'system'))
       setTheme(theme ?? 'system')
     })()
   }, [changeColorMode])
