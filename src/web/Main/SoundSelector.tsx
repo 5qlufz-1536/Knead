@@ -118,9 +118,16 @@ export const SoundSelector = () => {
     setTxtFilters(e.target.value.split(' '))
   }, [setTxtFilters])
 
+  const [isSelecting, setIsSelecting] = useState(false)
+
   const onSelectSound = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isSelecting) return
+    setIsSelecting(true)
     dispatch(updateSelectedSound({ id: e.currentTarget.id }))
-  }, [dispatch])
+    setTimeout(() => {
+      setIsSelecting(false)
+    }, 250)
+  }, [dispatch, isSelecting])
 
   const onChangeRating = (id: string, rating: number) => {
     const CorrectSoundRatings = { ...soundRatings, [id]: rating }
