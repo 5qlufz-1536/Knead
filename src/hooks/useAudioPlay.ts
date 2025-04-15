@@ -131,28 +131,28 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   // MARK: stop
   const stop = useCallback(async () => {
     return new Promise<void>((resolve) => {
-      setAudioState((prev) => {
-        const newState = { ...prev }
+      setAudioState(prev => {
+        const newState = { ...prev };
         // すべてのコンテキストを停止状態にリセット
         Object.entries(prev).forEach(([key, ctx]) => {
           if ('isPlaying' in ctx && ctx.isPlaying) {
-            ctx.absn.onended = null
-            ctx.absn.stop()
+            ctx.absn.onended = null;
+            ctx.absn.stop();
           }
           // 再生状態に関わらず全てのサウンドを停止状態にする
           newState[key] = {
             ...ctx,
             isPlaying: false as const,
             playbackTime: 0,
-            playTime: 0,
-          }
-        })
-
-        resolve()
-        return newState
-      })
-    })
-  }, [setAudioState])
+            playTime: 0
+          };
+        });
+        
+        resolve();
+        return newState;
+      });
+    });
+  }, [setAudioState]);
 
   // MARK: createAudioBuffer
   const createAudioBuffer = useCallback(async (uri: string): Promise<AudioBuffer> => {
@@ -175,37 +175,37 @@ export const useAudioPlay = (): { context: GlobalContext, contexts: { head?: Pub
   const setSound = useCallback(async (soundKey: string, uri: string, speed: number = 1, volume: number = 1) => {
     // 同期的に確実に停止する
     const stopPromise = new Promise<void>((resolve) => {
-      setAudioState((prev) => {
+      setAudioState(prev => {
         // 再生中のすべてのサウンドを停止
-        const newState = { ...prev }
+        const newState = { ...prev };
         Object.entries(prev).forEach(([key, ctx]) => {
           if ('isPlaying' in ctx && ctx.isPlaying) {
-            ctx.absn.onended = null
-            ctx.absn.stop()
+            ctx.absn.onended = null;
+            ctx.absn.stop();
             newState[key] = {
               ...ctx,
               isPlaying: false as const,
               playbackTime: 0,
-              playTime: 0,
-            }
+              playTime: 0
+            };
           }
-        })
-        resolve()
-        return newState
-      })
-    })
-
-    await stopPromise
+        });
+        resolve();
+        return newState;
+      });
+    });
+    
+    await stopPromise;
     // 少し待機して AudioContext の処理を完了させる
-    await new Promise(resolve => setTimeout(resolve, 10))
-
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
     // 現在のstateを一度クリアしてから新しいサウンドを設定
-    setAudioState({})
-    await new Promise(resolve => setTimeout(resolve, 5))
-
-    const buffer = await createAudioBuffer(uri)
-    setAudioState({ [soundKey]: createContext({ buffer, maxTime: buffer.duration, volume, speed }) })
-  }, [createAudioBuffer, createContext])
+    setAudioState({});
+    await new Promise(resolve => setTimeout(resolve, 5));
+    
+    const buffer = await createAudioBuffer(uri);
+    setAudioState({ [soundKey]: createContext({ buffer, maxTime: buffer.duration, volume, speed }) });
+  }, [createAudioBuffer, createContext]);
 
   // MARK: setSounds
   const setSounds = useCallback(async (sounds: { [k: string]: string | [uri: string, speed?: number, volume?: number] }) => {

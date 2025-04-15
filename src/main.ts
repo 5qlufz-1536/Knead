@@ -47,7 +47,11 @@ const createSubWindow = () => {
     opacity: 1,
     show: false,
     icon: path.join(__dirname, 'assets/icon.png'),
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+    }
   })
+
   // メニューバー削除
   subWindow.setMenu(null)
   // レンダラープロセスをロード
