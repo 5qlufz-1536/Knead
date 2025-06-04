@@ -134,7 +134,7 @@ export function useAudioPlay(
     setIsPlaying(true)
     setIsPaused(false)
     setIsFinished(false)
-  }, [currentPitch, currentVolume])
+  }, [currentPitch, currentVolume, setPauseTime])
 
   const stop = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -150,7 +150,7 @@ export function useAudioPlay(
       setPauseTime(0)
       setTimeout(resolve, 20)
     })
-  }, [])
+  }, [setPauseTime])
 
   const pause = useCallback(() => {
     if (!audioContextRef.current || !sourceNodeRef.current) return
@@ -160,7 +160,7 @@ export function useAudioPlay(
     sourceNodeRef.current = null
     setIsPlaying(false)
     setIsPaused(true)
-  }, [])
+  }, [setPauseTime])
 
   const resume = useCallback(() => {
     if (!audioContextRef.current || !audioBufferRef.current) return
@@ -205,7 +205,7 @@ export function useAudioPlay(
     setIsPlaying(true)
     setIsPaused(false)
     setIsFinished(false)
-  }, [currentPitch, currentVolume, pauseTime])
+  }, [currentPitch, currentVolume, pauseTime, setPauseTime])
 
   const setVolume = useCallback((v: number) => {
     if (gainNodeRef.current) {
@@ -226,7 +226,7 @@ export function useAudioPlay(
       setPauseTime(0)
       play()
     })
-  }, [play, stop])
+  }, [play, stop, setPauseTime])
 
   const forceReloadAndPlay = useCallback(async () => {
     if (!audioPath) return
@@ -235,7 +235,7 @@ export function useAudioPlay(
     await loadAudio(audioPath)
     setPauseTime(0)
     play()
-  }, [audioPath, loadAudio, play, stop])
+  }, [audioPath, loadAudio, play, stop, setPauseTime])
 
   return { play, stop, pause, resume, setVolume, setPitch, isPlaying, isPaused, isFinished, resetAndPlay, forceReloadAndPlay }
 }

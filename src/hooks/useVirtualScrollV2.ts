@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 
 export interface VirtualScrollItem {
   index: number
@@ -8,8 +8,8 @@ export interface VirtualScrollItem {
 
 interface UseVirtualScrollV2Options {
   itemCount: number
-  getItemKey: (index: number) => string | number
-  getItemHeight: (index: number) => number
+  _getItemKey: (index: number) => string | number
+  _getItemHeight: (index: number) => number
   containerHeight: number
   overscan?: number
   initialScrollTop?: number
@@ -17,8 +17,8 @@ interface UseVirtualScrollV2Options {
 
 export function useVirtualScrollV2({
   itemCount,
-  getItemKey,
-  getItemHeight,
+  _getItemKey,
+  _getItemHeight,
   containerHeight,
   overscan = 3,
   initialScrollTop = 0,
@@ -37,31 +37,51 @@ export function useVirtualScrollV2({
     })
   }, [])
 
-  // スクロールイベント
   const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     setScrollTop(e.currentTarget.scrollTop)
   }, [])
 
-  // 各アイテムのtop位置を計算
-  const positions = [] as VirtualScrollItem[]
-  let acc = 0
-  for (let i = 0; i < itemCount; i++) {
-    positions.push({ index: i, top: acc, height: itemHeights[i] || 40 })
-    acc += itemHeights[i] || 40
-  }
-  const totalHeight = acc
+  // ループの中でHooksを呼んだと誤検知されないように、全計算をuseMemoにまとめる
+  const { positions, totalHeight, visibleItems } = useMemo(() => {
+    const pos: VirtualScrollItem[] = []
+    let acc = 0
 
-  // 表示範囲を計算
-  const startIdx = Math.max(0, positions.findIndex(p => p.top + p.height > scrollTop) - overscan)
-  const endIdx = Math.min(itemCount, positions.findIndex(p => p.top > scrollTop + containerHeight) + overscan)
-  const visibleItems = positions.slice(startIdx, endIdx > startIdx ? endIdx : undefined)
+    for (let i = 0; i < itemCount; i++) {
+      const h = itemHeights[i] || 40
+      pos.push({ index: i, top: acc, height: h })
+      acc += h
+    }
+    const tot = acc
+
+    const startIdx = Math.max(
+      0,
+      pos.findIndex(p => p.top + p.height > scrollTop) - overscan,
+    )
+    const endIdx = Math.min(
+      itemCount,
+      pos.findIndex(p => p.top > scrollTop + containerHeight) + overscan,
+    )
+    const visible = pos.slice(startIdx, endIdx > startIdx ? endIdx : undefined)
+
+    return {
+      positions: pos,
+      totalHeight: tot,
+      visibleItems: visible,
+    }
+  }, [
+    itemCount,
+    itemHeights,
+    scrollTop,
+    containerHeight,
+    overscan,
+  ])
 
   // スクロール位置復元
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = scrollTop
     }
-  }, [containerRef, scrollTop])
+  }, [scrollTop])
 
   // リストが変わったら高さ配列をリセット
   useEffect(() => {

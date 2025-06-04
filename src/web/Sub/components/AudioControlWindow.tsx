@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useMemo, useEffect } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { useVirtualScrollV2 } from '../../../hooks/useVirtualScrollV2'
 import {
   Box,
@@ -24,32 +24,43 @@ interface GroupState {
 }
 
 export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
-  const { loaded, soundIdList } = useAudioLibrary()
+  useAudioLibrary()
+
   const keyCounter = useRef(0)
   // 初期値は1つだけ空のグループ
-  const [groups, setGroups] = useState<GroupState[]>([{
-    key: `grp-${keyCounter.current++}`,
-    soundId: '',
-    variantIndex: -1,
-    volume: 1.0,
-    pitch: 1.0,
-  }])
+  const [groups, setGroups] = useState<GroupState[]>([
+    {
+      key: `grp-${keyCounter.current++}`,
+      soundId: '',
+      variantIndex: -1,
+      volume: 1.0,
+      pitch: 1.0,
+    },
+  ])
   const refs = useRef<Record<string, AudioGroupHandle>>({})
-  const [itemHeights, setItemHeights] = useState<number[]>([])
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [footerState, setFooterState] = useState<'playing' | 'paused' | 'stopped'>('stopped')
+  const [itemHeights, _setItemHeights] = useState<number[]>([])
+  const [_isPlaying, _setIsPlaying] = useState(false)
+  const [footerState, setFooterState] = useState<'playing' | 'paused' | 'stopped'>(
+    'stopped',
+  )
 
   const makeKey = () => `grp-${keyCounter.current++}`
 
   // グループ追加
-  const addGroup = useCallback((initId?: string) =>
-    setGroups(prev => [...prev, {
-      key: makeKey(),
-      soundId: initId || '',
-      variantIndex: -1,
-      volume: 0.5,
-      pitch: 1.0,
-    }]), [])
+  const addGroup = useCallback(
+    (initId?: string) =>
+      setGroups(prev => [
+        ...prev,
+        {
+          key: makeKey(),
+          soundId: initId || '',
+          variantIndex: -1,
+          volume: 0.5,
+          pitch: 1.0,
+        },
+      ]),
+    [],
+  )
 
   // グループ削除
   const handleRemoveGroup = useCallback((key: string) => {
@@ -58,24 +69,21 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
   }, [])
 
   // 全体再生/一時停止/再開
-  const getAnyPlaying = () => Object.values(refs.current).some(r => (r as any).isPlaying)
-  const getAnyPaused = () => Object.values(refs.current).some(r => (r as any).isPaused)
-
   const playAll = useCallback(() => {
     Object.values(refs.current).forEach(r => r.play())
-    setIsPlaying(true)
+    _setIsPlaying(true)
   }, [])
   const pauseAll = useCallback(() => {
     Object.values(refs.current).forEach(r => r.pause && r.pause())
-    setIsPlaying(false)
+    _setIsPlaying(false)
   }, [])
   const resumeAll = useCallback(() => {
     Object.values(refs.current).forEach(r => r.resume && r.resume())
-    setIsPlaying(true)
+    _setIsPlaying(true)
   }, [])
   const stopAll = useCallback(() => {
     Object.values(refs.current).forEach(r => r.stop())
-    setIsPlaying(false)
+    _setIsPlaying(false)
   }, [])
   const restartAll = useCallback(() => {
     stopAll()
@@ -84,7 +92,9 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
 
   // 仮想化のセットアップ
   const FOOTER_HEIGHT = 68
-  const [containerHeight, setContainerHeight] = useState(window.innerHeight - FOOTER_HEIGHT)
+  const [containerHeight, setContainerHeight] = useState(
+    window.innerHeight - FOOTER_HEIGHT,
+  )
 
   // ウィンドウサイズの変更を監視
   useEffect(() => {
@@ -98,23 +108,16 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
   const {
     containerRef,
     onScroll,
-    visibleItems,
+    visibleItems: _visibleItems,
     setItemHeight,
-    totalHeight,
+    totalHeight: _totalHeight,
   } = useVirtualScrollV2({
     itemCount: groups.length,
-    getItemKey: i => groups[i].key,
-    getItemHeight: i => itemHeights[i] || 120,
+    _getItemKey: i => groups[i].key,
+    _getItemHeight: i => itemHeights[i] || 120,
     containerHeight,
     overscan: 3,
   })
-
-  // setItemHeightをラップして、再レンダリングを強制
-  const [, forceUpdate] = useState({})
-  const handleSetItemHeight = useCallback((index: number, height: number) => {
-    setItemHeight(index, height)
-    forceUpdate({})
-  }, [setItemHeight])
 
   // グループ複製
   const handleDuplicateGroup = useCallback((key: string) => {
@@ -131,12 +134,17 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
   }, [])
 
   // グループの状態更新
-  const handleGroupChange = useCallback((key: string, patch: Partial<Omit<GroupState, 'key'>>) => {
-    setGroups(prev => prev.map(g => g.key === key ? { ...g, ...patch } : g))
-  }, [])
+  const handleGroupChange = useCallback(
+    (key: string, patch: Partial<Omit<GroupState, 'key'>>) => {
+      setGroups(prev =>
+        prev.map(g => (g.key === key ? { ...g, ...patch } : g)),
+      )
+    },
+    [],
+  )
 
-  // onRemove, onDuplicate, onChange, refの安定化
-  const removeHandlers = useMemo(() => {
+  // onRemove, onDuplicate を安定化
+  const removeHandlers = React.useMemo(() => {
     const handlers: Record<string, () => void> = {}
     groups.forEach((g) => {
       handlers[g.key] = () => handleRemoveGroup(g.key)
@@ -144,7 +152,7 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
     return handlers
   }, [groups, handleRemoveGroup])
 
-  const duplicateHandlers = useMemo(() => {
+  const duplicateHandlers = React.useMemo(() => {
     const handlers: Record<string, () => void> = {}
     groups.forEach((g) => {
       handlers[g.key] = () => handleDuplicateGroup(g.key)
@@ -152,7 +160,8 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
     return handlers
   }, [groups, handleDuplicateGroup])
 
-  const groupRefs = useMemo(() => {
+  // ref コールバックを安定化
+  const groupRefs = React.useMemo(() => {
     const refMap: Record<string, (el: AudioGroupHandle | null) => void> = {}
     groups.forEach((g) => {
       refMap[g.key] = (el: AudioGroupHandle | null) => {
@@ -163,10 +172,15 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
     return refMap
   }, [groups])
 
+  // Footer 用ステート更新（直接 ref.current から判定）
   useEffect(() => {
     const timer = setInterval(() => {
-      const anyPlaying = Object.values(refs.current).some(r => r && r.isPlaying)
-      const anyPaused = Object.values(refs.current).some(r => r && r.isPaused)
+      const anyPlaying = Object.values(refs.current).some(
+        r => r && r.isPlaying,
+      )
+      const anyPaused = Object.values(refs.current).some(
+        r => r && r.isPaused,
+      )
       if (anyPlaying) setFooterState('playing')
       else if (anyPaused) setFooterState('paused')
       else setFooterState('stopped')
@@ -190,25 +204,29 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
             w="full"
             orientation="vertical"
             onChange={(keys: string[]) => {
-              const reordered = keys.map(k => groups.find(g => g.key === k)!)
+              const reordered = keys.map(k =>
+                groups.find(g => g.key === k)!,
+              )
               setGroups(reordered)
             }}
           >
-            {groups.map(({ key, soundId, variantIndex, volume, pitch }) => (
-              <ReorderItem key={key} value={key}>
-                <AudioGroup
-                  key={key}
-                  initialSoundId={soundId}
-                  initialVariantIndex={variantIndex}
-                  initialVolume={volume}
-                  initialPitch={pitch}
-                  onRemove={removeHandlers[key]}
-                  onDuplicate={duplicateHandlers[key]}
-                  onChange={patch => handleGroupChange(key, patch)}
-                  ref={groupRefs[key]}
-                />
-              </ReorderItem>
-            ))}
+            {groups.map(
+              ({ key, soundId, variantIndex, volume, pitch }) => (
+                <ReorderItem key={key} value={key}>
+                  <AudioGroup
+                    key={key}
+                    initialSoundId={soundId}
+                    initialVariantIndex={variantIndex}
+                    initialVolume={volume}
+                    initialPitch={pitch}
+                    onRemove={removeHandlers[key]}
+                    onDuplicate={duplicateHandlers[key]}
+                    onChange={patch => handleGroupChange(key, patch)}
+                    ref={groupRefs[key]}
+                  />
+                </ReorderItem>
+              ),
+            )}
           </Reorder>
         </Box>
         {groups.length === 0 && (
@@ -232,17 +250,23 @@ export const AudioControlWindow: React.FC<Props> = ({ mainSelectedId }) => {
         </Button>
         {footerState === 'playing'
           ? (
-              <Button onClick={pauseAll} colorScheme="red">停止</Button>
+              <Button onClick={pauseAll} colorScheme="red">
+                停止
+              </Button>
             )
           : footerState === 'paused'
             ? (
-                <Button onClick={resumeAll} colorScheme="green">再開</Button>
+                <Button onClick={resumeAll} colorScheme="green">
+                  再開
+                </Button>
               )
             : (
-                <Button onClick={playAll} colorScheme="green">再生</Button>
+                <Button onClick={playAll} colorScheme="green">
+                  再生
+                </Button>
               )}
         <Button onClick={() => addGroup()} colorScheme="blue">
-          + グループ追加
+          ＋ グループ追加
         </Button>
         <Button
           onClick={() => addGroup(mainSelectedId)}
